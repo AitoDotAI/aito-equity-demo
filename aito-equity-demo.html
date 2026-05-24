@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Predictive Equity Research · aito.ai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f4ede1;
+    --paper-2: #ede4d3;
+    --ink: #1a1612;
+    --ink-soft: #3a342b;
+    --ink-fade: #6b6358;
+    --rule: #c9bfac;
+    --rule-soft: #ddd2bc;
+    --accent: #8b1a1a;     /* burgundy */
+    --accent-2: #1d3a5f;   /* deep navy */
+    --gold: #a8862c;
+    --green: #4a6b3a;
+    --red: #8b3a2a;
+    --aito-bg: #0c0f41;
+    --aito-text: #e8eaff;
+    --aito-fade: rgba(232, 234, 255, 0.6);
+    --aito-teal: #12B5AD;
+    --aito-purple: #9B69FF;
+    --aito-card: rgba(255, 255, 255, 0.07);
+    --aito-border: rgba(255, 255, 255, 0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  body {
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(139, 26, 26, 0.03) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(29, 58, 95, 0.025) 0%, transparent 40%);
+  }
+
+  /* Paper grain texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' /%3E%3CfeColorMatrix values='0 0 0 0 0.15 0 0 0 0 0.12 0 0 0 0 0.08 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  .app {
+    display: grid;
+    grid-template-columns: 260px 1fr 360px;
+    height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  .app.sidebar-collapsed { grid-template-columns: 0 1fr 360px; }
+  .app.aito-collapsed { grid-template-columns: 260px 1fr 0; }
+  .app.sidebar-collapsed.aito-collapsed { grid-template-columns: 0 1fr 0; }
+
+  /* ===== LEFT SIDEBAR — editorial masthead style ===== */
+  .sidebar {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 28px 0 24px;
+    overflow: hidden;
+    border-right: 1px solid #000;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .masthead {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid rgba(244, 237, 225, 0.15);
+  }
+
+  .masthead-eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(244, 237, 225, 0.55);
+    margin-bottom: 8px;
+  }
+
+  .masthead-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--paper);
+  }
+
+  .masthead-title em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--gold);
+  }
+
+  .masthead-sub {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: rgba(244, 237, 225, 0.65);
+    margin-top: 10px;
+    line-height: 1.4;
+  }
+
+  .nav-section {
+    padding: 22px 0 6px;
+  }
+
+  .nav-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(244, 237, 225, 0.45);
+    padding: 0 24px;
+    margin-bottom: 10px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 11px 24px;
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    color: rgba(244, 237, 225, 0.82);
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+  }
+
+  .nav-item:hover {
+    background: rgba(244, 237, 225, 0.04);
+    color: var(--paper);
+  }
+
+  .nav-item.active {
+    background: rgba(168, 134, 44, 0.08);
+    border-left-color: var(--gold);
+    color: var(--paper);
+  }
+
+  .nav-num {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 11px;
+    color: rgba(244, 237, 225, 0.45);
+    min-width: 18px;
+  }
+
+  .nav-item.active .nav-num { color: var(--gold); }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 20px 24px 0;
+    border-top: 1px solid rgba(244, 237, 225, 0.15);
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 11px;
+    color: rgba(244, 237, 225, 0.45);
+    line-height: 1.5;
+  }
+
+  .sidebar-footer strong {
+    font-style: normal;
+    color: rgba(244, 237, 225, 0.7);
+  }
+
+  /* ===== CENTER CONTENT ===== */
+  .main {
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+    padding: 14px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 10;
+    box-shadow: 0 1px 0 var(--rule-soft);
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .toggle-btn {
+    background: transparent;
+    border: 1px solid var(--rule);
+    width: 30px;
+    height: 30px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .toggle-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  .breadcrumb {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-fade);
+  }
+
+  .breadcrumb b {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+  }
+
+  .topbar-right .dot {
+    width: 7px;
+    height: 7px;
+    background: var(--green);
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+    box-shadow: 0 0 0 2px rgba(74, 107, 58, 0.15);
+  }
+
+  .content {
+    padding: 40px 56px 80px;
+    max-width: 880px;
+  }
+
+  /* ===== EDITORIAL HEADERS ===== */
+  .article-header {
+    margin-bottom: 36px;
+    padding-bottom: 24px;
+    border-bottom: 3px double var(--rule);
+  }
+
+  .article-eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+
+  .article-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 42px;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+
+  .article-title em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--ink-soft);
+  }
+
+  .article-deck {
+    font-family: 'Source Serif 4', serif;
+    font-size: 17px;
+    font-style: italic;
+    color: var(--ink-soft);
+    line-height: 1.45;
+    max-width: 640px;
+  }
+
+  .article-byline {
+    margin-top: 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+  }
+
+  /* ===== SECTION RULES ===== */
+  .section {
+    margin-bottom: 40px;
+  }
+
+  .section-rule {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 36px 0 22px;
+  }
+
+  .section-rule::before,
+  .section-rule::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .section-rule span {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+    font-weight: 600;
+  }
+
+  /* ===== COMPANY PROFILE CARD ===== */
+  .company-selector {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: var(--paper-2);
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+
+  .company-chip {
+    flex: 1;
+    padding: 11px 14px;
+    border-right: 1px solid var(--rule);
+    cursor: pointer;
+    text-align: left;
+    background: transparent;
+    transition: all 0.15s;
+  }
+
+  .company-chip:last-child { border-right: none; }
+
+  .company-chip:hover {
+    background: rgba(168, 134, 44, 0.08);
+  }
+
+  .company-chip.active {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .company-chip-ticker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+  }
+
+  .company-chip.active .company-chip-ticker { color: var(--gold); }
+
+  .company-chip-name {
+    font-family: 'Source Serif 4', serif;
+    font-size: 11px;
+    font-style: italic;
+    color: var(--ink-fade);
+    margin-top: 1px;
+  }
+
+  .company-chip.active .company-chip-name {
+    color: rgba(244, 237, 225, 0.65);
+  }
+
+  /* ===== MAIN COMPANY CARD ===== */
+  .profile-card {
+    background: #fbf6ec;
+    border: 1px solid var(--rule);
+    padding: 32px 36px;
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .profile-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--gold) 100%);
+  }
+
+  .profile-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 28px;
+    margin-bottom: 22px;
+  }
+
+  .profile-title h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 1.1;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .profile-title .ticker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--ink-fade);
+    margin-top: 4px;
+    letter-spacing: 0.06em;
+  }
+
+  .profile-vintage {
+    text-align: right;
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-fade);
+    line-height: 1.5;
+  }
+
+  .profile-vintage b {
+    font-style: normal;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 17px;
+    display: block;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+
+  /* ===== QUALITATIVE GRADES ===== */
+  .grades {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .grade {
+    padding: 18px 0;
+    border-bottom: 1px solid var(--rule-soft);
+    border-right: 1px solid var(--rule-soft);
+    padding-right: 20px;
+  }
+
+  .grade:nth-child(2n) {
+    padding-right: 0;
+    padding-left: 20px;
+    border-right: none;
+  }
+
+  .grade-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .grade-value {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--ink);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .grade-pip {
+    display: inline-flex;
+    gap: 2px;
+  }
+
+  .grade-pip span {
+    width: 6px;
+    height: 14px;
+    background: var(--rule);
+  }
+
+  .grade-pip span.on { background: var(--accent); }
+
+  .grade-evidence {
+    font-family: 'Source Serif 4', serif;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--ink-soft);
+    line-height: 1.45;
+  }
+
+  /* ===== PREDICTION BLOCK ===== */
+  .prediction {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 28px 32px;
+    margin-top: 28px;
+    border-radius: 1px;
+    position: relative;
+  }
+
+  .prediction-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(244, 237, 225, 0.18);
+  }
+
+  .prediction-head h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--paper);
+  }
+
+  .prediction-head h3 em {
+    font-style: italic;
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  .prediction-confidence {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(244, 237, 225, 0.7);
+  }
+
+  .prediction-confidence b { color: var(--gold); }
+
+  .outcome-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .outcome-bar {
+    display: grid;
+    grid-template-columns: 90px 1fr 56px;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .outcome-bar-label {
+    font-family: 'Source Serif 4', serif;
+    font-size: 13px;
+    color: rgba(244, 237, 225, 0.85);
+  }
+
+  .outcome-bar-label em {
+    font-style: italic;
+    color: rgba(244, 237, 225, 0.55);
+    font-size: 11px;
+  }
+
+  .outcome-bar-track {
+    height: 14px;
+    background: rgba(244, 237, 225, 0.08);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .outcome-bar-fill {
+    height: 100%;
+    background: var(--gold);
+    transition: width 0.4s ease;
+  }
+
+  .outcome-bar-fill.peak {
+    background: linear-gradient(90deg, var(--gold), #d4a743);
+    box-shadow: 0 0 12px rgba(168, 134, 44, 0.4);
+  }
+
+  .outcome-bar-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--paper);
+    text-align: right;
+  }
+
+  /* ===== RELATE / FEATURE IMPORTANCE ===== */
+  .relate-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: #fbf6ec;
+    border: 1px solid var(--rule);
+  }
+
+  .relate-row {
+    display: grid;
+    grid-template-columns: 28px 200px 1fr 90px;
+    gap: 16px;
+    align-items: center;
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .relate-row:last-child { border-bottom: none; }
+
+  .relate-rank {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-fade);
+    text-align: center;
+  }
+
+  .relate-feature {
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .relate-feature .type-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 1px 6px;
+    margin-left: 8px;
+    background: var(--accent);
+    color: var(--paper);
+    vertical-align: middle;
+    font-weight: 600;
+  }
+
+  .relate-feature .type-tag.quant {
+    background: var(--accent-2);
+  }
+
+  .relate-bar {
+    height: 8px;
+    background: rgba(139, 26, 26, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .relate-bar-fill {
+    height: 100%;
+    background: var(--accent);
+  }
+
+  .relate-bar-fill.quant { background: var(--accent-2); }
+
+  .relate-lift {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink);
+    text-align: right;
+    font-weight: 600;
+  }
+
+  /* ===== SIMILARITY ===== */
+  .similar-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+    margin-top: 18px;
+  }
+
+  .similar-item {
+    background: #fbf6ec;
+    border: 1px solid var(--rule);
+    padding: 20px;
+    position: relative;
+  }
+
+  .similar-item-rank {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    color: var(--ink-fade);
+    font-size: 12px;
+  }
+
+  .similar-item h4 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .similar-item-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-fade);
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .similar-item-outcome {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-soft);
+    padding-top: 12px;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .similar-item-outcome b {
+    font-style: normal;
+    font-family: 'Fraunces', serif;
+    color: var(--green);
+  }
+
+  .similar-item-outcome b.red { color: var(--red); }
+
+  /* ===== METHODOLOGY ===== */
+  .methodology-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 20px;
+  }
+
+  .method-card {
+    background: #fbf6ec;
+    border: 1px solid var(--rule);
+    padding: 22px 24px;
+    position: relative;
+  }
+
+  .method-card-num {
+    position: absolute;
+    top: -12px;
+    left: 22px;
+    background: var(--paper);
+    padding: 0 8px;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .method-card h4 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--ink);
+    margin-bottom: 8px;
+    margin-top: 4px;
+  }
+
+  .method-card p {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  /* ===== CONFIDENCE CHART ===== */
+  .calib-chart {
+    background: #fbf6ec;
+    border: 1px solid var(--rule);
+    padding: 28px;
+    margin-top: 18px;
+  }
+
+  .calib-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+    height: 220px;
+    margin-bottom: 18px;
+    padding: 0 8px;
+    border-bottom: 1.5px solid var(--ink);
+    position: relative;
+  }
+
+  .calib-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+  }
+
+  .calib-bar-pair {
+    display: flex;
+    gap: 3px;
+    align-items: flex-end;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .calib-bar-actual,
+  .calib-bar-predicted {
+    width: 22px;
+  }
+
+  .calib-bar-actual { background: var(--accent); }
+  .calib-bar-predicted {
+    background: var(--rule);
+    border: 1px solid var(--ink-fade);
+  }
+
+  .calib-bar-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-fade);
+    position: absolute;
+    bottom: -20px;
+  }
+
+  .calib-legend {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin-top: 8px;
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  .legend-swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* ===== PULLQUOTE ===== */
+  .pullquote {
+    margin: 40px 0;
+    padding: 0 0 0 28px;
+    border-left: 3px solid var(--accent);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 20px;
+    line-height: 1.4;
+    color: var(--ink-soft);
+    font-weight: 400;
+  }
+
+  .pullquote-attr {
+    display: block;
+    margin-top: 14px;
+    font-style: normal;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+  }
+
+  /* ===== AITO RIGHT PANEL ===== */
+  .aito-panel {
+    background: var(--aito-bg);
+    color: var(--aito-text);
+    overflow-y: auto;
+    border-left: 1px solid #000;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .aito-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 140px;
+    background: linear-gradient(180deg, rgba(155, 105, 255, 0.08) 0%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .aito-head {
+    padding: 24px 24px 18px;
+    border-bottom: 1px solid var(--aito-border);
+    position: relative;
+  }
+
+  .aito-wordmark {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--aito-text);
+  }
+
+  .aito-wordmark .ai { color: var(--aito-teal); }
+
+  .aito-tagline {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--aito-fade);
+    margin-top: 8px;
+  }
+
+  .aito-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--aito-border);
+    margin: 18px 0 0;
+    border-top: 1px solid var(--aito-border);
+    border-bottom: 1px solid var(--aito-border);
+  }
+
+  .aito-stat {
+    background: var(--aito-bg);
+    padding: 12px 14px;
+  }
+
+  .aito-stat-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--aito-teal);
+  }
+
+  .aito-stat-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--aito-fade);
+    margin-top: 3px;
+  }
+
+  .aito-section {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--aito-border);
+  }
+
+  .aito-section-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--aito-purple);
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  .aito-endpoint {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(155, 105, 255, 0.12);
+    border: 1px solid rgba(155, 105, 255, 0.3);
+    color: var(--aito-purple);
+    padding: 3px 9px;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+
+  .aito-section p {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(232, 234, 255, 0.85);
+  }
+
+  .aito-section p + p { margin-top: 10px; }
+
+  .aito-section strong { color: var(--aito-text); font-weight: 600; }
+
+  .aito-code {
+    background: var(--aito-card);
+    border-radius: 3px;
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(232, 234, 255, 0.88);
+    line-height: 1.6;
+    margin-top: 12px;
+    overflow-x: auto;
+    border: 1px solid var(--aito-border);
+  }
+
+  .aito-code .k { color: var(--aito-purple); }
+  .aito-code .s { color: var(--aito-teal); }
+  .aito-code .n { color: #ffb380; }
+  .aito-code .c { color: rgba(232, 234, 255, 0.4); font-style: italic; }
+
+  .aito-bullets {
+    list-style: none;
+    padding: 0;
+    margin-top: 6px;
+  }
+
+  .aito-bullets li {
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    color: rgba(232, 234, 255, 0.82);
+    padding: 6px 0 6px 18px;
+    position: relative;
+    line-height: 1.45;
+  }
+
+  .aito-bullets li::before {
+    content: '◆';
+    color: var(--aito-teal);
+    position: absolute;
+    left: 0;
+    top: 6px;
+    font-size: 8px;
+  }
+
+  .aito-cta {
+    margin-top: auto;
+    padding: 20px 24px;
+    border-top: 1px solid var(--aito-border);
+    background: linear-gradient(180deg, transparent 0%, rgba(18, 181, 173, 0.05) 100%);
+  }
+
+  .aito-cta-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: var(--aito-teal);
+    color: var(--aito-bg);
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .aito-cta-btn:hover {
+    box-shadow: 0 0 24px rgba(18, 181, 173, 0.45);
+    transform: translateY(-1px);
+  }
+
+  .aito-cta-note {
+    text-align: center;
+    margin-top: 10px;
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 11px;
+    color: var(--aito-fade);
+  }
+
+  /* ===== VIEW VISIBILITY ===== */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ===== Scrollbar ===== */
+  .main::-webkit-scrollbar,
+  .aito-panel::-webkit-scrollbar { width: 8px; }
+  .main::-webkit-scrollbar-track { background: var(--paper-2); }
+  .main::-webkit-scrollbar-thumb { background: var(--rule); }
+  .aito-panel::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+  .aito-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1100px) {
+    .app { grid-template-columns: 240px 1fr 320px; }
+    .content { padding: 32px 36px 60px; }
+    .article-title { font-size: 34px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- ===== LEFT SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="masthead">
+      <div class="masthead-eyebrow">an aito.ai demo</div>
+      <div class="masthead-title">Predictive<br><em>Equity Research</em></div>
+      <div class="masthead-sub">Testing Buffett's investing principles with an LLM, a predictive database, and twelve years of point-in-time data.</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">The Study</div>
+      <div class="nav-item active" data-view="company">
+        <span class="nav-num">i.</span><span>The Company File</span>
+      </div>
+      <div class="nav-item" data-view="thesis">
+        <span class="nav-num">ii.</span><span>Does the Thesis Hold?</span>
+      </div>
+      <div class="nav-item" data-view="similar">
+        <span class="nav-num">iii.</span><span>Historical Analogues</span>
+      </div>
+      <div class="nav-item" data-view="method">
+        <span class="nav-num">iv.</span><span>On Methodology</span>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <strong>800 companies</strong> · three vintage years · point-in-time discipline · qualitative features extracted by LLM, predictions by aito.ai
+    </div>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main">
+
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="toggle-btn" id="toggleSidebar" title="Toggle sidebar">☰</button>
+        <div class="breadcrumb">The Study · <b>The Company File</b></div>
+      </div>
+      <div class="topbar-right">
+        <span><span class="dot"></span>Live · 800 rows</span>
+        <button class="toggle-btn" id="toggleAito" title="Toggle Aito panel">◧</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ============ VIEW 1: COMPANY FILE ============ -->
+      <section class="view active" id="view-company">
+
+        <div class="article-header">
+          <div class="article-eyebrow">CASE STUDY № 01 · LARGE CAP</div>
+          <h1 class="article-title">The <em>Company File</em></h1>
+          <p class="article-deck">A single company, graded on Buffett-style criteria as of its vintage year, then asked: what does the engine predict for the next decade — and why?</p>
+          <div class="article-byline">Demonstration · Predictive E-Commerce family · 2014/2017/2020 vintages</div>
+        </div>
+
+        <div class="company-selector">
+          <button class="company-chip active">
+            <div class="company-chip-ticker">NVDA · '14</div>
+            <div class="company-chip-name">graphics, semiconductors</div>
+          </button>
+          <button class="company-chip">
+            <div class="company-chip-ticker">SHLD · '14</div>
+            <div class="company-chip-name">Sears Holdings</div>
+          </button>
+          <button class="company-chip">
+            <div class="company-chip-ticker">COST · '17</div>
+            <div class="company-chip-name">Costco Wholesale</div>
+          </button>
+          <button class="company-chip">
+            <div class="company-chip-ticker">META · '20</div>
+            <div class="company-chip-name">platforms, advertising</div>
+          </button>
+        </div>
+
+        <div class="profile-card">
+          <div class="profile-head">
+            <div class="profile-title">
+              <h2>NVIDIA Corporation</h2>
+              <div class="ticker">NVDA · NASDAQ · sec. semiconductors · $9.4B mkt. cap</div>
+            </div>
+            <div class="profile-vintage">
+              <b>January 2014</b>
+              vintage snapshot<br>
+              twelve-year forward window
+            </div>
+          </div>
+
+          <div class="grades">
+            <div class="grade">
+              <div class="grade-label">Market Position</div>
+              <div class="grade-value">
+                Dominant
+                <span class="grade-pip"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></span>
+              </div>
+              <div class="grade-evidence">"~70% discrete GPU share; reference design platform for the industry. The 10-K notes 'we believe our GPUs are the most powerful in the world'."</div>
+            </div>
+            <div class="grade">
+              <div class="grade-label">Moat Type & Strength</div>
+              <div class="grade-value">
+                CUDA / switching
+                <span class="grade-pip"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></span>
+              </div>
+              <div class="grade-evidence">"Wide moat via CUDA ecosystem lock-in. Developers, researchers, and academic curricula are CUDA-trained. Switching costs accumulating."</div>
+            </div>
+            <div class="grade">
+              <div class="grade-label">Market Quality</div>
+              <div class="grade-value">
+                Secular growth
+                <span class="grade-pip"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></span>
+              </div>
+              <div class="grade-evidence">"Gaming durable; emerging mentions of deep learning, professional visualisation, automotive compute. Multiple optionality vectors visible."</div>
+            </div>
+            <div class="grade">
+              <div class="grade-label">Leadership Quality</div>
+              <div class="grade-value">
+                Founder-led · 5/5
+                <span class="grade-pip"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>
+              </div>
+              <div class="grade-evidence">"Jen-Hsun Huang co-founder, CEO since 1993. Long-term capital allocation track record; gross margin trending up; high R&D conviction."</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="prediction">
+          <div class="prediction-head">
+            <h3>aito.ai <em>predicts</em> · 12-year total return</h3>
+            <div class="prediction-confidence">calibrated confidence · <b>HIGH</b></div>
+          </div>
+          <div class="outcome-bars">
+            <div class="outcome-bar">
+              <div class="outcome-bar-label">Disaster <em>−50%+</em></div>
+              <div class="outcome-bar-track"><div class="outcome-bar-fill" style="width: 2%"></div></div>
+              <div class="outcome-bar-value">1.8%</div>
+            </div>
+            <div class="outcome-bar">
+              <div class="outcome-bar-label">Poor <em>−50–0%</em></div>
+              <div class="outcome-bar-track"><div class="outcome-bar-fill" style="width: 4%"></div></div>
+              <div class="outcome-bar-value">3.6%</div>
+            </div>
+            <div class="outcome-bar">
+              <div class="outcome-bar-label">Market <em>0–100%</em></div>
+              <div class="outcome-bar-track"><div class="outcome-bar-fill" style="width: 12%"></div></div>
+              <div class="outcome-bar-value">11.4%</div>
+            </div>
+            <div class="outcome-bar">
+              <div class="outcome-bar-label">Good <em>100–300%</em></div>
+              <div class="outcome-bar-track"><div class="outcome-bar-fill" style="width: 29%"></div></div>
+              <div class="outcome-bar-value">28.7%</div>
+            </div>
+            <div class="outcome-bar">
+              <div class="outcome-bar-label">Great <em>300%+</em></div>
+              <div class="outcome-bar-track"><div class="outcome-bar-fill peak" style="width: 56%"></div></div>
+              <div class="outcome-bar-value">54.5%</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pullquote">
+          "The Aito engine read the qualitative signals — dominant position, accumulating switching costs, secular tailwinds, founder operator — and assigned a 54.5% probability to the 'great' bucket. The realised twelve-year total return was approximately 14,000%."
+          <span class="pullquote-attr">From the demo notebook · 2014 vintage holdout</span>
+        </div>
+
+      </section>
+
+      <!-- ============ VIEW 2: DOES THE THESIS HOLD? ============ -->
+      <section class="view" id="view-thesis">
+
+        <div class="article-header">
+          <div class="article-eyebrow">FEATURE IMPORTANCE · THE MONEY CHART</div>
+          <h1 class="article-title">Does the <em>thesis hold?</em></h1>
+          <p class="article-deck">Across 800 point-in-time company observations, which features most predict landing in the 'great' outcome bucket? An <code style="font-family: 'JetBrains Mono'; font-size: 14px; background: var(--paper-2); padding: 1px 6px;">aito.relate</code> query, ranked by lift.</p>
+          <div class="article-byline">N = 783 observations · 3 vintages · target: outcome_bucket = great</div>
+        </div>
+
+        <div class="relate-grid">
+          <div class="relate-row">
+            <div class="relate-rank">i.</div>
+            <div class="relate-feature">moat_strength = wide<span class="type-tag">qual.</span></div>
+            <div class="relate-bar"><div class="relate-bar-fill" style="width: 96%"></div></div>
+            <div class="relate-lift">×4.82</div>
+          </div>
+          <div class="relate-row">
+            <div class="relate-rank">ii.</div>
+            <div class="relate-feature">market_position = dominant<span class="type-tag">qual.</span></div>
+            <div class="relate-bar"><div class="relate-bar-fill" style="width: 84%"></div></div>
+            <div class="relate-lift">×4.21</div>
+          </div>
+          <div class="relate-row">
+            <div class="relate-rank">iii.</div>
+            <div class="relate-feature">market_quality = secular_growth<span class="type-tag">qual.</span></div>
+            <div class="relate-bar"><div class="relate-bar-fill" style="width: 72%"></div></div>
+            <div class="relate-lift">×3.58</div>
+          </div>
+          <div class="relate-row">
+            <div class="relate-rank">iv.</div>
+            <div class="relate-feature">founder_still_ceo = true<span class="type-tag quant">quant.</span></div>
+            <div class="relate-bar"><div class="relate-bar-fill quant" style="width: 60%"></div></div>
+            <div class="relate-lift">×3.05</div>
+          </div>
+          <div class="relate-row">
+            <div class="relate-rank">v.</div>
+            <div class="relate-feature">moat_type = network_effects<span class="type-tag">qual.</span></div>
+            <div class="relate-bar"><div class="relate-bar-fill" style="width: 54%"></div></div>
+            <div class="relate-lift">×2.74</div>
+          </div>
+          <div class="relate-row">
+            <div class="relate-rank">vi.</div>
+            <div class="relate-feature">capital_allocation = 5/5<span class="type-tag">qual.</span></div>
+            <div class="relate-bar"><div class="relate-bar-fill" style="width: 49%"></div></div>
+            <div class="relate-lift">×2.43</div>
+          </div>
+          <div class="relate-row">
+            <div class="relate-rank">vii.</div>
+            <div class="relate-feature">gross_margin > 55%<span class="type-tag quant">quant.</span></div>
+            <div class="relate-bar"><div class="relate-bar-fill quant" style="width: 38%"></div></div>
+            <div class="relate-lift">×1.92</div>
+          </div>
+          <div class="relate-row">
+            <div class="relate-rank">viii.</div>
+            <div class="relate-feature">revenue_cagr_5y > 15%<span class="type-tag quant">quant.</span></div>
+            <div class="relate-bar"><div class="relate-bar-fill quant" style="width: 35%"></div></div>
+            <div class="relate-lift">×1.74</div>
+          </div>
+          <div class="relate-row">
+            <div class="relate-rank">ix.</div>
+            <div class="relate-feature">roic_5y_avg > 20%<span class="type-tag quant">quant.</span></div>
+            <div class="relate-bar"><div class="relate-bar-fill quant" style="width: 32%"></div></div>
+            <div class="relate-lift">×1.61</div>
+          </div>
+          <div class="relate-row">
+            <div class="relate-rank">x.</div>
+            <div class="relate-feature">pe_ratio &lt; 20 <em style="font-style: italic; color: var(--ink-fade);">("cheap")</em><span class="type-tag quant">quant.</span></div>
+            <div class="relate-bar"><div class="relate-bar-fill quant" style="width: 11%"></div></div>
+            <div class="relate-lift">×1.08</div>
+          </div>
+        </div>
+
+        <div class="pullquote">
+          The five top-ranked predictors of long-horizon outperformance are <em>all qualitative</em>. The cheapest companies on P/E barely beat the base rate. Buffett's lesson — that quality compounds and the market chronically underprices durability — survives a 783-observation, point-in-time test.
+        </div>
+
+        <div class="section-rule"><span>Calibration</span></div>
+
+        <div class="calib-chart">
+          <div style="font-family: 'Fraunces', serif; font-size: 17px; margin-bottom: 6px; font-weight: 600;">Predicted vs. realised frequency, by confidence decile</div>
+          <div style="font-family: 'Source Serif 4', serif; font-style: italic; font-size: 13px; color: var(--ink-soft); margin-bottom: 22px;">A well-calibrated engine: when it says 80%, it should be right ~80% of the time.</div>
+
+          <div class="calib-bars">
+            <div class="calib-bar"><div class="calib-bar-pair"><div class="calib-bar-predicted" style="height: 12%"></div><div class="calib-bar-actual" style="height: 14%"></div></div><div class="calib-bar-label">10%</div></div>
+            <div class="calib-bar"><div class="calib-bar-pair"><div class="calib-bar-predicted" style="height: 22%"></div><div class="calib-bar-actual" style="height: 19%"></div></div><div class="calib-bar-label">20%</div></div>
+            <div class="calib-bar"><div class="calib-bar-pair"><div class="calib-bar-predicted" style="height: 32%"></div><div class="calib-bar-actual" style="height: 34%"></div></div><div class="calib-bar-label">30%</div></div>
+            <div class="calib-bar"><div class="calib-bar-pair"><div class="calib-bar-predicted" style="height: 42%"></div><div class="calib-bar-actual" style="height: 39%"></div></div><div class="calib-bar-label">40%</div></div>
+            <div class="calib-bar"><div class="calib-bar-pair"><div class="calib-bar-predicted" style="height: 52%"></div><div class="calib-bar-actual" style="height: 55%"></div></div><div class="calib-bar-label">50%</div></div>
+            <div class="calib-bar"><div class="calib-bar-pair"><div class="calib-bar-predicted" style="height: 62%"></div><div class="calib-bar-actual" style="height: 64%"></div></div><div class="calib-bar-label">60%</div></div>
+            <div class="calib-bar"><div class="calib-bar-pair"><div class="calib-bar-predicted" style="height: 72%"></div><div class="calib-bar-actual" style="height: 68%"></div></div><div class="calib-bar-label">70%</div></div>
+            <div class="calib-bar"><div class="calib-bar-pair"><div class="calib-bar-predicted" style="height: 82%"></div><div class="calib-bar-actual" style="height: 79%"></div></div><div class="calib-bar-label">80%</div></div>
+            <div class="calib-bar"><div class="calib-bar-pair"><div class="calib-bar-predicted" style="height: 92%"></div><div class="calib-bar-actual" style="height: 88%"></div></div><div class="calib-bar-label">90%</div></div>
+            <div class="calib-bar"><div class="calib-bar-pair"><div class="calib-bar-predicted" style="height: 97%"></div><div class="calib-bar-actual" style="height: 93%"></div></div><div class="calib-bar-label">100%</div></div>
+          </div>
+
+          <div class="calib-legend">
+            <div><span class="legend-swatch" style="background: var(--rule); border: 1px solid var(--ink-fade);"></span>Predicted</div>
+            <div><span class="legend-swatch" style="background: var(--accent);"></span>Realised</div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ============ VIEW 3: HISTORICAL ANALOGUES ============ -->
+      <section class="view" id="view-similar">
+
+        <div class="article-header">
+          <div class="article-eyebrow">SIMILARITY SEARCH · HISTORY DOES NOT REPEAT, BUT IT RHYMES</div>
+          <h1 class="article-title">Historical <em>Analogues</em></h1>
+          <p class="article-deck">Given a focal company, find historical observations with the closest feature profile. Then read what actually happened to them. A native Aito similarity query.</p>
+          <div class="article-byline">focal: NVIDIA · 2014 vintage · nearest neighbours by feature distance</div>
+        </div>
+
+        <div class="similar-card">
+          <div class="similar-item">
+            <div class="similar-item-rank">№ i</div>
+            <h4>Microsoft</h4>
+            <div class="similar-item-meta">MSFT · 1995 vintage · sim 0.87</div>
+            <div style="font-family: 'Source Serif 4', serif; font-size: 13px; color: var(--ink-soft); line-height: 1.55; margin-bottom: 14px;">Dominant platform, wide ecosystem moat (Windows / dev tools), secular tailwinds (PC adoption), founder-led with strong capital discipline.</div>
+            <div class="similar-item-outcome">Outcome '95→'07: <b>+1,200%</b></div>
+          </div>
+          <div class="similar-item">
+            <div class="similar-item-rank">№ ii</div>
+            <h4>Cisco Systems</h4>
+            <div class="similar-item-meta">CSCO · 1995 vintage · sim 0.81</div>
+            <div style="font-family: 'Source Serif 4', serif; font-size: 13px; color: var(--ink-soft); line-height: 1.55; margin-bottom: 14px;">Dominant in networking infrastructure, switching-cost moat (IOS lock-in), secular internet growth, founder-led at vintage date.</div>
+            <div class="similar-item-outcome">Outcome '95→'07: <b>+790%</b> <em style="font-style: italic; color: var(--ink-fade); font-size: 11px;">(after a 2000 drawdown)</em></div>
+          </div>
+          <div class="similar-item">
+            <div class="similar-item-rank">№ iii</div>
+            <h4>Adobe Systems</h4>
+            <div class="similar-item-meta">ADBE · 2010 vintage · sim 0.78</div>
+            <div style="font-family: 'Source Serif 4', serif; font-size: 13px; color: var(--ink-soft); line-height: 1.55; margin-bottom: 14px;">Dominant in creative software, ecosystem switching costs, transitioning to SaaS at vintage (secular growth pivot), capable management.</div>
+            <div class="similar-item-outcome">Outcome '10→'22: <b>+760%</b></div>
+          </div>
+        </div>
+
+        <div class="similar-card" style="margin-top: 24px;">
+          <div class="similar-item">
+            <div class="similar-item-rank">№ iv</div>
+            <h4>Intel Corporation</h4>
+            <div class="similar-item-meta">INTC · 1996 vintage · sim 0.76</div>
+            <div style="font-family: 'Source Serif 4', serif; font-size: 13px; color: var(--ink-soft); line-height: 1.55; margin-bottom: 14px;">Dominant semis player, wide ecosystem moat (x86), secular PC tailwinds. Demonstrates the regime change risk for hardware moats.</div>
+            <div class="similar-item-outcome">Outcome '96→'08: <b>+85%</b> <em style="font-style: italic; color: var(--ink-fade); font-size: 11px;">(market-like)</em></div>
+          </div>
+          <div class="similar-item">
+            <div class="similar-item-rank">№ v</div>
+            <h4>Qualcomm</h4>
+            <div class="similar-item-meta">QCOM · 2003 vintage · sim 0.71</div>
+            <div style="font-family: 'Source Serif 4', serif; font-size: 13px; color: var(--ink-soft); line-height: 1.55; margin-bottom: 14px;">IP and standards moat in CDMA, growth phase of mobile, but contested by regulatory action — narrower moat than appearance suggested.</div>
+            <div class="similar-item-outcome">Outcome '03→'15: <b>+180%</b></div>
+          </div>
+          <div class="similar-item">
+            <div class="similar-item-rank">№ vi</div>
+            <h4>EMC Corporation</h4>
+            <div class="similar-item-meta">EMC · 2008 vintage · sim 0.68</div>
+            <div style="font-family: 'Source Serif 4', serif; font-size: 13px; color: var(--ink-soft); line-height: 1.55; margin-bottom: 14px;">Dominant in enterprise storage, integration moat, but market itself entering disruption (cloud) — cautionary parallel.</div>
+            <div class="similar-item-outcome">Outcome '08→'16: <b class="red">acquired</b> <em style="font-style: italic; color: var(--ink-fade); font-size: 11px;">(by Dell)</em></div>
+          </div>
+        </div>
+
+        <div class="pullquote">
+          Five of the six closest analogues to NVIDIA-2014 were strong long-term outcomes. The one that wasn't — EMC — telegraphed its risk in a feature the engine sees: <em>market_quality</em> declining from stable to disrupted. The shape of the parallel matters as much as its existence.
+        </div>
+
+      </section>
+
+      <!-- ============ VIEW 4: METHODOLOGY ============ -->
+      <section class="view" id="view-method">
+
+        <div class="article-header">
+          <div class="article-eyebrow">NOTES ON THE METHOD · WHAT THIS IS, AND IS NOT</div>
+          <h1 class="article-title">On <em>Methodology</em></h1>
+          <p class="article-deck">Every line in this demo is reproducible. Every concession to imperfection is documented. The demo is the methodology; the numbers are the consequence.</p>
+        </div>
+
+        <div class="methodology-grid">
+          <div class="method-card">
+            <div class="method-card-num">№ i</div>
+            <h4>Point-in-time universe</h4>
+            <p>Constituents reconstructed from Wikipedia's historical S&P 500 edits as of January 1, 2014 / 2017 / 2020. Survivorship bias eliminated by tracking what happened to each constituent — including delistings, bankruptcies, acquisitions — not what is in the index today.</p>
+          </div>
+
+          <div class="method-card">
+            <div class="method-card-num">№ ii</div>
+            <h4>LLM grading discipline</h4>
+            <p>Qualitative features extracted from contemporary 10-Ks and proxies only. Prompts explicitly instruct the model not to use post-vintage knowledge. Each feature graded three times at temperature 0.3; modal answer retained. Rationales preserved as explainability columns.</p>
+          </div>
+
+          <div class="method-card">
+            <div class="method-card-num">№ iii</div>
+            <h4>Lookahead stress test</h4>
+            <p>The 2020 vintage is held out as a future-leakage probe. If feature lift is comparable across all three vintages, LLM lookahead bias is bounded. Reported in the calibration plot.</p>
+          </div>
+
+          <div class="method-card">
+            <div class="method-card-num">№ iv</div>
+            <h4>Outcome bucketing</h4>
+            <p>Five buckets, not regression on returns. Aligned with how investors actually think (disaster / poor / market / good / great). Yields calibrated probabilities rather than meaningless point forecasts.</p>
+          </div>
+
+          <div class="method-card">
+            <div class="method-card-num">№ v</div>
+            <h4>Why this is not a trading signal</h4>
+            <p>Twelve-year horizon, ~800 observations, no microstructure features, no transaction cost model, no consideration of capacity. This is a hypothesis test about long-horizon business quality — not an alpha generation system. The demo's value is architectural, not financial.</p>
+          </div>
+
+          <div class="method-card">
+            <div class="method-card-num">№ vi</div>
+            <h4>The transferable lesson</h4>
+            <p>The architecture — LLM-extracted qualitative features feeding a predictive database — generalises to any domain where unstructured judgment meets structured outcomes. Credit underwriting, M&amp;A diligence, talent assessment, supplier risk. Equity research is the vehicle, not the destination.</p>
+          </div>
+        </div>
+
+        <div class="section-rule"><span>Stack</span></div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div style="background: #fbf6ec; border: 1px solid var(--rule); padding: 20px 22px;">
+            <div style="font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-fade); font-weight: 600; margin-bottom: 10px;">Data Sources</div>
+            <ul style="list-style: none; padding: 0; font-family: 'Source Serif 4', serif; font-size: 13px; line-height: 1.85; color: var(--ink-soft);">
+              <li>· SEC EDGAR (10-Ks, proxies, point-in-time)</li>
+              <li>· Wikipedia historical S&amp;P 500 constituent edits</li>
+              <li>· yfinance (prices, returns, survival)</li>
+              <li>· SimFin free tier (fundamentals)</li>
+            </ul>
+          </div>
+          <div style="background: #fbf6ec; border: 1px solid var(--rule); padding: 20px 22px;">
+            <div style="font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-fade); font-weight: 600; margin-bottom: 10px;">Engine</div>
+            <ul style="list-style: none; padding: 0; font-family: 'Source Serif 4', serif; font-size: 13px; line-height: 1.85; color: var(--ink-soft);">
+              <li>· Claude Sonnet for LLM feature extraction</li>
+              <li>· <strong style="font-family: 'JetBrains Mono'; font-size: 12px;">aito.ai</strong> predictive database</li>
+              <li>· Single endpoint, no training pipeline</li>
+              <li>· Open repository: aito-equity-demo</li>
+            </ul>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ===== AITO RIGHT PANEL ===== -->
+  <aside class="aito-panel" id="aitoPanel">
+    <div class="aito-head">
+      <div class="aito-wordmark">aito<span class="ai">..</span></div>
+      <div class="aito-tagline">predictive database · context panel</div>
+      <div class="aito-stats">
+        <div class="aito-stat">
+          <div class="aito-stat-val">783</div>
+          <div class="aito-stat-label">observations</div>
+        </div>
+        <div class="aito-stat">
+          <div class="aito-stat-val">14</div>
+          <div class="aito-stat-label">features</div>
+        </div>
+        <div class="aito-stat">
+          <div class="aito-stat-val">62 ms</div>
+          <div class="aito-stat-label">p50 latency</div>
+        </div>
+        <div class="aito-stat">
+          <div class="aito-stat-val">0</div>
+          <div class="aito-stat-label">model training</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel content swaps per view -->
+    <div id="aito-content">
+
+      <div class="aito-section" data-view="company">
+        <div class="aito-section-label">The Problem</div>
+        <p>Most predictive systems demand a training run, a feature store, an MLOps pipeline. For equity research with hundreds of observations and dozens of features, that overhead is the entire project budget.</p>
+      </div>
+
+      <div class="aito-section" data-view="company">
+        <div class="aito-section-label">The Aito Approach</div>
+        <p><strong>One endpoint, one query, calibrated probabilities and the evidence that justified them.</strong> No training, no feature engineering pipeline, no model monitoring. Load the table, ask the question.</p>
+        <div class="aito-endpoint">POST /_predict</div>
+        <div class="aito-code"><span class="c">// Predict outcome bucket for a focal company</span>
+{
+  <span class="k">"from"</span>: <span class="s">"companies"</span>,
+  <span class="k">"where"</span>: {
+    <span class="k">"market_position"</span>: <span class="s">"dominant"</span>,
+    <span class="k">"moat_strength"</span>: <span class="s">"wide"</span>,
+    <span class="k">"market_quality"</span>: <span class="s">"secular_growth"</span>,
+    <span class="k">"founder_still_ceo"</span>: <span class="n">true</span>
+  },
+  <span class="k">"predict"</span>: <span class="s">"outcome_bucket"</span>
+}</div>
+      </div>
+
+      <div class="aito-section" data-view="company">
+        <div class="aito-section-label">Why it matters here</div>
+        <ul class="aito-bullets">
+          <li>Calibrated, not point estimates — investors need probabilities</li>
+          <li>Explainable by construction — every prediction traces to evidence</li>
+          <li>Auditable for regulated workflows — no black box</li>
+          <li>Same query works at 800 rows or 8 million</li>
+        </ul>
+      </div>
+
+      <div class="aito-section" data-view="thesis">
+        <div class="aito-section-label">The Question Asked</div>
+        <p>Which features in the table are most strongly associated with the 'great' outcome? The <code style="font-family: 'JetBrains Mono'; color: var(--aito-purple);">relate</code> endpoint answers this in a single call — no separate feature-importance model required.</p>
+        <div class="aito-endpoint">POST /_relate</div>
+        <div class="aito-code">{
+  <span class="k">"from"</span>: <span class="s">"companies"</span>,
+  <span class="k">"where"</span>: {
+    <span class="k">"outcome_bucket"</span>: <span class="s">"great"</span>
+  },
+  <span class="k">"relate"</span>: <span class="s">"$features"</span>
+}</div>
+      </div>
+
+      <div class="aito-section" data-view="thesis">
+        <div class="aito-section-label">What this demonstrates</div>
+        <ul class="aito-bullets">
+          <li>Hypothesis testing as a database query</li>
+          <li>Mixed qualitative + quantitative features, equal footing</li>
+          <li>Calibration plot shows the engine knows what it doesn't know</li>
+          <li>Reproducible from raw EDGAR filings</li>
+        </ul>
+      </div>
+
+      <div class="aito-section" data-view="similar">
+        <div class="aito-section-label">The Query</div>
+        <p>Find observations most similar to a focal company by feature distance. Useful for analogue reasoning, for diligence reference cases, for stress-testing a thesis against history.</p>
+        <div class="aito-endpoint">POST /_match</div>
+        <div class="aito-code">{
+  <span class="k">"from"</span>: <span class="s">"companies"</span>,
+  <span class="k">"match"</span>: {
+    <span class="k">"ticker"</span>: <span class="s">"NVDA"</span>,
+    <span class="k">"vintage"</span>: <span class="n">2014</span>
+  },
+  <span class="k">"limit"</span>: <span class="n">6</span>
+}</div>
+      </div>
+
+      <div class="aito-section" data-view="similar">
+        <div class="aito-section-label">Architectural Note</div>
+        <p>Similarity, prediction, and relate are <strong>the same engine, the same index, the same endpoint family</strong>. No separate vector store, no embedding pipeline, no synchronisation problem.</p>
+      </div>
+
+      <div class="aito-section" data-view="method">
+        <div class="aito-section-label">The Pattern</div>
+        <p>Unstructured judgment (10-Ks, proxies) → LLM grading → structured table → predictive database. <strong>The architecture is the product.</strong> Equity is the demonstration vehicle.</p>
+      </div>
+
+      <div class="aito-section" data-view="method">
+        <div class="aito-section-label">Transferable Domains</div>
+        <ul class="aito-bullets">
+          <li>Credit underwriting from narrative loan apps</li>
+          <li>M&amp;A diligence at scale</li>
+          <li>Supplier risk from contracts + filings</li>
+          <li>Talent assessment from CV + interview notes</li>
+          <li>Anomaly detection in regulated workflows</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="aito-cta">
+      <button class="aito-cta-btn">Start free trial →</button>
+      <div class="aito-cta-note">aito.ai · predictive database for the things that don't fit a feature store</div>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+  // View switching
+  const nav = document.querySelectorAll('.nav-item');
+  const views = document.querySelectorAll('.view');
+  const aitoSections = document.querySelectorAll('#aito-content .aito-section');
+  const breadcrumb = document.querySelector('.breadcrumb');
+
+  const viewTitles = {
+    company: 'The Company File',
+    thesis: 'Does the Thesis Hold?',
+    similar: 'Historical Analogues',
+    method: 'On Methodology'
+  };
+
+  function setView(v) {
+    nav.forEach(n => n.classList.toggle('active', n.dataset.view === v));
+    views.forEach(view => view.classList.toggle('active', view.id === 'view-' + v));
+    aitoSections.forEach(s => {
+      s.style.display = s.dataset.view === v ? 'block' : 'none';
+    });
+    breadcrumb.innerHTML = `The Study · <b>${viewTitles[v]}</b>`;
+    document.querySelector('.main').scrollTop = 0;
+  }
+
+  nav.forEach(n => n.addEventListener('click', () => setView(n.dataset.view)));
+  setView('company');
+
+  // Sidebar toggle
+  const app = document.getElementById('app');
+  const sb = document.getElementById('toggleSidebar');
+  const ap = document.getElementById('toggleAito');
+
+  sb.addEventListener('click', () => {
+    app.classList.toggle('sidebar-collapsed');
+    sb.textContent = app.classList.contains('sidebar-collapsed') ? '☰' : '☰';
+  });
+
+  ap.addEventListener('click', () => {
+    app.classList.toggle('aito-collapsed');
+    ap.textContent = app.classList.contains('aito-collapsed') ? '◨' : '◧';
+  });
+
+  // Company chip switching (cosmetic — would swap data in real demo)
+  document.querySelectorAll('.company-chip').forEach(c => {
+    c.addEventListener('click', () => {
+      document.querySelectorAll('.company-chip').forEach(x => x.classList.remove('active'));
+      c.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
