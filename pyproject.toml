@@ -17,7 +17,10 @@ dependencies = [
     "pandas>=2.2,<3",            # data wrangling between stages
 
     # ── LLM extraction (qualitative grading) ─────────────────────
+    # Both kept available; pipeline/extraction/extract.py currently uses
+    # OpenAI. Switch by changing the import + model string.
     "anthropic>=0.40,<1",
+    "openai>=1.50,<2",
 
     # ── Price + survival ─────────────────────────────────────────
     "yfinance>=0.2.40,<1",
