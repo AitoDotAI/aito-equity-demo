@@ -20,6 +20,7 @@ import argparse
 import json
 import time
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 
 import pandas as pd
@@ -35,15 +36,16 @@ COMPANIES_TABLE = "companies"
 class Focal:
     ticker: str
     vintage: int
+    name: str  # full legal/display name (h2 in profile card)
     chip_label: str
-    short_name: str
+    short_name: str  # sector / subtitle text under the chip
 
 
 FOCAL_COMPANIES: list[Focal] = [
-    Focal(ticker="NVDA", vintage=2014, chip_label="NVDA · '14", short_name="graphics, semiconductors"),
-    Focal(ticker="SHLD", vintage=2014, chip_label="SHLD · '14", short_name="Sears Holdings"),
-    Focal(ticker="COST", vintage=2017, chip_label="COST · '17", short_name="Costco Wholesale"),
-    Focal(ticker="META", vintage=2020, chip_label="META · '20", short_name="platforms, advertising"),
+    Focal(ticker="NVDA", vintage=2014, name="NVIDIA Corporation", chip_label="NVDA · '14", short_name="graphics, semiconductors"),
+    Focal(ticker="SHLD", vintage=2014, name="Sears Holdings", chip_label="SHLD · '14", short_name="Sears Holdings"),
+    Focal(ticker="COST", vintage=2017, name="Costco Wholesale", chip_label="COST · '17", short_name="Costco Wholesale"),
+    Focal(ticker="META", vintage=2020, name="Meta Platforms", chip_label="META · '20", short_name="platforms, advertising"),
 ]
 
 OUTCOME_BUCKET_LABELS = {
@@ -90,6 +92,9 @@ def emit_meta(companies_df: pd.DataFrame, latency_samples: list[float], out_dir:
         if vintages
         else "no vintage data"
     )
+    # Window for the OLDEST vintage (largest forward window); rounded to int.
+    today = date.today()
+    window_default = int((today - date(min(vintages), 1, 1)).days / 365.25) if vintages else 12
     payload = {
         "observations": len(companies_df),
         "features": n_features,
@@ -97,10 +102,51 @@ def emit_meta(companies_df: pd.DataFrame, latency_samples: list[float], out_dir:
         "training_runs": 0,
         "vintages": vintages,
         "vintages_label": vintages_label,
-        "window_years_default": max(vintages) if vintages and len(vintages) > 0 else 12,
+        "window_years_default": window_default,
         "data_source_note": "S&P 500 historical constituents · SEC EDGAR · yfinance",
     }
     (out_dir / "meta.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
+def emit_universe(companies_df: pd.DataFrame, out_dir: Path) -> None:
+    """Dump the full companies table as JSON for the Universe view.
+
+    No Aito call — pure denormalisation of data/companies.csv. Rows may
+    have null outcomes (delisted) or null LLM grades (extract not yet run).
+    The UI handles these gracefully.
+    """
+    cols_to_export = [
+        "ticker", "vintage_year", "vintage_date", "company_name",
+        "sector", "industry", "market_cap_bucket",
+        "exchange", "currency", "reporting_standard",
+        "market_position", "moat_type", "moat_strength", "market_quality",
+        "leadership_quality", "founder_still_ceo",
+        "outcome_bucket", "survived_intact", "terminal_event",
+        "total_return_pct_local", "total_return_pct_usd", "window_years",
+        "end_date",
+    ]
+    present = [c for c in cols_to_export if c in companies_df.columns]
+    sub = companies_df[present].copy()
+
+    # Replace NaN with None for clean JSON
+    rows = []
+    for raw in sub.to_dict(orient="records"):
+        clean = {}
+        for k, v in raw.items():
+            if isinstance(v, float) and (v != v):  # NaN
+                clean[k] = None
+            elif hasattr(v, "item"):
+                clean[k] = v.item()
+            else:
+                clean[k] = v
+        rows.append(clean)
+
+    payload = {
+        "_note": "Generated from data/companies.csv. Rows with null LLM features mean the extraction stage hasn't run for that ticker yet.",
+        "columns": present,
+        "rows": rows,
+    }
+    (out_dir / "universe.json").write_text(json.dumps(payload), encoding="utf-8")
 
 
 def emit_companies(out_dir: Path) -> None:
@@ -108,7 +154,7 @@ def emit_companies(out_dir: Path) -> None:
         {
             "ticker": f.ticker,
             "vintage": f.vintage,
-            "name": f.short_name,
+            "name": f.name,
             "chip_label": f.chip_label,
             "short_name": f.short_name,
         }
@@ -390,32 +436,49 @@ def emit_match_per_focal(
         )
 
 
-def precompute_all(out_dir: Path = SITE_DATA) -> None:
-    """Emit every JSON file the static site reads."""
+def precompute_all(out_dir: Path = SITE_DATA, static_only: bool = False) -> None:
+    """Emit every JSON file the static site reads.
+
+    With `static_only=True`, skip Aito-dependent outputs (relate, calibration,
+    predict, match) and emit only the data we already have on disk —
+    meta, companies, universe. Use this when Aito isn't wired yet.
+    """
     out_dir.mkdir(parents=True, exist_ok=True)
     companies_df = pd.read_csv("data/companies.csv")
     latency_samples: list[float] = []
-    with AitoClient() as client:
-        print("→ relate")
-        emit_relate(client, out_dir, latency_samples)
-        print("→ calibration (placeholder)")
-        emit_calibration(client, out_dir, latency_samples)
-        print(f"→ predict × {len(FOCAL_COMPANIES)}")
-        emit_predict_per_focal(client, companies_df, out_dir, latency_samples)
-        print(f"→ match × {len(FOCAL_COMPANIES)}")
-        emit_match_per_focal(client, companies_df, out_dir, latency_samples)
+
+    if not static_only:
+        with AitoClient() as client:
+            print("→ relate")
+            emit_relate(client, out_dir, latency_samples)
+            print("→ calibration (placeholder)")
+            emit_calibration(client, out_dir, latency_samples)
+            print(f"→ predict × {len(FOCAL_COMPANIES)}")
+            emit_predict_per_focal(client, companies_df, out_dir, latency_samples)
+            print(f"→ match × {len(FOCAL_COMPANIES)}")
+            emit_match_per_focal(client, companies_df, out_dir, latency_samples)
+    else:
+        print("→ (skipping Aito queries; static-only mode)")
+
     print("→ meta")
     emit_meta(companies_df, latency_samples, out_dir)
     print("→ companies")
     emit_companies(out_dir)
+    print("→ universe")
+    emit_universe(companies_df, out_dir)
     print(f"✓ wrote JSON to {out_dir}/")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", default=str(SITE_DATA))
+    parser.add_argument(
+        "--static-only",
+        action="store_true",
+        help="Skip Aito queries; emit only meta + companies + universe from local CSVs",
+    )
     args = parser.parse_args()
-    precompute_all(Path(args.out))
+    precompute_all(Path(args.out), static_only=args.static_only)
 
 
 if __name__ == "__main__":

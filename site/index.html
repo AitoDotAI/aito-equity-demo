@@ -1088,6 +1088,141 @@
     color: var(--aito-fade);
   }
 
+  /* ===== UNIVERSE TABLE ===== */
+  .universe-toolbar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 18px;
+    padding: 12px 16px;
+    background: #fbf6ec;
+    border: 1px solid var(--rule);
+    font-family: 'Source Serif 4', serif;
+    font-size: 12px;
+  }
+  .universe-toolbar label {
+    font-style: italic;
+    color: var(--ink-fade);
+    margin-right: 4px;
+  }
+  .universe-toolbar select,
+  .universe-toolbar input[type="search"] {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 4px 8px;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .universe-toolbar input[type="search"] {
+    flex: 1;
+    min-width: 140px;
+  }
+  .universe-toolbar .count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-fade);
+    margin-left: auto;
+  }
+
+  .universe-table-wrap {
+    background: #fbf6ec;
+    border: 1px solid var(--rule);
+    max-height: 620px;
+    overflow-y: auto;
+  }
+  table.universe-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Source Serif 4', serif;
+    font-size: 12.5px;
+  }
+  table.universe-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--paper-2);
+    border-bottom: 2px solid var(--rule);
+    text-align: left;
+    padding: 9px 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+    cursor: pointer;
+    user-select: none;
+    font-weight: 600;
+  }
+  table.universe-table thead th:hover {
+    background: rgba(168, 134, 44, 0.08);
+    color: var(--ink);
+  }
+  table.universe-table thead th[aria-sort="ascending"]::after { content: " ↑"; color: var(--accent); }
+  table.universe-table thead th[aria-sort="descending"]::after { content: " ↓"; color: var(--accent); }
+
+  table.universe-table tbody tr {
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  table.universe-table tbody tr:hover {
+    background: rgba(168, 134, 44, 0.05);
+  }
+  table.universe-table tbody td {
+    padding: 7px 12px;
+    color: var(--ink-soft);
+    vertical-align: middle;
+  }
+  table.universe-table td.ticker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  table.universe-table td.num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    text-align: right;
+  }
+  table.universe-table td.vintage {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    color: var(--ink-fade);
+  }
+  td .bucket-chip {
+    display: inline-block;
+    padding: 1px 7px;
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    font-weight: 600;
+  }
+  td .bucket-chip.great    { background: rgba(168, 134, 44, 0.18); color: #6e5818; }
+  td .bucket-chip.good     { background: rgba(74, 107, 58, 0.16); color: #3c5630; }
+  td .bucket-chip.market   { background: rgba(29, 58, 95, 0.12); color: #1d3a5f; }
+  td .bucket-chip.poor     { background: rgba(139, 58, 42, 0.14); color: var(--red); }
+  td .bucket-chip.disaster { background: rgba(139, 26, 26, 0.18); color: var(--accent); }
+  td .bucket-chip.empty    { background: var(--rule-soft); color: var(--ink-fade); font-style: italic; }
+
+  td .grade-cell {
+    font-family: 'Source Serif 4', serif;
+    font-size: 12px;
+  }
+  td .grade-cell.empty {
+    font-style: italic;
+    color: var(--ink-fade);
+  }
+  td.return-pos { color: var(--green); }
+  td.return-neg { color: var(--red); }
+
+  .universe-empty {
+    padding: 40px;
+    text-align: center;
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    color: var(--ink-fade);
+  }
+
   /* ===== VIEW VISIBILITY ===== */
   .view { display: none; }
   .view.active { display: block; }
@@ -1131,8 +1266,11 @@
       <div class="nav-item" data-view="similar">
         <span class="nav-num">iii.</span><span>Historical Analogues</span>
       </div>
+      <div class="nav-item" data-view="universe">
+        <span class="nav-num">iv.</span><span>The Universe</span>
+      </div>
       <div class="nav-item" data-view="method">
-        <span class="nav-num">iv.</span><span>On Methodology</span>
+        <span class="nav-num">v.</span><span>On Methodology</span>
       </div>
     </div>
 
@@ -1295,6 +1433,48 @@
 
       </section>
 
+      <!-- ============ VIEW 5: THE UNIVERSE ============ -->
+      <section class="view" id="view-universe">
+        <div class="article-header">
+          <div class="article-eyebrow">THE FULL TABLE · WHAT THE ENGINE SEES</div>
+          <h1 class="article-title">The <em>Universe</em></h1>
+          <p class="article-deck">Every (ticker, vintage) row the predictive database holds. Filter by sector, vintage, or outcome bucket; sort by any column. Companies graded by the LLM show their qualitative grades; those without grades show the realised outcome only.</p>
+          <div class="article-byline" data-bind="universe-byline">N = — observations · sourced from S&P 500 historical constituents, EDGAR filings, yfinance prices</div>
+        </div>
+
+        <div class="universe-toolbar">
+          <label>Vintage:</label>
+          <select id="filter-vintage"><option value="">all</option></select>
+          <label>Sector:</label>
+          <select id="filter-sector"><option value="">all</option></select>
+          <label>Outcome:</label>
+          <select id="filter-outcome">
+            <option value="">all</option>
+            <option value="great">great</option>
+            <option value="good">good</option>
+            <option value="market">market</option>
+            <option value="poor">poor</option>
+            <option value="disaster">disaster</option>
+            <option value="__nodata__">no data</option>
+          </select>
+          <input type="search" id="filter-search" placeholder="search ticker or name…" />
+          <span class="count" id="universe-count">—</span>
+        </div>
+
+        <div class="universe-table-wrap">
+          <table class="universe-table">
+            <thead>
+              <tr id="universe-thead"><!-- headers rendered by JS --></tr>
+            </thead>
+            <tbody id="universe-tbody"><!-- rows rendered by JS --></tbody>
+          </table>
+        </div>
+
+        <div class="pullquote">
+          The table is a leveling tool. It shows every constituent that was in the index at vintage, including the ones the engine got wrong, the ones that delisted, and the ones the LLM hasn't graded yet. The visual editorial register applies to the curated views — this view is the receipts.
+        </div>
+      </section>
+
     </div>
   </main>
 
@@ -1398,6 +1578,37 @@
       <div class="aito-section" data-view="similar">
         <div class="aito-section-label">Architectural Note</div>
         <p>Similarity, prediction, and relate are <strong>the same engine, the same index, the same endpoint family</strong>. No separate vector store, no embedding pipeline, no synchronisation problem.</p>
+      </div>
+
+      <div class="aito-section" data-view="universe">
+        <div class="aito-section-label">The Table</div>
+        <p>Every row the engine sees. <strong>Filtering and sorting happen client-side</strong> — the entire 1,500-row universe ships as a single JSON file (~700KB), small enough that no server round-trip is needed for browse.</p>
+        <p>This is the receipts layer. Every other view summarises; this one shows the unvarnished input.</p>
+      </div>
+
+      <div class="aito-section" data-view="universe">
+        <div class="aito-section-label">Data Shape</div>
+        <div class="aito-endpoint">GET /data/universe.json</div>
+        <div class="aito-code"><span class="c">// One row per (ticker, vintage). Nulls allowed for not-yet-graded.</span>
+{
+  <span class="k">"ticker"</span>: <span class="s">"NVDA"</span>,
+  <span class="k">"vintage_year"</span>: <span class="n">2014</span>,
+  <span class="k">"sector"</span>: <span class="s">"Information Technology"</span>,
+  <span class="k">"market_position"</span>: <span class="s">"dominant"</span>,
+  <span class="k">"moat_strength"</span>: <span class="s">"wide"</span>,
+  <span class="k">"outcome_bucket"</span>: <span class="s">"great"</span>,
+  <span class="k">"total_return_pct_local"</span>: <span class="n">58197.3</span>,
+  <span class="k">"survived_intact"</span>: <span class="n">true</span>
+}</div>
+      </div>
+
+      <div class="aito-section" data-view="universe">
+        <div class="aito-section-label">Why this matters</div>
+        <ul class="aito-bullets">
+          <li>Click any column to sort — sortable on every dimension</li>
+          <li>Outcome chips colour-coded by bucket; null grades shown italicised</li>
+          <li>This is the same data Aito sees — no hidden curation</li>
+        </ul>
       </div>
 
       <div class="aito-section" data-view="method">
@@ -1612,6 +1823,7 @@
     company: 'The Company File',
     thesis: 'Does the Thesis Hold?',
     similar: 'Historical Analogues',
+    universe: 'The Universe',
     method: 'On Methodology'
   };
 
@@ -1637,18 +1849,184 @@
     app.classList.toggle('aito-collapsed');
   });
 
+  // ── Render: view 5 (universe) ───────────────────────────────────
+  const UNIVERSE_COLS = [
+    { key: 'ticker',                 label: 'Ticker',     cls: 'ticker' },
+    { key: 'vintage_year',           label: 'Vintage',    cls: 'vintage' },
+    { key: 'company_name',           label: 'Name',       cls: '' },
+    { key: 'sector',                 label: 'Sector',     cls: '' },
+    { key: 'market_position',        label: 'Position',   cls: 'grade-cell' },
+    { key: 'moat_strength',          label: 'Moat',       cls: 'grade-cell' },
+    { key: 'outcome_bucket',         label: 'Outcome',    cls: '' },
+    { key: 'total_return_pct_local', label: 'Return',     cls: 'num' }
+  ];
+
+  const universeState = {
+    all: [],
+    sortKey: 'total_return_pct_local',
+    sortAsc: false,
+    filters: { vintage: '', sector: '', outcome: '', search: '' }
+  };
+
+  function fmtReturn(v) {
+    if (v == null || Number.isNaN(v)) return '—';
+    const sign = v >= 0 ? '+' : '';
+    return `${sign}${v.toFixed(0)}%`;
+  }
+
+  function renderUniverseHeaders() {
+    const tr = document.getElementById('universe-thead');
+    tr.innerHTML = UNIVERSE_COLS.map(c => {
+      const isSort = c.key === universeState.sortKey;
+      const aria = isSort ? (universeState.sortAsc ? 'ascending' : 'descending') : 'none';
+      return `<th data-sortkey="${c.key}" aria-sort="${aria}">${esc(c.label)}</th>`;
+    }).join('');
+    tr.querySelectorAll('th').forEach(th => {
+      th.addEventListener('click', () => {
+        const k = th.dataset.sortkey;
+        if (universeState.sortKey === k) {
+          universeState.sortAsc = !universeState.sortAsc;
+        } else {
+          universeState.sortKey = k;
+          universeState.sortAsc = false; // descending by default
+        }
+        renderUniverseHeaders();
+        renderUniverseRows();
+      });
+    });
+  }
+
+  function applyFiltersAndSort(rows) {
+    const { vintage, sector, outcome, search } = universeState.filters;
+    let r = rows.filter(row => {
+      if (vintage && String(row.vintage_year) !== vintage) return false;
+      if (sector && row.sector !== sector) return false;
+      if (outcome === '__nodata__') {
+        if (row.outcome_bucket) return false;
+      } else if (outcome) {
+        if (row.outcome_bucket !== outcome) return false;
+      }
+      if (search) {
+        const q = search.toLowerCase();
+        const hay = `${row.ticker || ''} ${row.company_name || ''}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+    const k = universeState.sortKey;
+    const sign = universeState.sortAsc ? 1 : -1;
+    r = r.slice().sort((a, b) => {
+      const va = a[k], vb = b[k];
+      if (va == null && vb == null) return 0;
+      if (va == null) return 1;   // nulls last regardless of direction
+      if (vb == null) return -1;
+      if (typeof va === 'number' && typeof vb === 'number') return (va - vb) * sign;
+      return String(va).localeCompare(String(vb)) * sign;
+    });
+    return r;
+  }
+
+  function renderUniverseRows() {
+    const rows = applyFiltersAndSort(universeState.all);
+    const tbody = document.getElementById('universe-tbody');
+    const count = document.getElementById('universe-count');
+    count.textContent = `${rows.length.toLocaleString()} of ${universeState.all.length.toLocaleString()} rows`;
+    if (rows.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="${UNIVERSE_COLS.length}" class="universe-empty">no rows match the current filters</td></tr>`;
+      return;
+    }
+    const MAX_VISIBLE = 800;
+    const slice = rows.slice(0, MAX_VISIBLE);
+    tbody.innerHTML = slice.map(r => {
+      const cells = UNIVERSE_COLS.map(c => {
+        const v = r[c.key];
+        if (c.key === 'outcome_bucket') {
+          const bucket = v || 'empty';
+          const label = v || 'no data';
+          return `<td><span class="bucket-chip ${esc(bucket)}">${esc(label)}</span></td>`;
+        }
+        if (c.key === 'total_return_pct_local') {
+          if (v == null) return `<td class="num">—</td>`;
+          const cls = v >= 0 ? 'return-pos' : 'return-neg';
+          return `<td class="num ${cls}">${fmtReturn(v)}</td>`;
+        }
+        if (c.cls === 'grade-cell') {
+          if (v == null || v === '') return `<td><span class="grade-cell empty">—</span></td>`;
+          return `<td><span class="grade-cell">${esc(String(v))}</span></td>`;
+        }
+        const text = v == null || v === '' ? '—' : String(v);
+        return `<td class="${esc(c.cls)}">${esc(text)}</td>`;
+      }).join('');
+      return `<tr>${cells}</tr>`;
+    }).join('');
+    if (rows.length > MAX_VISIBLE) {
+      const more = rows.length - MAX_VISIBLE;
+      tbody.insertAdjacentHTML('beforeend',
+        `<tr><td colspan="${UNIVERSE_COLS.length}" class="universe-empty">… ${more.toLocaleString()} more rows hidden. Narrow filters to see them.</td></tr>`
+      );
+    }
+  }
+
+  function setupUniverseFilters() {
+    const populate = (selectId, values) => {
+      const sel = document.getElementById(selectId);
+      const existing = new Set(Array.from(sel.options).map(o => o.value));
+      values.filter(v => !existing.has(String(v)))
+            .sort((a, b) => String(a).localeCompare(String(b)))
+            .forEach(v => {
+              const opt = document.createElement('option');
+              opt.value = String(v); opt.textContent = String(v);
+              sel.appendChild(opt);
+            });
+    };
+    const vintages = [...new Set(universeState.all.map(r => r.vintage_year))].filter(Boolean);
+    populate('filter-vintage', vintages);
+    const sectors = [...new Set(universeState.all.map(r => r.sector))].filter(Boolean);
+    populate('filter-sector', sectors);
+
+    document.getElementById('filter-vintage').addEventListener('change', e => {
+      universeState.filters.vintage = e.target.value; renderUniverseRows();
+    });
+    document.getElementById('filter-sector').addEventListener('change', e => {
+      universeState.filters.sector = e.target.value; renderUniverseRows();
+    });
+    document.getElementById('filter-outcome').addEventListener('change', e => {
+      universeState.filters.outcome = e.target.value; renderUniverseRows();
+    });
+    let searchTimer;
+    document.getElementById('filter-search').addEventListener('input', e => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        universeState.filters.search = e.target.value; renderUniverseRows();
+      }, 150);
+    });
+  }
+
+  function renderUniverse(payload) {
+    universeState.all = payload.rows || [];
+    const byline = document.querySelector('[data-bind="universe-byline"]');
+    if (byline) {
+      byline.textContent = `N = ${universeState.all.length.toLocaleString()} observations · sourced from S&P 500 historical constituents, EDGAR filings, yfinance prices`;
+    }
+    renderUniverseHeaders();
+    setupUniverseFilters();
+    renderUniverseRows();
+  }
+
   // ── Boot ────────────────────────────────────────────────────────
   (async () => {
     try {
-      const [meta, companies, relate, calibration] = await Promise.all([
+      const [meta, companies, relate, calibration, universe] = await Promise.all([
         fetchJson('./data/meta.json'),
         fetchJson('./data/companies.json'),
         fetchJson('./data/relate.json'),
-        fetchJson('./data/calibration.json')
+        fetchJson('./data/calibration.json'),
+        fetchJson('./data/universe.json')
       ]);
       renderMeta(meta);
       renderRelate(relate);
       renderCalibration(calibration);
+      renderUniverse(universe);
 
       const initialKey = `${companies[0].ticker}_${companies[0].vintage}`;
       renderChips(companies, initialKey);

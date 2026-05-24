@@ -3,28 +3,28 @@
     "ticker": "NVDA",
     "vintage": 2014,
     "name": "NVIDIA Corporation",
-    "chip_label": "NVDA · '14",
+    "chip_label": "NVDA \u00b7 '14",
     "short_name": "graphics, semiconductors"
   },
   {
     "ticker": "SHLD",
     "vintage": 2014,
     "name": "Sears Holdings",
-    "chip_label": "SHLD · '14",
+    "chip_label": "SHLD \u00b7 '14",
     "short_name": "Sears Holdings"
   },
   {
     "ticker": "COST",
     "vintage": 2017,
     "name": "Costco Wholesale",
-    "chip_label": "COST · '17",
+    "chip_label": "COST \u00b7 '17",
     "short_name": "Costco Wholesale"
   },
   {
     "ticker": "META",
     "vintage": 2020,
     "name": "Meta Platforms",
-    "chip_label": "META · '20",
+    "chip_label": "META \u00b7 '20",
     "short_name": "platforms, advertising"
   }
 ]
