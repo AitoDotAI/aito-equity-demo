@@ -7,15 +7,14 @@ pkgs.mkShell {
   name = "aito-equity-demo";
 
   buildInputs = [
-    # Python (backend: FastAPI + uvicorn via uv)
+    # Python — pipeline, health stub, tests
     python
     pkgs.uv
 
-    # Node / Next.js frontend
-    pkgs.nodejs_20
-    pkgs.corepack
-
-    # Playwright system dependencies (screenshot scripts in frontend/scripts/)
+    # Nix-managed Playwright browsers (FHS-shimmed so they find system libs
+    # like libnspr4.so that bare playwright-Python downloads do not).
+    # The playwright Python package version in pyproject.toml is pinned to
+    # match the browser revision this provides — see pyproject.toml.
     pkgs.playwright-driver.browsers
 
     # Dev tools
@@ -34,7 +33,9 @@ pkgs.mkShell {
       uv sync --quiet 2>/dev/null || true
     fi
 
-    # Use nix-managed Playwright browsers rather than `npx playwright install`.
+    # Use nix-managed Playwright browsers; skip the playwright Python
+    # auto-download (which can't write to nix-store and would version-skew
+    # against what's pinned in pyproject.toml).
     export PLAYWRIGHT_BROWSERS_PATH="${pkgs.playwright-driver.browsers}"
     export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
@@ -61,7 +62,7 @@ pkgs.mkShell {
     fi
 
     echo ""
-    echo "Aito Equity demo — run ./do help for available commands"
+    echo "aito-equity-demo — run ./do help for available commands"
     echo ""
   '';
 }

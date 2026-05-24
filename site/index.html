@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Predictive Equity Research · aito.ai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f4ede1;
+    --paper-2: #ede4d3;
+    --ink: #1a1612;
+    --ink-soft: #3a342b;
+    --ink-fade: #6b6358;
+    --rule: #c9bfac;
+    --rule-soft: #ddd2bc;
+    --accent: #8b1a1a;     /* burgundy */
+    --accent-2: #1d3a5f;   /* deep navy */
+    --gold: #a8862c;
+    --green: #4a6b3a;
+    --red: #8b3a2a;
+    --aito-bg: #0c0f41;
+    --aito-text: #e8eaff;
+    --aito-fade: rgba(232, 234, 255, 0.6);
+    --aito-teal: #12B5AD;
+    --aito-purple: #9B69FF;
+    --aito-card: rgba(255, 255, 255, 0.07);
+    --aito-border: rgba(255, 255, 255, 0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  body {
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(139, 26, 26, 0.03) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(29, 58, 95, 0.025) 0%, transparent 40%);
+  }
+
+  /* Paper grain texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' /%3E%3CfeColorMatrix values='0 0 0 0 0.15 0 0 0 0 0.12 0 0 0 0 0.08 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  .app {
+    display: grid;
+    grid-template-columns: 260px 1fr 360px;
+    height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  .app.sidebar-collapsed { grid-template-columns: 0 1fr 360px; }
+  .app.aito-collapsed { grid-template-columns: 260px 1fr 0; }
+  .app.sidebar-collapsed.aito-collapsed { grid-template-columns: 0 1fr 0; }
+
+  /* ===== LEFT SIDEBAR — editorial masthead style ===== */
+  .sidebar {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 28px 0 24px;
+    overflow: hidden;
+    border-right: 1px solid #000;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .masthead {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid rgba(244, 237, 225, 0.15);
+  }
+
+  .masthead-eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(244, 237, 225, 0.55);
+    margin-bottom: 8px;
+  }
+
+  .masthead-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--paper);
+  }
+
+  .masthead-title em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--gold);
+  }
+
+  .masthead-sub {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: rgba(244, 237, 225, 0.65);
+    margin-top: 10px;
+    line-height: 1.4;
+  }
+
+  .nav-section {
+    padding: 22px 0 6px;
+  }
+
+  .nav-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(244, 237, 225, 0.45);
+    padding: 0 24px;
+    margin-bottom: 10px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 11px 24px;
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    color: rgba(244, 237, 225, 0.82);
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+  }
+
+  .nav-item:hover {
+    background: rgba(244, 237, 225, 0.04);
+    color: var(--paper);
+  }
+
+  .nav-item.active {
+    background: rgba(168, 134, 44, 0.08);
+    border-left-color: var(--gold);
+    color: var(--paper);
+  }
+
+  .nav-num {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 11px;
+    color: rgba(244, 237, 225, 0.45);
+    min-width: 18px;
+  }
+
+  .nav-item.active .nav-num { color: var(--gold); }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 20px 24px 0;
+    border-top: 1px solid rgba(244, 237, 225, 0.15);
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 11px;
+    color: rgba(244, 237, 225, 0.45);
+    line-height: 1.5;
+  }
+
+  .sidebar-footer strong {
+    font-style: normal;
+    color: rgba(244, 237, 225, 0.7);
+  }
+
+  /* ===== CENTER CONTENT ===== */
+  .main {
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+    padding: 14px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 10;
+    box-shadow: 0 1px 0 var(--rule-soft);
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .toggle-btn {
+    background: transparent;
+    border: 1px solid var(--rule);
+    width: 30px;
+    height: 30px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .toggle-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  .breadcrumb {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-fade);
+  }
+
+  .breadcrumb b {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+  }
+
+  .topbar-right .dot {
+    width: 7px;
+    height: 7px;
+    background: var(--green);
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+    box-shadow: 0 0 0 2px rgba(74, 107, 58, 0.15);
+  }
+
+  .content {
+    padding: 40px 56px 80px;
+    max-width: 880px;
+  }
+
+  /* ===== EDITORIAL HEADERS ===== */
+  .article-header {
+    margin-bottom: 36px;
+    padding-bottom: 24px;
+    border-bottom: 3px double var(--rule);
+  }
+
+  .article-eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+
+  .article-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 42px;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+
+  .article-title em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--ink-soft);
+  }
+
+  .article-deck {
+    font-family: 'Source Serif 4', serif;
+    font-size: 17px;
+    font-style: italic;
+    color: var(--ink-soft);
+    line-height: 1.45;
+    max-width: 640px;
+  }
+
+  .article-byline {
+    margin-top: 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+  }
+
+  /* ===== SECTION RULES ===== */
+  .section {
+    margin-bottom: 40px;
+  }
+
+  .section-rule {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 36px 0 22px;
+  }
+
+  .section-rule::before,
+  .section-rule::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .section-rule span {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+    font-weight: 600;
+  }
+
+  /* ===== COMPANY PROFILE CARD ===== */
+  .company-selector {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: var(--paper-2);
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+
+  .company-chip {
+    flex: 1;
+    padding: 11px 14px;
+    border-right: 1px solid var(--rule);
+    cursor: pointer;
+    text-align: left;
+    background: transparent;
+    transition: all 0.15s;
+  }
+
+  .company-chip:last-child { border-right: none; }
+
+  .company-chip:hover {
+    background: rgba(168, 134, 44, 0.08);
+  }
+
+  .company-chip.active {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .company-chip-ticker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+  }
+
+  .company-chip.active .company-chip-ticker { color: var(--gold); }
+
+  .company-chip-name {
+    font-family: 'Source Serif 4', serif;
+    font-size: 11px;
+    font-style: italic;
+    color: var(--ink-fade);
+    margin-top: 1px;
+  }
+
+  .company-chip.active .company-chip-name {
+    color: rgba(244, 237, 225, 0.65);
+  }
+
+  /* ===== MAIN COMPANY CARD ===== */
+  .profile-card {
+    background: #fbf6ec;
+    border: 1px solid var(--rule);
+    padding: 32px 36px;
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .profile-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--gold) 100%);
+  }
+
+  .profile-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 28px;
+    margin-bottom: 22px;
+  }
+
+  .profile-title h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 1.1;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .profile-title .ticker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--ink-fade);
+    margin-top: 4px;
+    letter-spacing: 0.06em;
+  }
+
+  .profile-vintage {
+    text-align: right;
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-fade);
+    line-height: 1.5;
+  }
+
+  .profile-vintage b {
+    font-style: normal;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 17px;
+    display: block;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+
+  /* ===== QUALITATIVE GRADES ===== */
+  .grades {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .grade {
+    padding: 18px 0;
+    border-bottom: 1px solid var(--rule-soft);
+    border-right: 1px solid var(--rule-soft);
+    padding-right: 20px;
+  }
+
+  .grade:nth-child(2n) {
+    padding-right: 0;
+    padding-left: 20px;
+    border-right: none;
+  }
+
+  .grade-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .grade-value {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--ink);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .grade-pip {
+    display: inline-flex;
+    gap: 2px;
+  }
+
+  .grade-pip span {
+    width: 6px;
+    height: 14px;
+    background: var(--rule);
+  }
+
+  .grade-pip span.on { background: var(--accent); }
+
+  .grade-evidence {
+    font-family: 'Source Serif 4', serif;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--ink-soft);
+    line-height: 1.45;
+  }
+
+  /* ===== PREDICTION BLOCK ===== */
+  .prediction {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 28px 32px;
+    margin-top: 28px;
+    border-radius: 1px;
+    position: relative;
+  }
+
+  .prediction-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(244, 237, 225, 0.18);
+  }
+
+  .prediction-head h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--paper);
+  }
+
+  .prediction-head h3 em {
+    font-style: italic;
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  .prediction-confidence {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(244, 237, 225, 0.7);
+  }
+
+  .prediction-confidence b { color: var(--gold); }
+
+  .outcome-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .outcome-bar {
+    display: grid;
+    grid-template-columns: 90px 1fr 56px;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .outcome-bar-label {
+    font-family: 'Source Serif 4', serif;
+    font-size: 13px;
+    color: rgba(244, 237, 225, 0.85);
+  }
+
+  .outcome-bar-label em {
+    font-style: italic;
+    color: rgba(244, 237, 225, 0.55);
+    font-size: 11px;
+  }
+
+  .outcome-bar-track {
+    height: 14px;
+    background: rgba(244, 237, 225, 0.08);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .outcome-bar-fill {
+    height: 100%;
+    background: var(--gold);
+    transition: width 0.4s ease;
+  }
+
+  .outcome-bar-fill.peak {
+    background: linear-gradient(90deg, var(--gold), #d4a743);
+    box-shadow: 0 0 12px rgba(168, 134, 44, 0.4);
+  }
+
+  .outcome-bar-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--paper);
+    text-align: right;
+  }
+
+  /* ===== RELATE / FEATURE IMPORTANCE ===== */
+  .relate-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: #fbf6ec;
+    border: 1px solid var(--rule);
+  }
+
+  .relate-row {
+    display: grid;
+    grid-template-columns: 28px 200px 1fr 90px;
+    gap: 16px;
+    align-items: center;
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .relate-row:last-child { border-bottom: none; }
+
+  .relate-rank {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-fade);
+    text-align: center;
+  }
+
+  .relate-feature {
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .relate-feature .type-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 1px 6px;
+    margin-left: 8px;
+    background: var(--accent);
+    color: var(--paper);
+    vertical-align: middle;
+    font-weight: 600;
+  }
+
+  .relate-feature .type-tag.quant {
+    background: var(--accent-2);
+  }
+
+  .relate-bar {
+    height: 8px;
+    background: rgba(139, 26, 26, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .relate-bar-fill {
+    height: 100%;
+    background: var(--accent);
+  }
+
+  .relate-bar-fill.quant { background: var(--accent-2); }
+
+  .relate-lift {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink);
+    text-align: right;
+    font-weight: 600;
+  }
+
+  /* ===== SIMILARITY ===== */
+  .similar-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+    margin-top: 18px;
+  }
+
+  .similar-item {
+    background: #fbf6ec;
+    border: 1px solid var(--rule);
+    padding: 20px;
+    position: relative;
+  }
+
+  .similar-item-rank {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    color: var(--ink-fade);
+    font-size: 12px;
+  }
+
+  .similar-item h4 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .similar-item-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-fade);
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .similar-item-outcome {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-soft);
+    padding-top: 12px;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .similar-item-outcome b {
+    font-style: normal;
+    font-family: 'Fraunces', serif;
+    color: var(--green);
+  }
+
+  .similar-item-outcome b.red { color: var(--red); }
+
+  /* ===== METHODOLOGY ===== */
+  .methodology-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 20px;
+  }
+
+  .method-card {
+    background: #fbf6ec;
+    border: 1px solid var(--rule);
+    padding: 22px 24px;
+    position: relative;
+  }
+
+  .method-card-num {
+    position: absolute;
+    top: -12px;
+    left: 22px;
+    background: var(--paper);
+    padding: 0 8px;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .method-card h4 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--ink);
+    margin-bottom: 8px;
+    margin-top: 4px;
+  }
+
+  .method-card p {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  /* ===== CONFIDENCE CHART ===== */
+  .calib-chart {
+    background: #fbf6ec;
+    border: 1px solid var(--rule);
+    padding: 28px;
+    margin-top: 18px;
+  }
+
+  .calib-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+    height: 220px;
+    margin-bottom: 18px;
+    padding: 0 8px;
+    border-bottom: 1.5px solid var(--ink);
+    position: relative;
+  }
+
+  .calib-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+  }
+
+  .calib-bar-pair {
+    display: flex;
+    gap: 3px;
+    align-items: flex-end;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .calib-bar-actual,
+  .calib-bar-predicted {
+    width: 22px;
+  }
+
+  .calib-bar-actual { background: var(--accent); }
+  .calib-bar-predicted {
+    background: var(--rule);
+    border: 1px solid var(--ink-fade);
+  }
+
+  .calib-bar-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-fade);
+    position: absolute;
+    bottom: -20px;
+  }
+
+  .calib-legend {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin-top: 8px;
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  .legend-swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* ===== PULLQUOTE ===== */
+  .pullquote {
+    margin: 40px 0;
+    padding: 0 0 0 28px;
+    border-left: 3px solid var(--accent);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 20px;
+    line-height: 1.4;
+    color: var(--ink-soft);
+    font-weight: 400;
+  }
+
+  .pullquote-attr {
+    display: block;
+    margin-top: 14px;
+    font-style: normal;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+  }
+
+  /* ===== AITO RIGHT PANEL ===== */
+  .aito-panel {
+    background: var(--aito-bg);
+    color: var(--aito-text);
+    overflow-y: auto;
+    border-left: 1px solid #000;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .aito-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 140px;
+    background: linear-gradient(180deg, rgba(155, 105, 255, 0.08) 0%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .aito-head {
+    padding: 24px 24px 18px;
+    border-bottom: 1px solid var(--aito-border);
+    position: relative;
+  }
+
+  .aito-wordmark {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--aito-text);
+  }
+
+  .aito-wordmark .ai { color: var(--aito-teal); }
+
+  .aito-tagline {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--aito-fade);
+    margin-top: 8px;
+  }
+
+  .aito-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--aito-border);
+    margin: 18px 0 0;
+    border-top: 1px solid var(--aito-border);
+    border-bottom: 1px solid var(--aito-border);
+  }
+
+  .aito-stat {
+    background: var(--aito-bg);
+    padding: 12px 14px;
+  }
+
+  .aito-stat-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--aito-teal);
+  }
+
+  .aito-stat-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--aito-fade);
+    margin-top: 3px;
+  }
+
+  .aito-section {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--aito-border);
+  }
+
+  .aito-section-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--aito-purple);
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  .aito-endpoint {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(155, 105, 255, 0.12);
+    border: 1px solid rgba(155, 105, 255, 0.3);
+    color: var(--aito-purple);
+    padding: 3px 9px;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+
+  .aito-section p {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(232, 234, 255, 0.85);
+  }
+
+  .aito-section p + p { margin-top: 10px; }
+
+  .aito-section strong { color: var(--aito-text); font-weight: 600; }
+
+  .aito-code {
+    background: var(--aito-card);
+    border-radius: 3px;
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(232, 234, 255, 0.88);
+    line-height: 1.6;
+    margin-top: 12px;
+    overflow-x: auto;
+    border: 1px solid var(--aito-border);
+  }
+
+  .aito-code .k { color: var(--aito-purple); }
+  .aito-code .s { color: var(--aito-teal); }
+  .aito-code .n { color: #ffb380; }
+  .aito-code .c { color: rgba(232, 234, 255, 0.4); font-style: italic; }
+
+  .aito-bullets {
+    list-style: none;
+    padding: 0;
+    margin-top: 6px;
+  }
+
+  .aito-bullets li {
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    color: rgba(232, 234, 255, 0.82);
+    padding: 6px 0 6px 18px;
+    position: relative;
+    line-height: 1.45;
+  }
+
+  .aito-bullets li::before {
+    content: '◆';
+    color: var(--aito-teal);
+    position: absolute;
+    left: 0;
+    top: 6px;
+    font-size: 8px;
+  }
+
+  .aito-cta {
+    margin-top: auto;
+    padding: 20px 24px;
+    border-top: 1px solid var(--aito-border);
+    background: linear-gradient(180deg, transparent 0%, rgba(18, 181, 173, 0.05) 100%);
+  }
+
+  .aito-cta-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: var(--aito-teal);
+    color: var(--aito-bg);
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .aito-cta-btn:hover {
+    box-shadow: 0 0 24px rgba(18, 181, 173, 0.45);
+    transform: translateY(-1px);
+  }
+
+  .aito-cta-note {
+    text-align: center;
+    margin-top: 10px;
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 11px;
+    color: var(--aito-fade);
+  }
+
+  /* ===== VIEW VISIBILITY ===== */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ===== Scrollbar ===== */
+  .main::-webkit-scrollbar,
+  .aito-panel::-webkit-scrollbar { width: 8px; }
+  .main::-webkit-scrollbar-track { background: var(--paper-2); }
+  .main::-webkit-scrollbar-thumb { background: var(--rule); }
+  .aito-panel::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+  .aito-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1100px) {
+    .app { grid-template-columns: 240px 1fr 320px; }
+    .content { padding: 32px 36px 60px; }
+    .article-title { font-size: 34px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- ===== LEFT SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="masthead">
+      <div class="masthead-eyebrow">an aito.ai demo</div>
+      <div class="masthead-title">Predictive<br><em>Equity Research</em></div>
+      <div class="masthead-sub">Testing Buffett's investing principles with an LLM, a predictive database, and twelve years of point-in-time data.</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">The Study</div>
+      <div class="nav-item active" data-view="company">
+        <span class="nav-num">i.</span><span>The Company File</span>
+      </div>
+      <div class="nav-item" data-view="thesis">
+        <span class="nav-num">ii.</span><span>Does the Thesis Hold?</span>
+      </div>
+      <div class="nav-item" data-view="similar">
+        <span class="nav-num">iii.</span><span>Historical Analogues</span>
+      </div>
+      <div class="nav-item" data-view="method">
+        <span class="nav-num">iv.</span><span>On Methodology</span>
+      </div>
+    </div>
+
+    <div class="sidebar-footer" data-bind="sidebar-footer">
+      <strong>—</strong> · point-in-time discipline · qualitative features extracted by LLM, predictions by aito.ai
+    </div>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main">
+
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="toggle-btn" id="toggleSidebar" title="Toggle sidebar">☰</button>
+        <div class="breadcrumb">The Study · <b>The Company File</b></div>
+      </div>
+      <div class="topbar-right">
+        <span><span class="dot"></span>Live · <span data-bind="topbar-rows">—</span> rows</span>
+        <button class="toggle-btn" id="toggleAito" title="Toggle Aito panel">◧</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ============ VIEW 1: COMPANY FILE ============ -->
+      <section class="view active" id="view-company">
+
+        <div class="article-header">
+          <div class="article-eyebrow">CASE STUDY № 01 · LARGE CAP</div>
+          <h1 class="article-title">The <em>Company File</em></h1>
+          <p class="article-deck">A single company, graded on Buffett-style criteria as of its vintage year, then asked: what does the engine predict for the next decade — and why?</p>
+          <div class="article-byline" data-bind="company-byline">Demonstration · vintage forward window</div>
+        </div>
+
+        <div class="company-selector" id="company-selector"><!-- chips rendered from data/companies.json --></div>
+
+        <div class="profile-card" id="profile-card"><!-- rendered from data/predict/{focal}.json --></div>
+
+        <div class="prediction" id="prediction-block"><!-- rendered from data/predict/{focal}.json --></div>
+
+        <div class="pullquote" id="company-pullquote"><!-- rendered from data/predict/{focal}.json --></div>
+
+      </section>
+
+      <!-- ============ VIEW 2: DOES THE THESIS HOLD? ============ -->
+      <section class="view" id="view-thesis">
+
+        <div class="article-header">
+          <div class="article-eyebrow">FEATURE IMPORTANCE · THE MONEY CHART</div>
+          <h1 class="article-title">Does the <em>thesis hold?</em></h1>
+          <p class="article-deck">Across <span data-bind="thesis-deck-n">—</span> point-in-time company observations, which features most predict landing in the 'great' outcome bucket? An <code style="font-family: 'JetBrains Mono'; font-size: 14px; background: var(--paper-2); padding: 1px 6px;">aito.relate</code> query, ranked by lift.</p>
+          <div class="article-byline" data-bind="thesis-byline">N = — observations · — vintages · target: outcome_bucket = great</div>
+        </div>
+
+        <div class="relate-grid" id="relate-grid"><!-- rendered from data/relate.json --></div>
+
+        <div class="pullquote" id="thesis-pullquote"><!-- rendered from data/relate.json --></div>
+
+        <div class="section-rule"><span>Calibration</span></div>
+
+        <div class="calib-chart">
+          <div style="font-family: 'Fraunces', serif; font-size: 17px; margin-bottom: 6px; font-weight: 600;">Predicted vs. realised frequency, by confidence decile</div>
+          <div style="font-family: 'Source Serif 4', serif; font-style: italic; font-size: 13px; color: var(--ink-soft); margin-bottom: 22px;">A well-calibrated engine: when it says 80%, it should be right ~80% of the time.</div>
+
+          <div class="calib-bars" id="calib-bars"><!-- rendered from data/calibration.json --></div>
+
+          <div class="calib-legend">
+            <div><span class="legend-swatch" style="background: var(--rule); border: 1px solid var(--ink-fade);"></span>Predicted</div>
+            <div><span class="legend-swatch" style="background: var(--accent);"></span>Realised</div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ============ VIEW 3: HISTORICAL ANALOGUES ============ -->
+      <section class="view" id="view-similar">
+
+        <div class="article-header">
+          <div class="article-eyebrow">SIMILARITY SEARCH · HISTORY DOES NOT REPEAT, BUT IT RHYMES</div>
+          <h1 class="article-title">Historical <em>Analogues</em></h1>
+          <p class="article-deck">Given a focal company, find historical observations with the closest feature profile. Then read what actually happened to them. A native Aito similarity query.</p>
+          <div class="article-byline" data-bind="similar-byline">focal: — · nearest neighbours by feature distance</div>
+        </div>
+
+        <div id="similar-cards-container"><!-- rendered from data/match/{focal}.json --></div>
+
+        <div class="pullquote" id="similar-pullquote"><!-- rendered from data/match/{focal}.json --></div>
+
+      </section>
+
+      <!-- ============ VIEW 4: METHODOLOGY ============ -->
+      <section class="view" id="view-method">
+
+        <div class="article-header">
+          <div class="article-eyebrow">NOTES ON THE METHOD · WHAT THIS IS, AND IS NOT</div>
+          <h1 class="article-title">On <em>Methodology</em></h1>
+          <p class="article-deck">Every line in this demo is reproducible. Every concession to imperfection is documented. The demo is the methodology; the numbers are the consequence.</p>
+        </div>
+
+        <div class="methodology-grid">
+          <div class="method-card">
+            <div class="method-card-num">№ i</div>
+            <h4>Point-in-time universe</h4>
+            <p>Constituents reconstructed from Wikipedia's historical S&P 500 edits as of January 1, 2014 / 2017 / 2020. Survivorship bias eliminated by tracking what happened to each constituent — including delistings, bankruptcies, acquisitions — not what is in the index today.</p>
+          </div>
+
+          <div class="method-card">
+            <div class="method-card-num">№ ii</div>
+            <h4>LLM grading discipline</h4>
+            <p>Qualitative features extracted from contemporary 10-Ks and proxies only. Prompts explicitly instruct the model not to use post-vintage knowledge. Each feature graded three times at temperature 0.3; modal answer retained. Rationales preserved as explainability columns.</p>
+          </div>
+
+          <div class="method-card">
+            <div class="method-card-num">№ iii</div>
+            <h4>Lookahead stress test</h4>
+            <p>The 2020 vintage is held out as a future-leakage probe. If feature lift is comparable across all three vintages, LLM lookahead bias is bounded. Reported in the calibration plot.</p>
+          </div>
+
+          <div class="method-card">
+            <div class="method-card-num">№ iv</div>
+            <h4>Outcome bucketing</h4>
+            <p>Five buckets, not regression on returns. Aligned with how investors actually think (disaster / poor / market / good / great). Yields calibrated probabilities rather than meaningless point forecasts.</p>
+          </div>
+
+          <div class="method-card">
+            <div class="method-card-num">№ v</div>
+            <h4>Why this is not a trading signal</h4>
+            <p>Twelve-year horizon, ~800 observations, no microstructure features, no transaction cost model, no consideration of capacity. This is a hypothesis test about long-horizon business quality — not an alpha generation system. The demo's value is architectural, not financial.</p>
+          </div>
+
+          <div class="method-card">
+            <div class="method-card-num">№ vi</div>
+            <h4>The transferable lesson</h4>
+            <p>The architecture — LLM-extracted qualitative features feeding a predictive database — generalises to any domain where unstructured judgment meets structured outcomes. Credit underwriting, M&amp;A diligence, talent assessment, supplier risk. Equity research is the vehicle, not the destination.</p>
+          </div>
+        </div>
+
+        <div class="section-rule"><span>Stack</span></div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div style="background: #fbf6ec; border: 1px solid var(--rule); padding: 20px 22px;">
+            <div style="font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-fade); font-weight: 600; margin-bottom: 10px;">Data Sources</div>
+            <ul style="list-style: none; padding: 0; font-family: 'Source Serif 4', serif; font-size: 13px; line-height: 1.85; color: var(--ink-soft);">
+              <li>· SEC EDGAR (10-Ks, proxies, point-in-time)</li>
+              <li>· Wikipedia historical S&amp;P 500 constituent edits</li>
+              <li>· yfinance (prices, returns, survival)</li>
+              <li>· SimFin free tier (fundamentals)</li>
+            </ul>
+          </div>
+          <div style="background: #fbf6ec; border: 1px solid var(--rule); padding: 20px 22px;">
+            <div style="font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-fade); font-weight: 600; margin-bottom: 10px;">Engine</div>
+            <ul style="list-style: none; padding: 0; font-family: 'Source Serif 4', serif; font-size: 13px; line-height: 1.85; color: var(--ink-soft);">
+              <li>· Claude Sonnet for LLM feature extraction</li>
+              <li>· <strong style="font-family: 'JetBrains Mono'; font-size: 12px;">aito.ai</strong> predictive database</li>
+              <li>· Single endpoint, no training pipeline</li>
+              <li>· Open repository: aito-equity-demo</li>
+            </ul>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ===== AITO RIGHT PANEL ===== -->
+  <aside class="aito-panel" id="aitoPanel">
+    <div class="aito-head">
+      <div class="aito-wordmark">aito<span class="ai">..</span></div>
+      <div class="aito-tagline">predictive database · context panel</div>
+      <div class="aito-stats">
+        <div class="aito-stat">
+          <div class="aito-stat-val" data-bind="stat-observations">—</div>
+          <div class="aito-stat-label">observations</div>
+        </div>
+        <div class="aito-stat">
+          <div class="aito-stat-val" data-bind="stat-features">—</div>
+          <div class="aito-stat-label">features</div>
+        </div>
+        <div class="aito-stat">
+          <div class="aito-stat-val" data-bind="stat-latency">—</div>
+          <div class="aito-stat-label">p50 latency</div>
+        </div>
+        <div class="aito-stat">
+          <div class="aito-stat-val" data-bind="stat-training">—</div>
+          <div class="aito-stat-label">model training</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel content swaps per view -->
+    <div id="aito-content">
+
+      <div class="aito-section" data-view="company">
+        <div class="aito-section-label">The Problem</div>
+        <p>Most predictive systems demand a training run, a feature store, an MLOps pipeline. For equity research with hundreds of observations and dozens of features, that overhead is the entire project budget.</p>
+      </div>
+
+      <div class="aito-section" data-view="company">
+        <div class="aito-section-label">The Aito Approach</div>
+        <p><strong>One endpoint, one query, calibrated probabilities and the evidence that justified them.</strong> No training, no feature engineering pipeline, no model monitoring. Load the table, ask the question.</p>
+        <div class="aito-endpoint">POST /_predict</div>
+        <div class="aito-code"><span class="c">// Predict outcome bucket for a focal company</span>
+{
+  <span class="k">"from"</span>: <span class="s">"companies"</span>,
+  <span class="k">"where"</span>: {
+    <span class="k">"market_position"</span>: <span class="s">"dominant"</span>,
+    <span class="k">"moat_strength"</span>: <span class="s">"wide"</span>,
+    <span class="k">"market_quality"</span>: <span class="s">"secular_growth"</span>,
+    <span class="k">"founder_still_ceo"</span>: <span class="n">true</span>
+  },
+  <span class="k">"predict"</span>: <span class="s">"outcome_bucket"</span>
+}</div>
+      </div>
+
+      <div class="aito-section" data-view="company">
+        <div class="aito-section-label">Why it matters here</div>
+        <ul class="aito-bullets">
+          <li>Calibrated, not point estimates — investors need probabilities</li>
+          <li>Explainable by construction — every prediction traces to evidence</li>
+          <li>Auditable for regulated workflows — no black box</li>
+          <li>Same query works at 800 rows or 8 million</li>
+        </ul>
+      </div>
+
+      <div class="aito-section" data-view="thesis">
+        <div class="aito-section-label">The Question Asked</div>
+        <p>Which features in the table are most strongly associated with the 'great' outcome? The <code style="font-family: 'JetBrains Mono'; color: var(--aito-purple);">relate</code> endpoint answers this in a single call — no separate feature-importance model required.</p>
+        <div class="aito-endpoint">POST /_relate</div>
+        <div class="aito-code">{
+  <span class="k">"from"</span>: <span class="s">"companies"</span>,
+  <span class="k">"where"</span>: {
+    <span class="k">"outcome_bucket"</span>: <span class="s">"great"</span>
+  },
+  <span class="k">"relate"</span>: <span class="s">"$features"</span>
+}</div>
+      </div>
+
+      <div class="aito-section" data-view="thesis">
+        <div class="aito-section-label">What this demonstrates</div>
+        <ul class="aito-bullets">
+          <li>Hypothesis testing as a database query</li>
+          <li>Mixed qualitative + quantitative features, equal footing</li>
+          <li>Calibration plot shows the engine knows what it doesn't know</li>
+          <li>Reproducible from raw EDGAR filings</li>
+        </ul>
+      </div>
+
+      <div class="aito-section" data-view="similar">
+        <div class="aito-section-label">The Query</div>
+        <p>Find observations most similar to a focal company by feature distance. Useful for analogue reasoning, for diligence reference cases, for stress-testing a thesis against history.</p>
+        <div class="aito-endpoint">POST /_match</div>
+        <div class="aito-code">{
+  <span class="k">"from"</span>: <span class="s">"companies"</span>,
+  <span class="k">"match"</span>: {
+    <span class="k">"ticker"</span>: <span class="s">"NVDA"</span>,
+    <span class="k">"vintage"</span>: <span class="n">2014</span>
+  },
+  <span class="k">"limit"</span>: <span class="n">6</span>
+}</div>
+      </div>
+
+      <div class="aito-section" data-view="similar">
+        <div class="aito-section-label">Architectural Note</div>
+        <p>Similarity, prediction, and relate are <strong>the same engine, the same index, the same endpoint family</strong>. No separate vector store, no embedding pipeline, no synchronisation problem.</p>
+      </div>
+
+      <div class="aito-section" data-view="method">
+        <div class="aito-section-label">The Pattern</div>
+        <p>Unstructured judgment (10-Ks, proxies) → LLM grading → structured table → predictive database. <strong>The architecture is the product.</strong> Equity is the demonstration vehicle.</p>
+      </div>
+
+      <div class="aito-section" data-view="method">
+        <div class="aito-section-label">Transferable Domains</div>
+        <ul class="aito-bullets">
+          <li>Credit underwriting from narrative loan apps</li>
+          <li>M&amp;A diligence at scale</li>
+          <li>Supplier risk from contracts + filings</li>
+          <li>Talent assessment from CV + interview notes</li>
+          <li>Anomaly detection in regulated workflows</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="aito-cta">
+      <button class="aito-cta-btn">Start free trial →</button>
+      <div class="aito-cta-note">aito.ai · predictive database for the things that don't fit a feature store</div>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+  // ── Helpers ─────────────────────────────────────────────────────
+  const ROMAN = ['', 'i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x'];
+  const roman = n => ROMAN[n] || String(n);
+
+  const esc = s => String(s).replace(/[&<>"']/g, c => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+
+  const pips = (filled, total = 5) => {
+    let html = '<span class="grade-pip">';
+    for (let i = 0; i < total; i++) html += `<span${i < filled ? ' class="on"' : ''}></span>`;
+    return html + '</span>';
+  };
+
+  const fetchJson = path => fetch(path).then(r => {
+    if (!r.ok) throw new Error(`${path}: ${r.status}`);
+    return r.json();
+  });
+
+  // ── Render: meta (sidebar, topbar, aito stats, thesis copy) ─────
+  function renderMeta(meta) {
+    document.querySelectorAll('[data-bind="stat-observations"]').forEach(el => el.textContent = meta.observations);
+    document.querySelectorAll('[data-bind="stat-features"]').forEach(el => el.textContent = meta.features);
+    document.querySelectorAll('[data-bind="stat-latency"]').forEach(el => el.textContent = `${meta.p50_latency_ms} ms`);
+    document.querySelectorAll('[data-bind="stat-training"]').forEach(el => el.textContent = meta.training_runs);
+    document.querySelectorAll('[data-bind="topbar-rows"]').forEach(el => el.textContent = meta.observations);
+    document.querySelectorAll('[data-bind="thesis-deck-n"]').forEach(el => el.textContent = meta.observations);
+
+    const sidebar = document.querySelector('[data-bind="sidebar-footer"]');
+    if (sidebar) sidebar.innerHTML = `<strong>${meta.observations} companies</strong> · ${meta.vintages_label} · point-in-time discipline · qualitative features extracted by LLM, predictions by aito.ai`;
+
+    const byline = document.querySelector('[data-bind="thesis-byline"]');
+    if (byline) byline.textContent = `N = ${meta.observations} observations · ${meta.vintages.length} vintage${meta.vintages.length === 1 ? '' : 's'} · target: outcome_bucket = great`;
+
+    const companyByline = document.querySelector('[data-bind="company-byline"]');
+    if (companyByline) companyByline.textContent = `Demonstration · ${meta.vintages.join('/')} vintage${meta.vintages.length === 1 ? '' : 's'} · ${meta.window_years_default}-year forward window`;
+  }
+
+  // ── Render: company chips ───────────────────────────────────────
+  function renderChips(companies, activeKey) {
+    const el = document.getElementById('company-selector');
+    el.innerHTML = companies.map(c => {
+      const key = `${c.ticker}_${c.vintage}`;
+      return `<button class="company-chip${key === activeKey ? ' active' : ''}" data-focal="${esc(key)}">
+        <div class="company-chip-ticker">${esc(c.chip_label)}</div>
+        <div class="company-chip-name">${esc(c.short_name)}</div>
+      </button>`;
+    }).join('');
+    el.querySelectorAll('.company-chip').forEach(chip => {
+      chip.addEventListener('click', () => loadFocal(chip.dataset.focal));
+    });
+  }
+
+  // ── Render: view 1 (predict) ────────────────────────────────────
+  function renderPredict(p) {
+    document.getElementById('profile-card').innerHTML = `
+      <div class="profile-head">
+        <div class="profile-title">
+          <h2>${esc(p.company_name)}</h2>
+          <div class="ticker">${esc(p.ticker)} · ${esc(p.exchange)} · sec. ${esc(p.sector)} · ${esc(p.market_cap)} mkt. cap</div>
+        </div>
+        <div class="profile-vintage">
+          <b>${esc(p.vintage_label)}</b>
+          vintage snapshot<br>
+          ${esc(p.window_label)} forward window
+        </div>
+      </div>
+      <div class="grades">
+        ${p.grades.map(g => `
+          <div class="grade">
+            <div class="grade-label">${esc(g.label)}</div>
+            <div class="grade-value">${esc(g.value)}${pips(g.pip_filled, g.pip_total || 5)}</div>
+            <div class="grade-evidence">${esc(g.evidence)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    document.getElementById('prediction-block').innerHTML = `
+      <div class="prediction-head">
+        <h3>aito.ai <em>predicts</em> · ${esc(p.window_label)} total return</h3>
+        <div class="prediction-confidence">calibrated confidence · <b>${esc(p.prediction.confidence)}</b></div>
+      </div>
+      <div class="outcome-bars">
+        ${p.prediction.buckets.map(b => {
+          const pct = (b.prob * 100).toFixed(1);
+          const peak = b.label === p.prediction.peak ? ' peak' : '';
+          return `<div class="outcome-bar">
+            <div class="outcome-bar-label">${esc(b.label)} <em>${esc(b.range)}</em></div>
+            <div class="outcome-bar-track"><div class="outcome-bar-fill${peak}" style="width: ${Math.max(1, b.prob * 100).toFixed(1)}%"></div></div>
+            <div class="outcome-bar-value">${pct}%</div>
+          </div>`;
+        }).join('')}
+      </div>
+    `;
+
+    const pull = document.getElementById('company-pullquote');
+    pull.innerHTML = `${esc(p.pullquote)}<span class="pullquote-attr">${esc(p.pullquote_attr)}</span>`;
+  }
+
+  // ── Render: view 2 (relate + calibration) ───────────────────────
+  function renderRelate(r) {
+    document.getElementById('relate-grid').innerHTML = r.rows.map((row, i) => {
+      const isQuant = row.type === 'quant';
+      const tag = isQuant ? '<span class="type-tag quant">quant.</span>' : '<span class="type-tag">qual.</span>';
+      const fillCls = isQuant ? 'relate-bar-fill quant' : 'relate-bar-fill';
+      const lift = `×${row.lift.toFixed(2)}`;
+      return `<div class="relate-row">
+        <div class="relate-rank">${roman(i + 1)}.</div>
+        <div class="relate-feature">${row.feature_html || esc(row.feature)}${tag}</div>
+        <div class="relate-bar"><div class="${fillCls}" style="width: ${row.bar_pct}%"></div></div>
+        <div class="relate-lift">${lift}</div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('thesis-pullquote').innerHTML = r.pullquote_html || esc(r.pullquote || '');
+  }
+
+  function renderCalibration(c) {
+    document.getElementById('calib-bars').innerHTML = c.deciles.map(d => `
+      <div class="calib-bar">
+        <div class="calib-bar-pair">
+          <div class="calib-bar-predicted" style="height: ${(d.predicted * 100).toFixed(0)}%"></div>
+          <div class="calib-bar-actual" style="height: ${(d.actual * 100).toFixed(0)}%"></div>
+        </div>
+        <div class="calib-bar-label">${esc(d.label)}</div>
+      </div>
+    `).join('');
+  }
+
+  // ── Render: view 3 (match) ──────────────────────────────────────
+  function renderMatch(m) {
+    const cards = [];
+    for (let i = 0; i < m.matches.length; i += 3) {
+      const row = m.matches.slice(i, i + 3);
+      const style = i === 0 ? '' : ' style="margin-top: 24px;"';
+      cards.push(`<div class="similar-card"${style}>${row.map((item, idx) => {
+        const rank = roman(i + idx + 1);
+        const outcomeClass = item.outcome.sentiment === 'negative' ? ' class="red"' : '';
+        const annot = item.outcome.annotation ? ` <em style="font-style: italic; color: var(--ink-fade); font-size: 11px;">${esc(item.outcome.annotation)}</em>` : '';
+        return `<div class="similar-item">
+          <div class="similar-item-rank">№ ${rank}</div>
+          <h4>${esc(item.name)}</h4>
+          <div class="similar-item-meta">${esc(item.ticker)} · ${item.vintage} vintage · sim ${item.similarity.toFixed(2)}</div>
+          <div style="font-family: 'Source Serif 4', serif; font-size: 13px; color: var(--ink-soft); line-height: 1.55; margin-bottom: 14px;">${esc(item.description)}</div>
+          <div class="similar-item-outcome">Outcome ${esc(item.outcome.window)}: <b${outcomeClass}>${esc(item.outcome.text)}</b>${annot}</div>
+        </div>`;
+      }).join('')}</div>`);
+    }
+    document.getElementById('similar-cards-container').innerHTML = cards.join('');
+    document.getElementById('similar-pullquote').innerHTML = m.pullquote_html || esc(m.pullquote || '');
+
+    const byline = document.querySelector('[data-bind="similar-byline"]');
+    if (byline) byline.textContent = `focal: ${m.focal.name} · ${m.focal.vintage} vintage · nearest neighbours by feature distance`;
+  }
+
+  // ── Focal switching ─────────────────────────────────────────────
+  let activeFocal = null;
+  async function loadFocal(key) {
+    activeFocal = key;
+    document.querySelectorAll('.company-chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.focal === key);
+    });
+    try {
+      const [predict, match] = await Promise.all([
+        fetchJson(`./data/predict/${key}.json`),
+        fetchJson(`./data/match/${key}.json`)
+      ]);
+      renderPredict(predict);
+      renderMatch(match);
+    } catch (e) {
+      console.error('Focal load failed', key, e);
+    }
+  }
+
+  // ── View switching (unchanged) ──────────────────────────────────
+  const nav = document.querySelectorAll('.nav-item');
+  const views = document.querySelectorAll('.view');
+  const aitoSections = document.querySelectorAll('#aito-content .aito-section');
+  const breadcrumb = document.querySelector('.breadcrumb');
+
+  const viewTitles = {
+    company: 'The Company File',
+    thesis: 'Does the Thesis Hold?',
+    similar: 'Historical Analogues',
+    method: 'On Methodology'
+  };
+
+  function setView(v) {
+    nav.forEach(n => n.classList.toggle('active', n.dataset.view === v));
+    views.forEach(view => view.classList.toggle('active', view.id === 'view-' + v));
+    aitoSections.forEach(s => {
+      s.style.display = s.dataset.view === v ? 'block' : 'none';
+    });
+    breadcrumb.innerHTML = `The Study · <b>${viewTitles[v]}</b>`;
+    document.querySelector('.main').scrollTop = 0;
+  }
+
+  nav.forEach(n => n.addEventListener('click', () => setView(n.dataset.view)));
+  setView('company');
+
+  // ── Sidebar / Aito panel toggles ────────────────────────────────
+  const app = document.getElementById('app');
+  document.getElementById('toggleSidebar').addEventListener('click', () => {
+    app.classList.toggle('sidebar-collapsed');
+  });
+  document.getElementById('toggleAito').addEventListener('click', () => {
+    app.classList.toggle('aito-collapsed');
+  });
+
+  // ── Boot ────────────────────────────────────────────────────────
+  (async () => {
+    try {
+      const [meta, companies, relate, calibration] = await Promise.all([
+        fetchJson('./data/meta.json'),
+        fetchJson('./data/companies.json'),
+        fetchJson('./data/relate.json'),
+        fetchJson('./data/calibration.json')
+      ]);
+      renderMeta(meta);
+      renderRelate(relate);
+      renderCalibration(calibration);
+
+      const initialKey = `${companies[0].ticker}_${companies[0].vintage}`;
+      renderChips(companies, initialKey);
+      await loadFocal(initialKey);
+    } catch (e) {
+      console.error('Boot failed', e);
+      document.body.insertAdjacentHTML('afterbegin',
+        `<div style="position: fixed; top: 0; left: 0; right: 0; padding: 12px; background: #8b1a1a; color: #f4ede1; font-family: 'JetBrains Mono', monospace; font-size: 13px; z-index: 9999;">data load failed: ${esc(e.message)}</div>`
+      );
+    }
+  })();
+</script>
+
+</body>
+</html>

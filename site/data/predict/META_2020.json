@@ -1,0 +1,54 @@
+{
+  "_note": "Placeholder values pending pipeline run.",
+  "ticker": "META",
+  "vintage": 2020,
+  "company_name": "Meta Platforms",
+  "exchange": "NASDAQ",
+  "sector": "interactive media · advertising",
+  "market_cap": "$585B",
+  "vintage_label": "January 2020",
+  "window_label": "six-year",
+  "grades": [
+    {
+      "label": "Market Position",
+      "value": "Dominant",
+      "pip_filled": 4,
+      "pip_total": 5,
+      "evidence": "~2.5B daily active users across the Facebook family. Instagram still in growth phase. Number-two share of global digital advertising behind Google."
+    },
+    {
+      "label": "Moat Type & Strength",
+      "value": "Network effects · wide",
+      "pip_filled": 4,
+      "pip_total": 5,
+      "evidence": "Cross-network social graph is the largest in existence. Switching costs at the individual level low, but at the social-circle level very high. 10-K acknowledges regulatory and platform risks at length."
+    },
+    {
+      "label": "Market Quality",
+      "value": "Cyclical",
+      "pip_filled": 2,
+      "pip_total": 5,
+      "evidence": "Advertising spend is procyclical; regulatory pressure (FTC inquiry, EU GDPR/DSA), Apple ATT pending, TikTok rising as attention rival. Significant ahead-of-cycle risks visible at vintage date."
+    },
+    {
+      "label": "Leadership Quality",
+      "value": "Founder-led · 5/5",
+      "pip_filled": 5,
+      "pip_total": 5,
+      "evidence": "Zuckerberg founder, super-voting share class. History of large bets (Instagram, WhatsApp acquisitions); willing to spend ahead of revenue (then VR/AR; later AI infrastructure). Long-term framing dominates investor communication."
+    }
+  ],
+  "prediction": {
+    "confidence": "MEDIUM",
+    "peak": "Good",
+    "buckets": [
+      { "label": "Disaster", "range": "−50%+", "prob": 0.041 },
+      { "label": "Poor", "range": "−50–0%", "prob": 0.118 },
+      { "label": "Market", "range": "0–100%", "prob": 0.243 },
+      { "label": "Good", "range": "100–300%", "prob": 0.382 },
+      { "label": "Great", "range": "300%+", "prob": 0.216 }
+    ]
+  },
+  "pullquote": "\"The engine saw dominant position and wide moat but flagged cyclicality and regulatory headwinds — the calibrated 'good' rather than confident 'great'. Meta drew down ~70% through 2022 before recovering; the realised six-year return sits inside the 'good' bucket.\"",
+  "pullquote_attr": "From the demo notebook · 2020 vintage holdout"
+}

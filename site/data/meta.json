@@ -1,0 +1,11 @@
+{
+  "_note": "Placeholder values mirroring the reference HTML mock-up. The Python pipeline (`./do precompute`) regenerates this file from the real Aito dataset.",
+  "observations": 783,
+  "features": 14,
+  "p50_latency_ms": 62,
+  "training_runs": 0,
+  "vintages": [2014, 2017, 2020],
+  "vintages_label": "three vintage years",
+  "window_years_default": 12,
+  "data_source_note": "S&P 500 historical constituents · SEC EDGAR · yfinance"
+}

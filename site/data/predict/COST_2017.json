@@ -1,0 +1,54 @@
+{
+  "_note": "Placeholder values pending pipeline run.",
+  "ticker": "COST",
+  "vintage": 2017,
+  "company_name": "Costco Wholesale",
+  "exchange": "NASDAQ",
+  "sector": "consumer staples · retail",
+  "market_cap": "$72B",
+  "vintage_label": "January 2017",
+  "window_label": "nine-year",
+  "grades": [
+    {
+      "label": "Market Position",
+      "value": "Strong",
+      "pip_filled": 4,
+      "pip_total": 5,
+      "evidence": "Dominant in warehouse-club retail; ~90 million paying members. The 10-K describes a price-leadership flywheel — scale buying → lower prices → more members → more scale."
+    },
+    {
+      "label": "Moat Type & Strength",
+      "value": "Scale + brand · wide",
+      "pip_filled": 4,
+      "pip_total": 5,
+      "evidence": "Membership renewal rate >90%. Treasure-hunt SKU rotation builds visit habit. Combined scale economies and trust brand. The flywheel is documented across multiple Letters."
+    },
+    {
+      "label": "Market Quality",
+      "value": "Stable",
+      "pip_filled": 3,
+      "pip_total": 5,
+      "evidence": "Grocery and general-merchandise retail; modest secular growth. Less optionality than tech but more durable in any macro regime."
+    },
+    {
+      "label": "Leadership Quality",
+      "value": "Disciplined · 4/5",
+      "pip_filled": 4,
+      "pip_total": 5,
+      "evidence": "Craig Jelinek (CEO from 2012) maintains the Sinegal-era price discipline. Compensation modest by S&P 500 standards. Capital returned via special dividends rather than buybacks at peak multiples."
+    }
+  ],
+  "prediction": {
+    "confidence": "MEDIUM",
+    "peak": "Good",
+    "buckets": [
+      { "label": "Disaster", "range": "−50%+", "prob": 0.022 },
+      { "label": "Poor", "range": "−50–0%", "prob": 0.064 },
+      { "label": "Market", "range": "0–100%", "prob": 0.207 },
+      { "label": "Good", "range": "100–300%", "prob": 0.461 },
+      { "label": "Great", "range": "300%+", "prob": 0.246 }
+    ]
+  },
+  "pullquote": "\"The engine saw a strong position, wide moat, stable market, and disciplined leadership — the textbook compounder profile. It assigned 46% probability to 'good' and 25% to 'great'. The realised return through 2026 sits near the high end of the 'good' bucket.\"",
+  "pullquote_attr": "From the demo notebook · 2017 vintage holdout"
+}

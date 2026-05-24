@@ -1,0 +1,55 @@
+{
+  "_note": "Placeholder analogues pending pipeline run.",
+  "focal": { "ticker": "META", "vintage": 2020, "name": "Meta Platforms" },
+  "matches": [
+    {
+      "ticker": "GOOG",
+      "vintage": 2010,
+      "name": "Alphabet (Google)",
+      "similarity": 0.83,
+      "description": "Dominant advertising platform, network-effect moat, cyclical exposure, founder-led with super-voting structure. Closest direct peer.",
+      "outcome": { "text": "+780%", "window": "'10→'22", "sentiment": "positive" }
+    },
+    {
+      "ticker": "AAPL",
+      "vintage": 2014,
+      "name": "Apple",
+      "similarity": 0.74,
+      "description": "Dominant consumer platform, switching-cost moat, regulatory headwinds, capital-discipline leadership. Different category, similar archetype.",
+      "outcome": { "text": "+850%", "window": "'14→'26", "sentiment": "positive" }
+    },
+    {
+      "ticker": "MSFT",
+      "vintage": 2014,
+      "name": "Microsoft",
+      "similarity": 0.71,
+      "description": "Dominant platform incumbent in mid-pivot (cloud), wide ecosystem moat, founder-still-influential governance, willing to spend ahead of revenue.",
+      "outcome": { "text": "+820%", "window": "'14→'26", "sentiment": "positive" }
+    },
+    {
+      "ticker": "AMZN",
+      "vintage": 2014,
+      "name": "Amazon",
+      "similarity": 0.66,
+      "description": "Founder-led, scale moat, multiple optionality vectors (e-commerce + AWS), willing to suppress near-term margin for long-term position.",
+      "outcome": { "text": "+520%", "window": "'14→'26", "sentiment": "positive" }
+    },
+    {
+      "ticker": "NFLX",
+      "vintage": 2018,
+      "name": "Netflix",
+      "similarity": 0.61,
+      "description": "Founder-led, subscription network effects, content arms race, regulatory-light. Demonstrates 'wide-moat in cyclical demand' pattern.",
+      "outcome": { "text": "+95%", "window": "'18→'26", "sentiment": "positive", "annotation": "(after 2022 drawdown)" }
+    },
+    {
+      "ticker": "NOK",
+      "vintage": 2007,
+      "name": "Nokia",
+      "similarity": 0.52,
+      "description": "Once-dominant consumer platform that lost market position to a category redefinition (smartphone). Cautionary parallel for 'dominance + cyclicality' archetype.",
+      "outcome": { "text": "−85%", "window": "'07→'19", "sentiment": "negative", "annotation": "(category obsolescence)" }
+    }
+  ],
+  "pullquote_html": "Meta's nearest neighbours are the dominant platforms of the prior cycle. The cautionary case (Nokia) lost on a feature shift the engine cannot see in advance — <em>category redefinition</em> rather than competitive position. The risk for Meta is the equivalent: attention shifting off feed-based social entirely."
+}

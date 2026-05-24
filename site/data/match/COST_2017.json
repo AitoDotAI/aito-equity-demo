@@ -1,0 +1,55 @@
+{
+  "_note": "Placeholder analogues pending pipeline run.",
+  "focal": { "ticker": "COST", "vintage": 2017, "name": "Costco Wholesale" },
+  "matches": [
+    {
+      "ticker": "WMT",
+      "vintage": 2010,
+      "name": "Walmart",
+      "similarity": 0.79,
+      "description": "Dominant low-cost retailer, scale moat, stable category. Less membership-driven loyalty than Costco; lower margin trajectory.",
+      "outcome": { "text": "+170%", "window": "'10→'22", "sentiment": "positive" }
+    },
+    {
+      "ticker": "HD",
+      "vintage": 2010,
+      "name": "Home Depot",
+      "similarity": 0.76,
+      "description": "Category-dominant big-box, scale + brand moat, stable category. Disciplined capital allocation under Frank Blake.",
+      "outcome": { "text": "+540%", "window": "'10→'22", "sentiment": "positive" }
+    },
+    {
+      "ticker": "TJX",
+      "vintage": 2013,
+      "name": "TJX Companies",
+      "similarity": 0.72,
+      "description": "Off-price retail, treasure-hunt model, scale buying advantage, consistent operator. Closest peer in 'flywheel-discipline' archetype.",
+      "outcome": { "text": "+200%", "window": "'13→'25", "sentiment": "positive" }
+    },
+    {
+      "ticker": "BJ",
+      "vintage": 2018,
+      "name": "BJ's Wholesale Club",
+      "similarity": 0.69,
+      "description": "Direct warehouse-club competitor, similar membership model, smaller scale and weaker brand. Same archetype, smaller magnitude.",
+      "outcome": { "text": "+340%", "window": "'18→'25", "sentiment": "positive" }
+    },
+    {
+      "ticker": "DG",
+      "vintage": 2014,
+      "name": "Dollar General",
+      "similarity": 0.64,
+      "description": "Discount retail, rural footprint moat, stable category. Different customer than Costco but similar 'low-end discipline' archetype.",
+      "outcome": { "text": "+220%", "window": "'14→'24", "sentiment": "positive" }
+    },
+    {
+      "ticker": "BBBY",
+      "vintage": 2014,
+      "name": "Bed Bath & Beyond",
+      "similarity": 0.55,
+      "description": "Specialty retail with apparent moat that eroded — coupon-trained customer base, no membership lock-in, weak digital. Cautionary parallel.",
+      "outcome": { "text": "bankrupt 2023", "window": "'14→'23", "sentiment": "negative" }
+    }
+  ],
+  "pullquote_html": "Costco's nearest neighbours are the category-dominant compounders of the last cycle. The one cautionary case (BBBY) lacked Costco's <em>membership-locked customer</em> — the feature that converts a strong position into a durable one."
+}

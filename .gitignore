@@ -4,15 +4,6 @@ __pycache__/
 *.pyc
 .pytest_cache/
 
-# Node
-node_modules/
-
-# Next.js
-.next/
-frontend/out/
-frontend/.next/
-frontend/next-env.d.ts
-
 # Env
 .env
 .env.local
@@ -28,9 +19,14 @@ frontend/next-env.d.ts
 *.log
 dist/
 
-# Playwright output — keep dir but ignore captures
-frontend/scripts/output/*
-!frontend/scripts/output/.gitkeep
+# Pipeline outputs — derived from sources, not committed
+data/*
+!data/.gitkeep
+!data/10k_excerpts/.gitkeep
+
+# Playwright screenshots — keep dir but ignore captures
+scripts/output/*
+!scripts/output/.gitkeep
 
 # Booktest snapshot output
 books/.out/

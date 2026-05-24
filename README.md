@@ -1,127 +1,118 @@
-# Aito demo template (`aito-equity-demo`)
+# aito-equity-demo
 
-A starter skeleton that follows every convention `aito-demo-server` enforces. Copy this folder to a new repo, adjust the name + content, push to GitHub, and add one entry to `aito-demo-server/demos.config.yaml`. From scratch to a hosted `<name>.aito.ai` demo in well under an hour.
+**Predictive equity research with LLM-graded qualitative features and the
+[aito.ai](https://aito.ai) predictive database.**
 
-## What's in the box
+Live: [equity.aito.ai](https://equity.aito.ai) *(pending v1 deploy)*
 
-**Code (backend):**
-- **`pyproject.toml`** — Python 3.12 + uv. FastAPI / uvicorn / httpx / python-dotenv. Dev: pytest + pytest-httpx + booktest.
-- **`src/app.py`** — minimal FastAPI app. Has:
-  - `GET /health` — cheap liveness probe (returns `{"ok": true}`)
-  - `GET /api/health` — Aito-connectivity readiness probe (returns `aito_url`, `aito_connected`)
-  - `GET /api/schema` — pass-through to Aito's `/schema` (linked from AitoPanel)
-  - `GET /api/example` — hello-world that lists Aito tables
-  - Middleware that surfaces `X-Aito-Ms` / `X-Aito-Calls` / `X-Aito-Ops` headers (the topbar LatencyBadge reads these)
-  - `StaticFiles(html=True)` mount at `/` serving `frontend/out/` (production = one process)
-- **`src/aito_client.py`** — slim sync Aito client. `predict()`, `match()`, `search()`, `get_schema()`, `check_connectivity()`. Records `last_call` for latency middleware.
-- **`src/config.py`** — loads `AITO_API_URL` + `AITO_API_KEY` from env. Fails loudly if missing.
+---
 
-**Code (frontend):**
-- **`frontend/`** — Next.js 16 + React 19. Configured for static export in production; dev uses next-dev + backend proxy.
-- **`frontend/components/shell/`** — `TopBar`, `Nav`, `AitoPanel` (the canonical context/side pane — collapsible right panel showing live query + response time + stats), `ErrorState`, `Analytics`, `LatencyBadge`.
-- **`frontend/components/prediction/`** — `PredictionBadge`, `ConfidenceBar`, `WhyTooltip`, `PredictedField`, `WhyCards`, `LiftHint`. The reusable "show a prediction with confidence + explanation" UI.
-- **`frontend/lib/api.ts`** — `apiFetch` wrapper (emits latency events for LatencyBadge, throws `ApiError` on non-200), `confClass`, `fmtAmount`.
-- **`frontend/lib/aito.ts`** — *optional* browser-side Aito client for direct-from-browser pattern (rare; usually browser → FastAPI → Aito).
-- **`frontend/lib/types.ts`** — `Alternative`, `WhyFactor`, `AitoPanelConfig`, etc.
-- **`frontend/lib/analytics.ts`** — Amplitude + GA4 init from `NEXT_PUBLIC_AMPLITUDE_KEY` / `NEXT_PUBLIC_GA4_MEASUREMENT_ID`.
-- **`frontend/public/`** — `aito-logo.svg`, `aito-favicon.svg`, `aito-panel-bg.png` (background image used by AitoPanel).
+## What this is
 
-**Operational:**
-- **`do`** — wrapper for all common workflows. `./do help` for the list.
-- **`.env.example`** — the env contract.
-- **`shell.nix`** — Nix dev shell (Python 3.12 + uv + Node 20 + Playwright + dev tools). `nix-shell` to enter; auto-runs `uv sync` and loads `.env`.
+A test of Warren Buffett's long-horizon investing principles — moat,
+market position, market quality, leadership — at scale. We grade
+~250 S&P 500 companies on those four qualitative dimensions using
+contemporary 10-K and proxy filings (point-in-time, no lookahead), load
+the grades alongside quantitative features into Aito, and ask:
 
-**Tests:**
-- **`tests/test_health.py`** — plain pytest (no Aito).
-- **`book/test_01_aito_schema_book.py`** — booktest snapshot example (Aito-dependent; replays from `books/` on subsequent runs).
-- **`booktest.ini`** — booktest config.
+> Across hundreds of point-in-time observations, which features most
+> predict landing in the 'great' outcome bucket over the next decade?
 
-**Screenshots / regression:**
-- **`frontend/scripts/screenshot-teaser.cjs`** — renders `assets/teaser.html` → `assets/teaser.png` (1200×630, the size the landing page wants).
-- **`frontend/scripts/screenshot-pages.cjs`** — desktop full-page screenshots of given paths (regression baseline).
-- **`frontend/scripts/inspect-mobile.cjs`** — iPhone-sized screenshots for layout review.
+The answer is the demo. The numbers come from real Aito queries against
+real data — there is no narrative shaping of the result. If the data says
+quant beats qual, the chart says so.
 
-**Docs:**
-- **`README.md`** (this file) — bootstrap workflow.
-- **`CLAUDE.md`** — agent instructions: platform conventions, common pitfalls, where to start.
-- **`CHEATSHEET.md`** — Aito query cookbook (predict / match / search / multi-tenant / common where clauses).
-- **`CHECKLIST.md`** — pre-launch checklist covering code, branding, analytics, product sheet, deploy.
+## What this isn't
 
-**Assets:**
-- **`assets/teaser.html`** — source for the teaser image (edit visually, regenerate the PNG).
-- **`assets/teaser.png`** — the actual file consumed by the platform's landing page (regenerate via `./do screenshot-teaser`).
-- **`assets/README.md`** — what the platform expects.
+**Not a trading signal.** No microstructure, no transaction cost model,
+no capacity analysis. Twelve-year horizon, ~250 observations per vintage.
+This is a hypothesis test about long-horizon business quality and an
+architecture demonstration — not an alpha-generation system.
 
-## Bootstrap workflow
+## The four views
 
-```bash
-# 1. Copy and rename
-cp -r /home/arau/episto/src/aito-demo-server/template /home/arau/episto/src/aito-<NAME>-demo
-cd /home/arau/episto/src/aito-<NAME>-demo
+| № | View | Aito query | What it shows |
+|---|---|---|---|
+| i | The Company File | `POST /_predict` on `outcome_bucket` | Per-focal grades, evidence quotes, calibrated probabilities across five outcome buckets |
+| ii | Does the Thesis Hold? | `POST /_relate` with `outcome_bucket = great` | Feature-importance table; the "Buffett thesis quantified" chart, plus a calibration plot |
+| iii | Historical Analogues | `POST /_match` for similarity | Six nearest neighbours to the focal company with their actual realised outcomes |
+| iv | On Methodology | (static) | Point-in-time discipline, LLM-grading method, lookahead stress test, why this isn't a trading signal |
 
-# 2. Find & replace the placeholder name
-#    (search for HELLO, hello-demo, predictive-equity, etc.)
-grep -rl "HELLO\|hello-demo\|predictive-equity" . --exclude-dir=node_modules --exclude-dir=.venv
+## Architecture
 
-# 3. Generate lockfiles so the platform's `--frozen` install works
-uv lock
-cd frontend && npm install && cd ..
-
-# 4. Replace assets/teaser.png with your own (1200×630 ish, dark navy bg, purple accent)
-
-# 5. git init, commit, push to github.com/AitoDotAI/aito-<NAME>-demo
-git init && git add -A && git commit -m "Initial commit from aito-equity-demo template"
-gh repo create AitoDotAI/aito-<NAME>-demo --private --source=. --push
-
-# 6. In aito-demo-server, add the yaml entry
-cd /home/arau/episto/src/aito-demo-server
-./do add-demo <NAME>           # appends a scaffold to demos.config.yaml
-# edit the new entry: set source.repo, ref: main (or a SHA), and teaser copy
-
-# 7. Validate + smoke build locally
-./do check
-./do build                      # ~5-10 min cold
-./do up                         # http://localhost:8080 — your demo at Host: <NAME>.aito.ai
-
-# 8. Deploy via aito-azure
-cd /home/arau/episto/src/aito-azure
-./do deploy-demos               # pushes to ACR + updates the unified Web App
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│   Python pipeline                          Static site          │
+│   ─────────────────                        ───────────          │
+│   universe   → data/universe.csv                                │
+│   filings    → data/10k_excerpts/                               │
+│   extract    → data/llm_features.csv  ─┐                        │
+│   outcomes   → data/outcomes.csv       ├─→ Aito ─→ precompute   │
+│                                        │           └→ site/data/│
+│                                        │                  ↑     │
+│                                        │                  │     │
+│                                        │           site/index.html  ← browser
+│                                        └→ schema.json                │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-## What you'd typically replace
+No runtime backend. The browser fetches `site/data/*.json` directly;
+every value was precomputed at pipeline-run time. API keys never reach
+the browser. A minimal FastAPI stub at `src/app.py` serves the static
+site and a `/health` endpoint to fit the `aito-demos-unified` platform
+contract — nothing else.
 
-- **`src/app.py`** — add your own `@app.get("/api/...")` routes. The `/health` and `/api/health` routes can stay verbatim; the StaticFiles mount must remain the LAST thing in the file (it shadows everything else at `/`).
-- **`src/config.py`** — extend if your demo needs more env vars. Keep the fail-loud pattern.
-- **`frontend/app/page.tsx`** — your UI.
-- **`pyproject.toml`** — add any additional Python deps you need.
-- **`frontend/package.json`** — add any additional JS deps you need.
-- **`assets/teaser.html`** — design your teaser, then `./do screenshot-teaser` to regenerate the PNG.
-- **`README.md`** — replace this file with one for your specific demo.
-- **`CLAUDE.md`** — trim sections you don't need, add demo-specific guidance.
-- **`book/test_01_aito_schema_book.py`** — adapt to test your demo's actual queries (use as a pattern; add more `book/test_NN_*.py` files for each capability you want snapshot-tested).
-- **`tests/test_health.py`** — add unit tests for any pure logic in your routes.
+## Stack
 
-Walk **`CHECKLIST.md`** before declaring done.
+- **Python 3.12 + uv** — pipeline (`pipeline/`), tests (`tests/`, `book/`),
+  health stub (`src/app.py`)
+- **Anthropic SDK** — LLM grading at temperature 0.3, modal of three runs
+  per feature
+- **httpx + lxml + BeautifulSoup** — EDGAR + Wikipedia constituent parsing
+- **yfinance** — prices, dividends, splits, terminal events
+- **aito.ai** — predictive database (single endpoint family: `/_predict`,
+  `/_relate`, `/_match`, no separate model training)
+- **HTML/CSS/JS** — single-file editorial frontend (Fraunces / Source Serif 4,
+  cream paper texture, double-rule dividers); no Next.js, no React
+- **playwright** — screenshot regression
+- **FastAPI / uvicorn** — health-stub only; no `/api/*` business routes
 
-## What you should NOT change (without a good reason)
+Multi-market columns (`market`, `exchange`, `currency`, `reporting_standard`,
+`filing_language`) are in the Aito schema from day 1 even though v1 data
+is US-only — Finnish / Nordic / EU datasets slot in without migration.
 
-- **`frontend/next.config.ts`** — the `output: "export"` + dev rewrite pattern is what lets the platform run you as a single uvicorn process. Diverging means you need `extra_processes` in `demos.config.yaml` and the operator complexity that comes with that.
-- **`src/app.py`'s StaticFiles mount line** — the platform expects `frontend/out/` to be served at `/` from the same uvicorn process as `/api/*`.
-- **`/health` endpoint** — nginx in the platform's container proxies `<demo>.aito.ai/health` to this route; if it 404s, monitoring breaks.
-- **Env var names** — `AITO_API_URL` + `AITO_API_KEY` is the canonical pair the platform's `env:` block remaps from per-demo secrets (`AITO_<DEMO_NAME>_API_URL`). Picking different names means adjusting the yaml.
-
-## Local development
+## Reproducing
 
 ```bash
-./do install     # uv sync + npm install
-./do dev         # runs uvicorn (backend) + next dev (frontend) on separate ports
-                 # frontend proxies /api/* to backend; hot-reload on both
+./do install                     # uv sync + playwright browser install
+cp .env.example .env             # add AITO_API_URL, AITO_API_KEY, ANTHROPIC_API_KEY
+./do pipeline all                # universe → filings → extract → outcomes → load → precompute
+./do serve                       # http://localhost:8401
 ```
 
-In dev, the backend listens on `8401` (configurable via `BACKEND_PORT`) and the frontend on `3000`. The next.config.ts proxy rewrite is dev-only — production builds skip it and FastAPI serves both `/api/*` and the static UI from the single `PORT` the platform assigns.
+All pipeline stages are currently `NotImplementedError` skeletons —
+see [aito-equity-demo-TASK.md](./aito-equity-demo-TASK.md) for the build
+order. The `site/data/*.json` files in this repo contain placeholder
+values mirroring the reference HTML mockup, so the site renders
+end-to-end before the pipeline lands.
 
-## Where this lives
+## Audience
 
-This template is committed inside `aito-demo-server/template/` rather than as a separate repo. Rationale: the platform's conventions evolve over time (env-var naming, `/health` shape, Next.js output config) and co-locating the template means a single PR updates both the platform and the canonical example. New demo repos are forks-by-copy from this folder, not git clones from a separate template repo.
+This is a sales / research demo for **[aito.ai](https://aito.ai)**.
+The architecture pattern — unstructured judgment → LLM grading →
+predictive database — generalises beyond equity research to credit
+underwriting, M&A diligence, supplier risk, and talent assessment.
+Equity is the vehicle; the architecture is the product.
 
-If you change the platform conventions, update this template in the same PR.
+## See also
+
+- [aito-equity-demo-TASK.md](./aito-equity-demo-TASK.md) — the full
+  build brief: methodology, build order, demo moments, scope limits
+- [aito-equity-demo.html](./aito-equity-demo.html) — the visual
+  design source-of-truth (single-file prototype)
+- [CLAUDE.md](./CLAUDE.md) — agent / contributor instructions
+- [CHEATSHEET.md](./CHEATSHEET.md) — Aito query reference
+- `notebooks/` — public reproducibility layer (pending)
+- `ADRs/` — six method decisions (pending)

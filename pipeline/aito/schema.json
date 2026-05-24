@@ -1,0 +1,56 @@
+{
+  "_comment": "Aito schema for the companies table. Multi-market columns included from day 1 (market, exchange, currency, reporting_standard, filing_language) so non-US data slots in without migration. Verify against current Aito schema syntax before loading; see CHEATSHEET.md.",
+  "schema": {
+    "companies": {
+      "type": "table",
+      "columns": {
+        "ticker":                       { "type": "String" },
+        "vintage_year":                 { "type": "Int" },
+        "vintage_date":                 { "type": "String" },
+        "company_name":                 { "type": "String" },
+
+        "market":                       { "type": "String" },
+        "exchange":                     { "type": "String" },
+        "currency":                     { "type": "String" },
+        "reporting_standard":           { "type": "String" },
+        "filing_language":              { "type": "String" },
+
+        "sector":                       { "type": "String" },
+        "industry":                     { "type": "String" },
+        "market_cap_bucket":            { "type": "String" },
+
+        "pe_ratio":                     { "type": "Decimal" },
+        "pb_ratio":                     { "type": "Decimal" },
+        "ev_ebitda":                    { "type": "Decimal" },
+        "roic_5y_avg":                  { "type": "Decimal" },
+        "gross_margin":                 { "type": "Decimal" },
+        "operating_margin":             { "type": "Decimal" },
+        "revenue_cagr_5y":              { "type": "Decimal" },
+        "debt_to_equity":               { "type": "Decimal" },
+        "years_public":                 { "type": "Int" },
+        "founder_still_ceo":            { "type": "Boolean" },
+
+        "market_position":              { "type": "String" },
+        "moat_type":                    { "type": "String" },
+        "moat_strength":                { "type": "String" },
+        "market_quality":               { "type": "String" },
+        "leadership_quality":           { "type": "Int" },
+        "capital_allocation":           { "type": "Int" },
+        "strategic_clarity":            { "type": "Int" },
+        "execution_track_record":       { "type": "Int" },
+
+        "market_position_rationale":    { "type": "Text", "analyzer": "english" },
+        "moat_rationale":               { "type": "Text", "analyzer": "english" },
+        "market_quality_rationale":     { "type": "Text", "analyzer": "english" },
+        "leadership_rationale":         { "type": "Text", "analyzer": "english" },
+
+        "outcome_bucket":               { "type": "String" },
+        "survived_intact":              { "type": "Boolean" },
+        "terminal_event":               { "type": "String" },
+        "total_return_pct_local":       { "type": "Decimal" },
+        "total_return_pct_usd":         { "type": "Decimal" },
+        "window_years":                 { "type": "Decimal" }
+      }
+    }
+  }
+}

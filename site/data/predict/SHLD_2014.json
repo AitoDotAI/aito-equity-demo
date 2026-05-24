@@ -1,0 +1,54 @@
+{
+  "_note": "Placeholder values pending pipeline run. Sears Holdings filed Chapter 11 in October 2018.",
+  "ticker": "SHLD",
+  "vintage": 2014,
+  "company_name": "Sears Holdings",
+  "exchange": "NASDAQ",
+  "sector": "general merchandise retail",
+  "market_cap": "$4.5B",
+  "vintage_label": "January 2014",
+  "window_label": "twelve-year",
+  "grades": [
+    {
+      "label": "Market Position",
+      "value": "Lagging",
+      "pip_filled": 1,
+      "pip_total": 5,
+      "evidence": "Share losses to Amazon, Walmart, Target across most categories. The 10-K acknowledges 'we have experienced declining sales' and accelerating store closures."
+    },
+    {
+      "label": "Moat Type & Strength",
+      "value": "Real estate · narrow",
+      "pip_filled": 1,
+      "pip_total": 5,
+      "evidence": "No durable competitive advantage in retail operations. Some value in real-estate portfolio, but management is monetising rather than reinvesting in core."
+    },
+    {
+      "label": "Market Quality",
+      "value": "Disrupted",
+      "pip_filled": 1,
+      "pip_total": 5,
+      "evidence": "Department-store category in secular decline. E-commerce share growing >20% per year; foot traffic to malls falling. The 10-K's risk factors list ten variants of the same observation."
+    },
+    {
+      "label": "Leadership Quality",
+      "value": "Financial engineer · 2/5",
+      "pip_filled": 2,
+      "pip_total": 5,
+      "evidence": "Eddie Lampert (CEO / largest shareholder) emphasises financial re-engineering and asset spinoffs over merchandising. Capital allocation prioritises buybacks and real-estate carve-outs."
+    }
+  ],
+  "prediction": {
+    "confidence": "HIGH",
+    "peak": "Disaster",
+    "buckets": [
+      { "label": "Disaster", "range": "−50%+", "prob": 0.612 },
+      { "label": "Poor", "range": "−50–0%", "prob": 0.241 },
+      { "label": "Market", "range": "0–100%", "prob": 0.097 },
+      { "label": "Good", "range": "100–300%", "prob": 0.038 },
+      { "label": "Great", "range": "300%+", "prob": 0.012 }
+    ]
+  },
+  "pullquote": "\"The engine saw a lagging position in a disrupted market with no durable moat and a financial-engineering management. It assigned 61% probability to the 'disaster' bucket. Sears filed for Chapter 11 in October 2018 — four years and ten months into the twelve-year window.\"",
+  "pullquote_attr": "From the demo notebook · 2014 vintage holdout"
+}

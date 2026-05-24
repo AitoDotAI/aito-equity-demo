@@ -1,100 +1,199 @@
-# CLAUDE.md — agent instructions for this demo
+# CLAUDE.md — agent instructions for aito-equity-demo
 
-This file is read by Claude Code (and similar agents) when working in this repo. Keep it tight; put narrative in `docs/` if it grows.
+This file is read by Claude Code (and similar agents) when working in this
+repo. Keep it tight; put narrative in `docs/` if it grows.
 
 ## What this is
 
-An Aito demo bootstrapped from `aito-demo-server/template/`. Production shape:
+A demo of the **unstructured-judgment → LLM grading → predictive database**
+pattern, vehicle = long-horizon equity research (Buffett-style: moat,
+position, market quality, leadership). Primary audience: a large quantitative trading firm. Secondary:
+public artifact (HN/LinkedIn/blog) between the two meetings.
 
-- **Python 3.12 + FastAPI + uvicorn** backend (`src/app.py`)
-- **Next.js 16 static export** frontend (`frontend/` → `frontend/out/`)
-- **One uvicorn process** serves both `/api/*` and `/` (via FastAPI's `StaticFiles(html=True)` mount at the bottom of `app.py`)
-- **Aito as data backend** — no other DB
+**Deployment target:** static site at `equity.aito.ai`, served via the
+`aito-demos-unified` platform alongside the other `*.aito.ai` demos.
 
-This demo runs in `aito-demos-unified` (one container, all demos), behind nginx routing by `Host` header, at `<demo-name>.aito.ai`.
+**The demo is the methodology.** The numbers in the UI come from real
+Aito queries against real data — placeholder JSON in `site/data/` exists
+only for the period between repo bootstrap and the first pipeline run.
+
+## Stack
+
+This demo **deviates from the demo-server default** (which is FastAPI +
+Next.js with a shared shell). The equity demo has its own editorial
+visual identity (single-file HTML, Fraunces / Source Serif 4 type, paper
+texture, double-rule dividers) and no need for a runtime backend.
+
+| Layer | Lives at | Notes |
+|---|---|---|
+| Data pipeline | `pipeline/` (Python 3.12) | Stages: universe → filings → extract → outcomes → load → precompute |
+| Static site | `site/index.html` + `site/data/*.json` | Single-file HTML with inline CSS/JS; fetches JSON at runtime |
+| Health stub | `src/app.py` (FastAPI, ~30 lines) | Serves `site/` + `/health` + `/api/health`. The aito-demos-unified platform expects a uvicorn process per demo; this stub satisfies that contract. **No /api/* routes are added here.** |
+| Aito | external | Predictive database; pipeline writes to it, then precomputes query results to JSON |
+
+There is **no request-time Aito call**. Every value the user sees in the
+browser was precomputed by `./do pipeline precompute` and written to
+`site/data/`. This is intentional:
+
+- API key never reaches the browser
+- Demo works offline (after build)
+- Reproducible from the four notebooks
+- Deploy is just a tarball of `site/`
 
 ## Conventions enforced by the platform — DO NOT drift
 
-The aito-demo-server platform (`/home/arau/episto/src/aito-demo-server/`) generates the Dockerfile, nginx config, and supervisord config from `demos.config.yaml`. It assumes this demo:
+| Convention | Lives at |
+|---|---|
+| Health stub entry | `src/app.py` defines `app: FastAPI` |
+| Static mount | `app.mount("/", StaticFiles(directory="site", html=True))` — must be LAST so it doesn't shadow `/health` |
+| `/health` | Returns 200 cheaply, no Aito call |
+| `/api/health` | Returns 200 + `backend: "static-only"` |
+| Lockfile | `uv.lock` committed (`uv sync --frozen` in build) |
+| Env contract | `AITO_API_URL`, `AITO_API_KEY` (pipeline), `ANTHROPIC_API_KEY` (extraction) |
 
-| Convention | Lives at | Don't change without coordinating the platform |
-|---|---|---|
-| Backend entry | `src/app.py` defines `app: FastAPI` | The platform runs `uvicorn src.app:app --host 0.0.0.0 --port ${PORT}` |
-| Frontend output | `frontend/out/` after `npx next build` | The platform's `build.frontend_build` runs `cd frontend && npm ci && npx next build` |
-| Static mount | `app.mount("/", StaticFiles(...))` at the END of `src/app.py` | Must be last so it doesn't shadow `/api/*` |
-| `/health` | Returns 200 cheaply, no Aito call | Platform's nginx routes `<demo>.aito.ai/health` here |
-| `/api/health` | Returns 200 + `aito_connected: bool` + `aito_url` | Used for readiness; OK if it touches Aito |
-| Lockfiles | `uv.lock` + `frontend/package-lock.json` committed | Build uses `uv sync --frozen` + `npm ci` |
-| Env contract | `AITO_API_URL` + `AITO_API_KEY` | Platform remaps from `AITO_<NAME>_*` via demos.config.yaml's `env:` block |
-
-If you genuinely need to break one of these, update both this demo AND the platform's expectations in the same PR.
+If you need to break one of these, update both this demo AND the platform's
+expectations in the same PR (the platform's `demos.config.yaml` may need
+adjustment — there's no per-demo Next.js build for this one).
 
 ## Local dev
 
 ```bash
-./do install    # uv sync + npm install (one-time)
-./do dev        # uvicorn on :8401 + next dev on :3000, hot-reload both
-./do build      # produces frontend/out/ (only needed for prod-shape smoke test)
-./do backend    # production-shape: uvicorn only, serves static if frontend/out/ exists
-./do test-book  # run booktest suite (snapshot tests, see CHEATSHEET.md)
-./do screenshot-teaser  # render assets/teaser.html → assets/teaser.png (1200×630)
-./do screenshot-pages   # full-page screenshots of key paths (regression)
-./do inspect-mobile     # iPhone-sized screenshots for layout review
+./do install                     # uv sync + playwright browser install (one-time)
+./do serve                       # uvicorn stub → http://localhost:8401
+
+# Pipeline (each stage feeds the next; all skeletal in v1):
+./do pipeline universe           # → data/universe.csv
+./do pipeline filings            # → data/10k_excerpts/
+./do pipeline extract            # → data/llm_features.csv  (needs ANTHROPIC_API_KEY)
+./do pipeline outcomes           # → data/outcomes.csv
+./do pipeline load               # push to Aito           (needs AITO_API_URL + AITO_API_KEY)
+./do pipeline precompute         # → site/data/*.json
+./do pipeline all                # the lot, in order
+
+./do test                        # pytest tests/ + book/
+./do test-book                   # booktest snapshots only
+
+./do screenshot-teaser           # assets/teaser.html → assets/teaser.png (1200×630)
+./do screenshot-pages            # full-page screenshots of /
+./do inspect-mobile              # iPhone-sized screenshots of /
 ```
 
-## Where to start when building this demo
+## Where to extend
 
-1. **Replace `src/app.py`'s `/api/example`** — that's the placeholder. Add your routes. Each one delegates to Aito via the shared `AitoClient` (`src/aito_client.py`). Keep handlers thin; factor logic to `src/<thing>_service.py` as needed.
-2. **Replace `frontend/app/page.tsx`** — the placeholder fetches `/api/example` and renders the result via the shell (`TopBar` + `AitoPanel`). Replace with your real UI. Build your own `AitoPanelConfig` for each page.
-3. **The shell components in `frontend/components/shell/`** (`TopBar`, `Nav`, `AitoPanel`, `ErrorState`, `Analytics`, `LatencyBadge`) come from accounting's reference impl. Generalize / extend as needed; don't remove the AitoPanel — it's the visual identity of "Aito demo".
-4. **The prediction primitives in `frontend/components/prediction/`** (`PredictionBadge`, `ConfidenceBar`, `WhyTooltip`, `PredictedField`, `WhyCards`, `LiftHint`) — drop into your UI wherever you display an Aito prediction. They render the calibrated-confidence + $why-explanation pattern uniformly across demos.
-5. **`frontend/lib/aito.ts`** is for browser-side Aito calls (rare); the default pattern is browser → FastAPI (`/api/*`) → Aito via `AitoClient`. `frontend/lib/api.ts`'s `apiFetch` is the standard wrapper (handles error envelope + emits latency events for LatencyBadge).
-6. **Replace `assets/teaser.html` + `assets/teaser.png`** — the landing page (aito.ai) thumbnails come from here.
-7. **Update `README.md`** to describe what this demo actually is.
-8. **Walk `CHECKLIST.md`** before declaring done.
+1. **Pipeline stages** (`pipeline/`) — all stages currently raise `NotImplementedError`.
+   The protocols (`UniverseSource`, `FilingFetcher`, `PriceSource`) and the
+   data shapes (`UniverseEntry`, `Filing`, `TerminalOutcome`) are defined;
+   implementing US-only concrete sources is v1 scope.
+
+2. **Static site** (`site/index.html`) — descended from `aito-equity-demo.html`
+   (kept at repo root as the design source-of-truth). All data points are
+   bound to JSON files in `site/data/`; visual layout / CSS rarely needs
+   touching. The four views (Company File / Thesis / Analogues / Methodology)
+   map 1:1 to four Aito query types (predict / relate / match / static).
+
+3. **Aito schema** (`pipeline/aito/schema.json`) — includes multi-market
+   columns (market, exchange, currency, reporting_standard, filing_language)
+   from day 1, even though v1 data is US-only. **Don't strip these.** They
+   exist so a later Finnish / Nordic / EU dataset slots in without a
+   migration.
+
+4. **Notebooks** (`notebooks/`) — public reproducibility layer; each notebook
+   reproduces one view's underlying data. Add when the pipeline lands.
+
+5. **ADRs** (`ADRs/`) — six method-card decisions to document; write last,
+   when methodology has settled.
+
+## Multi-market: US-only data, generic shape
+
+v1 ships US-only data (S&P 500 vintages). The architecture is generic so
+Finnish (OMX Helsinki), Nordic, or EU datasets can be added without
+schema migration. What's already done:
+
+- Schema columns: `market`, `exchange`, `currency`, `reporting_standard`,
+  `filing_language` are in `pipeline/aito/schema.json` from day 1
+- Tickers Yahoo-namespaced (`NOKIA.HE`, `VOLV-B.ST`) so keys stay unique
+- Sector taxonomy is GICS only (works globally; don't mix in ICB)
+- `UniverseSource` / `FilingFetcher` / `PriceSource` are Protocols;
+  v1 concrete: `SP500WikipediaSource`, `EDGARFetcher`, `YFinancePriceSource`
+- Non-US concrete sources are `NotImplementedError` stubs
+
+What's NOT done (deliberately):
+- Non-US universe sources
+- Prompt translation (v1 LLM prompts are English; Finnish filings would
+  need empirical eval first — Sonnet handles non-English but quality drifts)
+- Cross-currency outcome model (`total_return_pct_local` + `total_return_pct_usd`
+  columns exist; pipeline only fills `_usd` for v1)
 
 ## When you write new code
 
-- **Aito queries** — see `CHEATSHEET.md` for the standard predict / match / search patterns. Don't reinvent wheels.
-- **Test snapshots** — non-deterministic Aito outputs (probabilities, similarities) are easier to assert against with `booktest` than `pytest assert ==`. See `tests/test_aito_book.py`.
-- **Caching** — if you call Aito on every request, the demo feels slow. Cache cheap derivatives in-memory (`functools.lru_cache` for pure-input cases) or use a small disk cache for warmup. Check what `aito-accounting-demo/src/cache.py` does for the established pattern.
-- **Logging** — `print()` works; supervisord forwards stdout/stderr to Azure Log Analytics. Structured logging optional; if used, tag with `demo: <name>` for the unified-container log split.
+- **Aito queries** — see `CHEATSHEET.md` for the standard predict / match /
+  relate / search patterns. The pipeline's `pipeline/aito/queries.py` is
+  where the predict / relate / match calls land.
+- **Test snapshots** — non-deterministic Aito outputs (probabilities,
+  similarities) are easier to assert against with `booktest` than
+  `pytest assert ==`. See `book/test_01_aito_schema_book.py` for the pattern.
+- **Caching** — the precomputed-JSON design means there's no per-request
+  cache problem; cache happens at pipeline-run time (everything is
+  one-shot). For pipeline runs themselves, cache 10-K downloads to
+  `data/10k_excerpts/` — EDGAR rate-limits at 10 req/s and re-downloads
+  are wasteful.
+- **Logging** — `print()` works; supervisord forwards stdout/stderr to
+  Azure Log Analytics. Pipeline stages are batch-mode so print-per-row
+  is fine.
 
 ## Common pitfalls
 
-- **`uv sync --frozen` fails** → `uv.lock` is out of date; run `uv lock` and re-commit.
-- **Static export errors** → check `frontend/next.config.ts` still has `output: "export"` in production; Next.js features like Image Optimization, ISR, or server components don't work with static export.
-- **`/api/*` 404 in production but works in dev** → likely added a route AFTER the `app.mount` line; the mount shadows it. Move the route above the mount.
-- **`/api/*` works in production but 404 in dev** → the dev rewrite in `next.config.ts` proxies to `BACKEND_PORT` (default 8401); make sure your backend is on the matching port.
-- **CORS errors** → for direct-from-browser Aito calls, set CORS on the Aito instance (not in FastAPI). For same-origin calls (recommended), no CORS needed.
+- **`uv sync --frozen` fails** → `uv.lock` is out of date; run `uv lock`
+  and re-commit.
+- **Site renders blank / "data load failed" banner** → `site/data/*.json`
+  missing or malformed. Run `./do pipeline precompute` to regenerate, or
+  copy the placeholder JSONs from a known-good commit.
+- **`/api/*` 404 unexpectedly** → you've added a route after the
+  `app.mount` line in `src/app.py`. The mount shadows everything below.
+  But: this demo's design says **don't add /api/* routes at all** — if you
+  reach for one, ask whether the data should be precomputed instead.
+- **Pipeline stage fails with `NotImplementedError`** → that stage is
+  scaffolded but not implemented yet; see `aito-equity-demo-TASK.md` for
+  the v1 build order.
+- **EDGAR returns 403 / 429** → User-Agent header missing or rate limit;
+  enforce 10 req/s and provide a real contact email in the UA.
+- **Survivorship bias** — bankrupt companies stop filing. The
+  `EDGARFetcher` returns `[]` rather than failing; the caller must decide
+  whether to drop, grade the last-available 10-K, or flag the row. Don't
+  silently drop without noting in the ADR.
 
 ## Releasing a change
 
-The aito-demo-server platform tracks each demo's `main` branch by default. So:
+aito-demo-server tracks each demo's `main` branch by default. So:
 
 1. PR your change in this repo
 2. Merge to `main`
-3. In aito-azure: `./do deploy-demos` — rebuilds the unified image (your latest `main` is pulled at build time via `git ls-remote`) and updates the Web App
+3. In aito-azure: `./do deploy-demos` — rebuilds the unified image (latest
+   `main` is pulled at build time via `git ls-remote`) and updates the
+   Web App
 
-If you want to deploy a feature branch for testing without merging, in aito-demo-server change this demo's `ref:` in `demos.config.yaml` from `main` to your branch name temporarily, then revert + rebuild after merge.
+Note: the platform may need adjustment for this demo since there's no
+Next.js build step. If `demos.config.yaml`'s `build.frontend_build` for
+this demo still says `cd frontend && npm ci && npx next build`, it needs
+to become a no-op (or `cd .` placeholder). Coordinate before deploying.
 
 ## Files you can ignore as an agent
 
-- `frontend/.next/`, `frontend/out/`, `frontend/node_modules/`, `.venv/` — build artifacts / installed deps
-- `books/` — booktest output, regenerated by tests
-- `*.lock` files — managed by `uv` and `npm`, don't hand-edit
-
-## Latency badge — how it works
-
-`apiFetch` (frontend/lib/api.ts) reads the `X-Aito-Ms` / `X-Aito-Calls` / `X-Aito-Ops` response headers from every `/api/*` response. `LatencyBadge` subscribes to those events and shows the last Aito round-trip in the topbar.
-
-`src/app.py`'s middleware sets those headers based on `aito.last_call` (the AitoClient records the most recent call's op + ms). If you bypass `AitoClient` (e.g., call Aito directly with raw httpx in a route), set the headers yourself in the response so the badge keeps working.
+- `.venv/`, `__pycache__/` — local installs / caches
+- `data/` (except its `.gitkeep`) — pipeline-generated; not committed
+- `books/.out/` — booktest output, regenerated by tests
+- `*.lock` — managed by `uv`, don't hand-edit
 
 ## Pointers
 
+- [aito-equity-demo-TASK.md](./aito-equity-demo-TASK.md) — the full task
+  brief: methodology, data pipeline, four views, demo moments, scope limits.
+- [aito-equity-demo.html](./aito-equity-demo.html) — the design
+  source-of-truth (single-file editorial prototype). `site/index.html` is
+  the descended implementation.
 - [CHEATSHEET.md](./CHEATSHEET.md) — Aito query cookbook
-- [CHECKLIST.md](./CHECKLIST.md) — pre-launch checklist (analytics, product sheet, teaser, etc.)
-- `/home/arau/episto/src/aito-demo-server/README.md` — the platform that hosts this demo
-- `/home/arau/episto/src/aito-demo-server/aito-demo-framework.md` — the shared design system (850 lines, covers shell, prediction, design tokens, analytics, testing). Read this when you need to extend the patterns.
-- `/home/arau/episto/src/aito-azure/do` — deploy mechanics (don't run from here; this demo is one of N)
-- The reference impl for everything in here: `/home/arau/episto/src/aito-accounting-demo/`
+- [CHECKLIST.md](./CHECKLIST.md) — pre-launch checklist
+- `/home/arau/episto/src/aito-demo-server/README.md` — the platform that
+  hosts this demo
+- `/home/arau/episto/src/aito-azure/do` — deploy mechanics (don't run from
+  here; this demo is one of N)

@@ -1,13 +1,37 @@
 [project]
-name = "predictive-equity"
+name = "aito-equity-demo"
 version = "0.1.0"
-description = "Aito demo template — replace this name + description for your demo"
+description = "Predictive equity research — LLM-extracted qualitative features feeding the Aito predictive database. Buffett thesis quantified, point-in-time, multi-vintage."
 requires-python = ">=3.12"
 dependencies = [
+    # ── Static-serving stub ──────────────────────────────────────
+    # The demo has no runtime backend; FastAPI is here only to satisfy the
+    # aito-demos-unified platform contract (one uvicorn process per demo,
+    # serving /health and the static site).
     "fastapi>=0.110,<1",
     "uvicorn[standard]>=0.29,<1",
-    "httpx>=0.27,<1",
-    "python-dotenv>=1.0,<2",
+
+    # ── Pipeline shared ──────────────────────────────────────────
+    "httpx>=0.27,<1",            # EDGAR + Aito HTTP
+    "python-dotenv>=1.0,<2",     # AITO_API_KEY etc.
+    "pandas>=2.2,<3",            # data wrangling between stages
+
+    # ── LLM extraction (qualitative grading) ─────────────────────
+    "anthropic>=0.40,<1",
+
+    # ── Price + survival ─────────────────────────────────────────
+    "yfinance>=0.2.40,<1",
+
+    # ── Universe construction (Wikipedia constituent parsing) ────
+    "beautifulsoup4>=4.12,<5",
+    "lxml>=5.0,<6",
+
+    # ── Screenshots (replaces Node playwright-core) ──────────────
+    # Pinned to the playwright Python release whose bundled browser revision
+    # matches nix's playwright-driver.browsers (chromium 1169). If you bump
+    # nix, bump this in lockstep — version skew here produces
+    # "Executable doesn't exist" failures at screenshot time.
+    "playwright>=1.52,<1.53",
 ]
 
 [dependency-groups]

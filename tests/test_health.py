@@ -1,8 +1,8 @@
-"""Plain pytest unit tests — no Aito calls, no snapshots.
+"""Plain pytest unit tests for the health-stub.
 
-Use this file for things that don't depend on external services.
-For Aito-dependent tests, use booktest in book/ (snapshot pattern keeps
-them fast + deterministic).
+This demo's `src/app.py` is a static-serving stub with no Aito client;
+the health endpoints just verify the uvicorn process is up. All real
+behaviour lives in the pipeline (see `pipeline/`) and the static site.
 """
 
 from fastapi.testclient import TestClient
@@ -12,12 +12,15 @@ from src.app import app
 client = TestClient(app)
 
 
-def test_health_endpoint_returns_ok():
-    """/health is the cheap liveness probe nginx routes to.
-
-    Must stay cheap (no Aito call) and stable — external monitoring depends
-    on it.
-    """
+def test_health_endpoint_returns_ok() -> None:
     r = client.get("/health")
     assert r.status_code == 200
     assert r.json() == {"ok": True}
+
+
+def test_api_health_endpoint_returns_ok() -> None:
+    r = client.get("/api/health")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["status"] == "ok"
+    assert body["backend"] == "static-only"

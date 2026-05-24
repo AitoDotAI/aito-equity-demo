@@ -1,0 +1,55 @@
+{
+  "_note": "Placeholder analogues pending pipeline run.",
+  "focal": { "ticker": "SHLD", "vintage": 2014, "name": "Sears Holdings" },
+  "matches": [
+    {
+      "ticker": "JCP",
+      "vintage": 2014,
+      "name": "J. C. Penney",
+      "similarity": 0.84,
+      "description": "Department-store peer in the same secular-decline regime. Lagging position, no durable moat, repeated management turnover.",
+      "outcome": { "text": "bankrupt 2020", "window": "'14→'20", "sentiment": "negative" }
+    },
+    {
+      "ticker": "BBY",
+      "vintage": 2010,
+      "name": "Best Buy",
+      "similarity": 0.71,
+      "description": "Specialty retail facing e-commerce disruption — but with execution turnaround under Hubert Joly. Counter-example to the Sears thesis.",
+      "outcome": { "text": "+260%", "window": "'10→'22", "sentiment": "positive", "annotation": "(execution turnaround)" }
+    },
+    {
+      "ticker": "RSH",
+      "vintage": 2010,
+      "name": "RadioShack",
+      "similarity": 0.69,
+      "description": "Specialty electronics retail, eroding scale, real-estate-heavy footprint, financial engineering rather than operational reinvention.",
+      "outcome": { "text": "bankrupt 2015", "window": "'10→'15", "sentiment": "negative" }
+    },
+    {
+      "ticker": "KMRT",
+      "vintage": 1999,
+      "name": "Kmart",
+      "similarity": 0.66,
+      "description": "Discount retail, scale erosion vs. Walmart/Target, no merchandising differentiation. Pre-Sears-merger Kmart trajectory.",
+      "outcome": { "text": "bankrupt 2002", "window": "'99→'02", "sentiment": "negative" }
+    },
+    {
+      "ticker": "BORDERS",
+      "vintage": 2008,
+      "name": "Borders Group",
+      "similarity": 0.63,
+      "description": "Bricks-and-mortar book retail, Amazon disruption, late digital pivot. Pattern: dominant category share in a disrupted category.",
+      "outcome": { "text": "liquidated 2011", "window": "'08→'11", "sentiment": "negative" }
+    },
+    {
+      "ticker": "M",
+      "vintage": 2014,
+      "name": "Macy's",
+      "similarity": 0.61,
+      "description": "Department-store peer. Stronger merchandising and digital pivot than Sears; survived but no durable outperformance.",
+      "outcome": { "text": "−45%", "window": "'14→'26", "sentiment": "negative" }
+    }
+  ],
+  "pullquote_html": "Five of the six closest analogues to SHLD-2014 ended in bankruptcy or substantial value destruction. The one positive outcome (Best Buy) required an explicit operational reinvention — exactly what was absent in Sears's <em>leadership_quality</em> grade."
+}

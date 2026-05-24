@@ -1,94 +1,100 @@
 #!/usr/bin/env bash
-# Local-dev wrapper for the demo template. Replace name + commands as your
-# demo grows; the platform only requires that production `uvicorn src.app:app`
-# can be started and that `frontend/out/` exists for static export.
+# Local-dev wrapper for aito-equity-demo.
 #
-#   ./do install                  uv sync + npm install (one-time after bootstrap)
-#   ./do dev                      run backend (uvicorn) + frontend (next dev)
-#   ./do build                    build the frontend static export (frontend/out/)
-#   ./do backend                  run backend only (foreground; matches production shape)
-#   ./do test                     run all tests (pytest discovers book/ + tests/)
-#   ./do test-book                run booktest snapshot tests only (book/)
-#   ./do screenshot-teaser        render assets/teaser.html → assets/teaser.png (1200×630)
-#   ./do screenshot-pages [...]   desktop full-page screenshots of given paths
-#   ./do inspect-mobile [...]     iPhone-sized screenshots of given paths
-#   ./do clean                    wipe build artifacts
+# Architecture: Python data pipeline → site/data/*.json → static site/index.html.
+# A minimal uvicorn stub (src/app.py) serves the static site and a /health endpoint
+# to satisfy the aito-demos-unified platform contract; there is no runtime backend.
+#
+#   ./do install              uv sync + playwright browser install (one-time)
+#   ./do serve                run the static-serving stub (uvicorn on :8401)
+#
+#   ── Pipeline (run in this order; each stage produces input for the next) ──
+#   ./do pipeline universe    reconstruct point-in-time index constituents → data/universe.csv
+#   ./do pipeline filings     fetch 10-K + DEF 14A before each vintage → data/10k_excerpts/
+#   ./do pipeline extract     LLM grade qualitative features → data/llm_features.csv
+#                             (requires ANTHROPIC_API_KEY)
+#   ./do pipeline outcomes    forward returns + survival → data/outcomes.csv
+#   ./do pipeline load        push merged companies table → Aito instance
+#                             (requires AITO_API_URL + AITO_API_KEY)
+#   ./do pipeline precompute  emit site/data/*.json from real Aito queries
+#   ./do pipeline all         run every stage in order
+#
+#   ── Tests ────────────────────────────────────────────────────────────────
+#   ./do test                 run pytest (tests/ + book/)
+#   ./do test-book            run booktest snapshot tests only (book/)
+#
+#   ── Visuals ──────────────────────────────────────────────────────────────
+#   ./do screenshot-teaser    render assets/teaser.html → assets/teaser.png (1200×630)
+#   ./do screenshot-pages     full-page desktop screenshots of /
+#   ./do inspect-mobile       iPhone-sized screenshots of /
+#
+#   ./do clean                wipe build artifacts (.pytest_cache, scripts/output)
 
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-BACKEND_PORT="${BACKEND_PORT:-8401}"
-FRONTEND_PORT="${FRONTEND_PORT:-3000}"
+PORT="${PORT:-8401}"
 
 die() { echo "✗ $*" >&2; exit 1; }
 say() { echo "→ $*"; }
 
 cmd_install() {
   command -v uv >/dev/null 2>&1 || die "uv not found (see https://docs.astral.sh/uv/)"
-  command -v npm >/dev/null 2>&1 || die "npm not found"
   say "uv sync"
   uv sync
-  say "npm install (frontend)"
-  ( cd frontend && npm install --no-audit --no-fund )
+  say "playwright install chromium (for screenshot scripts)"
+  uv run playwright install chromium
 }
 
-cmd_build() {
-  ( cd frontend && NODE_ENV=production npx next build )
-  say "frontend/out/ ready ($(find frontend/out -type f | wc -l) files)"
+cmd_serve() {
+  say "site → http://localhost:${PORT} (serving site/ via uvicorn stub)"
+  exec uv run uvicorn src.app:app --host 0.0.0.0 --port "$PORT" --reload
 }
 
-cmd_backend() {
-  exec uv run uvicorn src.app:app --host 0.0.0.0 --port "$BACKEND_PORT" --reload
+cmd_pipeline() {
+  local stage="${1:-help}"
+  shift || true
+  case "$stage" in
+    universe)   uv run python -m pipeline.universe.sp500 "$@" ;;
+    filings)    uv run python -m pipeline.filings.edgar "$@" ;;
+    extract)    uv run python -m pipeline.extraction.extract "$@" ;;
+    outcomes)   uv run python -m pipeline.outcomes "$@" ;;
+    load)       uv run python -m pipeline.aito.load "$@" ;;
+    precompute) uv run python -m pipeline.aito.queries "$@" ;;
+    all)
+      say "universe"   && cmd_pipeline universe
+      say "filings"    && cmd_pipeline filings
+      say "extract"    && cmd_pipeline extract
+      say "outcomes"   && cmd_pipeline outcomes
+      say "load"       && cmd_pipeline load
+      say "precompute" && cmd_pipeline precompute
+      ;;
+    help|-h|--help|"")
+      sed -n '/── Pipeline/,/── Tests/p' "$0" | sed -n '/^#/p'
+      ;;
+    *) die "unknown pipeline stage: $stage (run './do pipeline help')" ;;
+  esac
 }
 
-cmd_dev() {
-  [ -d frontend/node_modules ] || cmd_install
-  say "backend → http://localhost:${BACKEND_PORT} (uvicorn, hot-reload)"
-  say "frontend → http://localhost:${FRONTEND_PORT} (next dev, proxies /api/* → backend)"
-  ( BACKEND_PORT="$BACKEND_PORT" uv run uvicorn src.app:app --host 127.0.0.1 --port "$BACKEND_PORT" --reload ) &
-  BACK=$!
-  trap 'kill $BACK 2>/dev/null || true' EXIT INT TERM
-  ( cd frontend && BACKEND_PORT="$BACKEND_PORT" npx next dev -p "$FRONTEND_PORT" )
-}
+cmd_test()      { exec uv run pytest "$@"; }
+cmd_test_book() { exec uv run pytest book/ "$@"; }
 
-cmd_test() {
-  exec uv run pytest "$@"
-}
-
-cmd_test_book() {
-  # booktest tests live under book/. First run records httpx interactions
-  # into books/; subsequent runs replay. Update snapshots with --update-snapshots.
-  exec uv run pytest book/ "$@"
-}
-
-cmd_screenshot_teaser() {
-  [ -d frontend/node_modules ] || cmd_install
-  ( cd frontend && node scripts/screenshot-teaser.cjs )
-}
-
-cmd_screenshot_pages() {
-  [ -d frontend/node_modules ] || cmd_install
-  ( cd frontend && node scripts/screenshot-pages.cjs "$@" )
-}
-
-cmd_inspect_mobile() {
-  [ -d frontend/node_modules ] || cmd_install
-  ( cd frontend && node scripts/inspect-mobile.cjs "$@" )
-}
+cmd_screenshot_teaser() { uv run python -m scripts.screenshot_teaser "$@"; }
+cmd_screenshot_pages()  { uv run python -m scripts.screenshot_pages "$@"; }
+cmd_inspect_mobile()    { uv run python -m scripts.inspect_mobile "$@"; }
 
 cmd_clean() {
-  rm -rf frontend/.next frontend/out .pytest_cache frontend/scripts/output/*
+  rm -rf .pytest_cache scripts/output/*
   find . -type d -name __pycache__ -prune -exec rm -rf {} +
   say "cleaned"
 }
 
-cmd_help() { sed -n '1,20p' "$0" | sed -n '/^#/p'; }
+cmd_help() { sed -n '1,40p' "$0" | sed -n '/^#/p'; }
 
 case "${1:-help}" in
   install)             shift; cmd_install "$@" ;;
-  dev)                 shift; cmd_dev "$@" ;;
-  build)               shift; cmd_build "$@" ;;
-  backend)             shift; cmd_backend "$@" ;;
+  serve)               shift; cmd_serve "$@" ;;
+  pipeline)            shift; cmd_pipeline "$@" ;;
   test)                shift; cmd_test "$@" ;;
   test-book)           shift; cmd_test_book "$@" ;;
   screenshot-teaser)   shift; cmd_screenshot_teaser "$@" ;;
