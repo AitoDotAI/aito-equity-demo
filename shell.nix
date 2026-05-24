@@ -11,6 +11,12 @@ pkgs.mkShell {
     python
     pkgs.uv
 
+    # Native libs the data-science wheels (numpy / pandas / lxml / yfinance)
+    # link against at runtime. Without these on LD_LIBRARY_PATH, imports fail
+    # with "libz.so.1: cannot open shared object file".
+    pkgs.zlib
+    pkgs.stdenv.cc.cc.lib
+
     # Nix-managed Playwright browsers (FHS-shimmed so they find system libs
     # like libnspr4.so that bare playwright-Python downloads do not).
     # The playwright Python package version in pyproject.toml is pinned to
@@ -32,6 +38,9 @@ pkgs.mkShell {
     if [ -f pyproject.toml ]; then
       uv sync --quiet 2>/dev/null || true
     fi
+
+    # Data-science wheels need libz + libstdc++ at runtime.
+    export LD_LIBRARY_PATH="${pkgs.zlib}/lib:${pkgs.stdenv.cc.cc.lib}/lib:''${LD_LIBRARY_PATH:-}"
 
     # Use nix-managed Playwright browsers; skip the playwright Python
     # auto-download (which can't write to nix-store and would version-skew
