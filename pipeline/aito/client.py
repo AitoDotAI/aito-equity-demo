@@ -13,7 +13,9 @@ from typing import Any
 import httpx
 from dotenv import load_dotenv
 
-load_dotenv()
+# override=True so .env wins over placeholder exports from shell.nix
+# (which sets AITO_API_URL=http://localhost:8200 / AITO_API_KEY="" as defaults).
+load_dotenv(override=True)
 
 
 @dataclass(frozen=True)

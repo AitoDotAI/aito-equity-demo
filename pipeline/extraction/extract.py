@@ -48,7 +48,8 @@ from pydantic import BaseModel, Field
 
 from pipeline.extraction.sections import excerpt_for_filing
 
-load_dotenv()
+# override=True so .env wins over placeholder exports from shell.nix.
+load_dotenv(override=True)
 
 # On Azure OpenAI, the `model` argument is the *deployment name*, not the
 # base model id. Default to the deployment; allow --model override.

@@ -56,19 +56,12 @@ pkgs.mkShell {
       set +a
     fi
 
-    # Project env defaults
-    export AITO_API_URL="''${AITO_API_URL:-http://localhost:8200}"
-    export AITO_API_KEY="''${AITO_API_KEY:-}"
+    # Project env defaults. NOTE: do NOT export AITO_API_URL / AITO_API_KEY
+    # placeholders here — they would shadow the real values in .env (Python's
+    # load_dotenv(override=True) now defends against this, but leaving the
+    # placeholders out avoids the footgun entirely).
     export PYTHONDONTWRITEBYTECODE=1
     export PYTHONUNBUFFERED=1
-
-    # Remind if Aito key is missing
-    if [ -z "$AITO_API_KEY" ]; then
-      echo ""
-      echo "  AITO_API_KEY not set. Export it or add to .env"
-      echo "  export AITO_API_KEY=your-key-here"
-      echo ""
-    fi
 
     echo ""
     echo "aito-equity-demo — run ./do help for available commands"
