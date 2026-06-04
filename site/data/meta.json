@@ -1,12 +1,14 @@
 {
-  "observations": 509,
+  "observations": 1520,
   "features": 15,
-  "p50_latency_ms": 73,
+  "p50_latency_ms": 63,
   "training_runs": 0,
   "vintages": [
-    2017
+    2014,
+    2017,
+    2020
   ],
-  "vintages_label": "1 vintage year",
-  "window_years_default": 9,
+  "vintages_label": "3 vintage years",
+  "window_years_default": 12,
   "data_source_note": "S&P 500 historical constituents \u00b7 SEC EDGAR \u00b7 yfinance"
 }

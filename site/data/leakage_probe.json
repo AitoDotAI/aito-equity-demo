@@ -1,99 +1,81 @@
 {
   "vintages": [
-    2017
+    2014,
+    2017,
+    2020
   ],
   "features": [
+    {
+      "feature": "leadership_quality = 5",
+      "type": "qual",
+      "per_vintage": {
+        "2014": 1.81,
+        "2017": 2.06
+      },
+      "drift": 0.13,
+      "lift_mean": 1.94
+    },
+    {
+      "feature": "moat_type = network_effects",
+      "type": "qual",
+      "per_vintage": {
+        "2014": 1.76,
+        "2017": 1.67
+      },
+      "drift": 0.05,
+      "lift_mean": 1.72
+    },
+    {
+      "feature": "execution_track_record = 5",
+      "type": "qual",
+      "per_vintage": {
+        "2014": 1.58,
+        "2017": 1.75
+      },
+      "drift": 0.1,
+      "lift_mean": 1.66
+    },
     {
       "feature": "moat_type = switching_costs",
       "type": "qual",
       "per_vintage": {
-        "2017": 1.25
+        "2014": 1.27,
+        "2017": 1.54
       },
-      "drift": 0.0,
-      "lift_mean": 1.25
-    },
-    {
-      "feature": "market_position = dominant",
-      "type": "qual",
-      "per_vintage": {
-        "2017": 1.09
-      },
-      "drift": 0.0,
-      "lift_mean": 1.09
-    },
-    {
-      "feature": "market_quality = secular_growth",
-      "type": "qual",
-      "per_vintage": {
-        "2017": 1.08
-      },
-      "drift": 0.0,
-      "lift_mean": 1.08
-    },
-    {
-      "feature": "capital_allocation = 4",
-      "type": "qual",
-      "per_vintage": {
-        "2017": 1.05
-      },
-      "drift": 0.0,
-      "lift_mean": 1.05
-    },
-    {
-      "feature": "leadership_quality = 4",
-      "type": "qual",
-      "per_vintage": {
-        "2017": 1.04
-      },
-      "drift": 0.0,
-      "lift_mean": 1.04
-    },
-    {
-      "feature": "market_quality = stable",
-      "type": "qual",
-      "per_vintage": {
-        "2017": 1.0
-      },
-      "drift": 0.0,
-      "lift_mean": 1.0
+      "drift": 0.19,
+      "lift_mean": 1.4
     },
     {
       "feature": "moat_strength = wide",
       "type": "qual",
       "per_vintage": {
-        "2017": 1.0
+        "2014": 1.41,
+        "2017": 1.27
       },
-      "drift": 0.0,
-      "lift_mean": 1.0
+      "drift": 0.1,
+      "lift_mean": 1.34
     },
     {
-      "feature": "moat_strength = narrow",
+      "feature": "moat_type = cost_advantage",
       "type": "qual",
       "per_vintage": {
-        "2017": 1.0
+        "2014": 1.19,
+        "2017": 1.35
       },
-      "drift": 0.0,
-      "lift_mean": 1.0
+      "drift": 0.13,
+      "lift_mean": 1.27
     },
     {
-      "feature": "moat_type = brand",
+      "feature": "strategic_clarity = 5",
       "type": "qual",
       "per_vintage": {
-        "2017": 1.0
+        "2014": 1.37,
+        "2017": 1.19
       },
-      "drift": 0.0,
-      "lift_mean": 1.0
-    },
-    {
-      "feature": "strategic_clarity = 4",
-      "type": "qual",
-      "per_vintage": {
-        "2017": 1.0
-      },
-      "drift": 0.0,
-      "lift_mean": 1.0
+      "drift": 0.14,
+      "lift_mean": 1.28
     }
   ],
-  "drift_score": 0.0,
-  "interpretation": "Drift = (max \u2212 min) / mean lift across vintages, averaged over the top 10 features. Low values (< 0.5) suggest the LLM is not smuggling future knowledge into feature grades; high values (> 1.0) suggest unstable lifts \u2014 investigate the offending feature."
+  "drift_score": 0.12,
+  "interpretation": "Each lift is computed within a single vintage (exact group-by, not an engine estimate): P(great | feature) / P(great) among that vintage's companies. Drift = (max \u2212 min) / mean across vintages. Low drift (< 0.5) means a feature's predictive value is stable across time \u2014 evidence the LLM is grading from contemporaneous filings, not leaking hindsight. High drift flags a feature to investigate."
 }

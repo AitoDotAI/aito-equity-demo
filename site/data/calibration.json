@@ -2,66 +2,66 @@
   "deciles": [
     {
       "label": "D1",
-      "predicted": 0.024,
-      "actual": 0.024,
-      "n": 41
+      "predicted": 0.033,
+      "actual": 0.02,
+      "n": 50
     },
     {
       "label": "D2",
-      "predicted": 0.098,
-      "actual": 0.146,
-      "n": 41
+      "predicted": 0.101,
+      "actual": 0.16,
+      "n": 50
     },
     {
       "label": "D3",
-      "predicted": 0.156,
-      "actual": 0.122,
-      "n": 41
+      "predicted": 0.166,
+      "actual": 0.22,
+      "n": 50
     },
     {
       "label": "D4",
-      "predicted": 0.194,
-      "actual": 0.293,
-      "n": 41
+      "predicted": 0.222,
+      "actual": 0.3,
+      "n": 50
     },
     {
       "label": "D5",
-      "predicted": 0.245,
-      "actual": 0.244,
-      "n": 41
+      "predicted": 0.261,
+      "actual": 0.24,
+      "n": 50
     },
     {
       "label": "D6",
-      "predicted": 0.306,
-      "actual": 0.244,
-      "n": 41
+      "predicted": 0.305,
+      "actual": 0.32,
+      "n": 50
     },
     {
       "label": "D7",
-      "predicted": 0.352,
-      "actual": 0.317,
-      "n": 41
+      "predicted": 0.349,
+      "actual": 0.2,
+      "n": 50
     },
     {
       "label": "D8",
-      "predicted": 0.449,
-      "actual": 0.268,
-      "n": 41
+      "predicted": 0.406,
+      "actual": 0.38,
+      "n": 50
     },
     {
       "label": "D9",
-      "predicted": 0.533,
-      "actual": 0.512,
-      "n": 41
+      "predicted": 0.519,
+      "actual": 0.56,
+      "n": 50
     },
     {
       "label": "D10",
-      "predicted": 0.685,
-      "actual": 0.667,
-      "n": 48
+      "predicted": 0.718,
+      "actual": 0.64,
+      "n": 50
     }
   ],
-  "n_observations": 417,
-  "brier_score": 0.1757,
+  "n_observations": 500,
+  "brier_score": 0.1858,
   "methodology": "In-sample calibration. For each row with a recorded outcome, P(great) predicted from its features (no outcome lookup); rows binned into deciles by predicted probability; mean predicted vs realised frequency plotted per bin. Lower Brier is better; perfect = 0, random = 0.25."
 }
