@@ -1,0 +1,82 @@
+{
+  "focal": {
+    "ticker": "NVDA",
+    "vintage": 2017,
+    "name": "NVIDIA Corporation"
+  },
+  "matches": [
+    {
+      "ticker": "AKAM",
+      "vintage": 2017,
+      "name": "Akamai Technologies",
+      "similarity": 5.409,
+      "description": "The company highlights its Akamai Intelligent Platform that can \"constantly monitor Internet conditions\" and leverage distributed servers and traffic data to identify threats and optimize routing \u2014 a data-driven network effect \u2014 however the filing also notes pricing pressure, customers taking \"do-it",
+      "outcome": {
+        "text": "+116%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
+      "ticker": "CRM",
+      "vintage": 2017,
+      "name": "Salesforce",
+      "similarity": 5.194,
+      "description": "The company emphasizes a single platform and ecosystem strategy\u2014\"encouraging the development of third-party applications on our cloud computing platforms,\" AppExchange and developer tools and a multi-tenant architecture\u2014creating reinforcing platform and partner dynamics that support a durable advant",
+      "outcome": {
+        "text": "+162%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
+      "ticker": "INTU",
+      "vintage": 2017,
+      "name": "Intuit",
+      "similarity": 5.194,
+      "description": "The filing emphasizes a platform and ecosystem approach (\"QuickBooks Online Ecosystem\", third-party apps, QuickBooks ProAdvisor Program) and explicitly calls out \"Creating network effect platforms \u2013 we call it 'Enabling the contributions of others,'\" which creates reinforcing dynamics across custome",
+      "outcome": {
+        "text": "+194%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
+      "ticker": "GEN",
+      "vintage": 2017,
+      "name": "Gen Digital",
+      "similarity": 4.088,
+      "description": "Management cites a primary advantage in a \"global civilian cyber intelligence threat network\" and a \"database of threat indicators\" drawn from \"hundreds of millions of mobile devices, endpoints, and servers,\" implying a data/network advantage; however the company also emphasizes ongoing product and ",
+      "outcome": {
+        "text": "+111%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
+      "ticker": "BKNG",
+      "vintage": 2017,
+      "name": "Booking Holdings",
+      "similarity": 3.222,
+      "description": "The filing describes large and growing inventory (Booking.com included over 850,000 properties) and that travel service providers benefit from the company's distribution, brands and online marketing; this scale in listings and demand creates reinforcing dynamics between consumers and partners that t",
+      "outcome": {
+        "text": "+175%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
+      "ticker": "CME",
+      "vintage": 2017,
+      "name": "CME Group",
+      "similarity": 3.222,
+      "description": "The company highlights that \"our clearing houses' performance guarantee\" and deep liquidity let customers avoid evaluating counterparty credit and enable easy offsetting of positions, a classic liquidity/network effect that is reinforced by broad product breadth and integrated clearing.",
+      "outcome": {
+        "text": "+252%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    }
+  ],
+  "pullquote_html": "Nearest analogues by feature similarity \u2014 live from Aito <code style=\"font-family:'JetBrains Mono'\">_similarity</code>."
+}

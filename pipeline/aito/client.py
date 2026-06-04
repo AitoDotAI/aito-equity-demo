@@ -90,6 +90,9 @@ class AitoClient:
     def match(self, body: dict) -> dict:
         return self._post_json("/api/v1/_match", body)
 
+    def similarity(self, body: dict) -> dict:
+        return self._post_json("/api/v1/_similarity", body)
+
     def search(self, body: dict) -> dict:
         return self._post_json("/api/v1/_search", body)
 

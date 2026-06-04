@@ -1,0 +1,73 @@
+{
+  "ticker": "NVDA",
+  "vintage": 2017,
+  "company_name": "Nvidia",
+  "exchange": "NYSE",
+  "sector": "Information Technology",
+  "market_cap": "",
+  "vintage_label": "January 2017",
+  "window_label": "9-year",
+  "grades": [
+    {
+      "label": "Market Position",
+      "value": "Dominant",
+      "pip_filled": 5,
+      "pip_total": 5,
+      "evidence": "The filing states explicitly that \"NVIDIA is the world leader in visual computing\" and describes leading product brands (GeForce, Quadro, Tesla, GRID) with GPUs driving ~75% of revenue and strong growth in high-end GeForce and Tesla products, indicating a category-leading position and pricing/power in core markets."
+    },
+    {
+      "label": "Moat Type & Strength",
+      "value": "network_effects / narrow",
+      "pip_filled": 3,
+      "pip_total": 5,
+      "evidence": "The company points to its invention of CUDA, a large developer/ecosystem (\"virtualized GPU\" and platform focus), and \"7,300 patent assets\" and heavy R&D (\"invested $12 billion\"), implying an ecosystem/network advantage; however the filing also notes rapid technology change and competitive risks (e.g., Tegra smartphone declines), so the advantage is meaningful but contested."
+    },
+    {
+      "label": "Market Quality",
+      "value": "Secular growth",
+      "pip_filled": 5,
+      "pip_total": 5,
+      "evidence": "The filing characterizes addressed markets as having long-term tailwinds: \"Gaming is one of the largest entertainment industries,\" accelerated/datacenter computing and deep learning adoption are growing rapidly, and automotive is described as a growing market for computing \u2014 supporting a secular growth view."
+    },
+    {
+      "label": "Leadership Quality",
+      "value": "4/5",
+      "pip_filled": 4,
+      "pip_total": 5,
+      "evidence": "Management shows clear strategic focus on four platforms and vertical integration (\"transformed into a specialized platform company\"), heavy R&D investment (\"invested $12 billion\" and strong IP portfolio), and solid financial execution (56.1% gross margin, net income 12.3%); capital allocation appears focused on reinvestment and equity incentives (proposal to amend equity plan) with no concerning signals in the excerpts provided."
+    }
+  ],
+  "prediction": {
+    "confidence": "HIGH",
+    "peak": "Great",
+    "buckets": [
+      {
+        "label": "Disaster",
+        "range": "< -63%",
+        "prob": 0.0259
+      },
+      {
+        "label": "Poor",
+        "range": "-63% to +0%",
+        "prob": 0.0353
+      },
+      {
+        "label": "Market",
+        "range": "+0% to +89%",
+        "prob": 0.0339
+      },
+      {
+        "label": "Good",
+        "range": "+89% to +215%",
+        "prob": 0.3255
+      },
+      {
+        "label": "Great",
+        "range": ">= +215%",
+        "prob": 0.5794
+      }
+    ]
+  },
+  "pullquote": "Generated from a live Aito _predict query on the loaded data.",
+  "pullquote_attr": "From the demo pipeline \u00b7 auto-regenerated"
+}

@@ -1,0 +1,82 @@
+{
+  "focal": {
+    "ticker": "MMM",
+    "vintage": 2017,
+    "name": "3M Company"
+  },
+  "matches": [
+    {
+      "ticker": "LMT",
+      "vintage": 2017,
+      "name": "Lockheed Martin",
+      "similarity": 3.813,
+      "description": "Competitive advantage is driven primarily by large-scale, long\u2011duration programs, backlog and integrated capabilities (e.g., F-35 multi-year production and sustainment, substantial backlog including Sikorsky) that create production and sustainment scale and high barriers to entry; the filing highlig",
+      "outcome": {
+        "text": "+171%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
+      "ticker": "ITW",
+      "vintage": 2017,
+      "name": "Illinois Tool Works",
+      "similarity": 2.843,
+      "description": "The filing emphasizes a company-wide, proprietary operating system (the \"80/20 management process\"), \"84 scaled-up divisions,\" and a strategic sourcing program that \"delivered an average of 1 percent reduction in spend each year in 2013-2015,\" demonstrating scale and repeatable cost/operational adva",
+      "outcome": {
+        "text": "+152%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
+      "ticker": "CTAS",
+      "vintage": 2017,
+      "name": "Cintas",
+      "similarity": 2.825,
+      "description": "Competitive advantage appears driven by scale and distribution (the Company operates thousands of local routes and multiple manufacturing and distribution facilities), which creates cost and service delivery advantages, but the filing also notes local, regional and national competitors and a \"highly",
+      "outcome": {
+        "text": "+551%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
+      "ticker": "GWW",
+      "vintage": 2017,
+      "name": "W. W. Grainger",
+      "similarity": 2.825,
+      "description": "The filing emphasizes scale advantages\u2014extensive DC and branch network, ~1.4 million stocked products, large eCommerce platform (\"eCommerce revenues were $3.3 billion in 2015... represented 41% of total revenues\"), and vendor relationships\u2014as the primary competitive edge; however branch closures, re",
+      "outcome": {
+        "text": "+503%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
+      "ticker": "RSG",
+      "vintage": 2017,
+      "name": "Republic Services",
+      "similarity": 2.825,
+      "description": "The filing emphasizes scale and integration (\"market-specific, vertically integrated operations\"), fleet and maintenance standardization (OneFleet, 78% of maintenance standardized) and long-term contracts and exclusive franchise agreements as competitive advantages, but also notes strong competitors",
+      "outcome": {
+        "text": "+324%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
+      "ticker": "COST",
+      "vintage": 2017,
+      "name": "Costco",
+      "similarity": 2.734,
+      "description": "Management emphasizes \"volume purchasing, efficient distribution and reduced handling\" that allow operation \"profitably at significantly lower gross margins,\" limited SKUs (~3,700 per warehouse), and a strong private\u2011label (Kirkland Signature) \u2014 all scale-driven advantages that are described as dura",
+      "outcome": {
+        "text": "+648%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    }
+  ],
+  "pullquote_html": "Nearest analogues by feature similarity \u2014 live from Aito <code style=\"font-family:'JetBrains Mono'\">_similarity</code>."
+}

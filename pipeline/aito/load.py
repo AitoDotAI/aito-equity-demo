@@ -64,11 +64,25 @@ def merge_pipeline_outputs(
     return universe
 
 
+# Columns typed Int in schema.json. Pandas promotes int columns to float64
+# when any NaN is present, so 4 becomes 4.0 — Aito then rejects "Double" for
+# an Integer column. Coerce these back to int after the NaN check.
+INT_COLUMNS = {
+    "vintage_year",
+    "years_public",
+    "leadership_quality",
+    "capital_allocation",
+    "strategic_clarity",
+    "execution_track_record",
+}
+
+
 def df_to_aito_rows(df: pd.DataFrame) -> list[dict]:
     """Convert DataFrame to Aito-friendly row dicts.
 
-    - NaN → None (Aito rejects NaN; nulls are fine for optional columns)
-    - bool/numeric coerced to Python primitives so JSON serialises cleanly
+    - NaN → omitted (Aito rejects NaN; missing keys are fine for nullable columns)
+    - numpy scalars → Python primitives so JSON serialises cleanly
+    - Int-typed columns coerced back from float (pandas NaN promotion)
     """
     rows: list[dict] = []
     for raw in df.to_dict(orient="records"):
@@ -78,8 +92,10 @@ def df_to_aito_rows(df: pd.DataFrame) -> list[dict]:
                 continue
             if pd.isna(v):
                 continue
-            if hasattr(v, "item"):  # numpy scalar
+            if hasattr(v, "item"):  # numpy scalar → python scalar
                 v = v.item()
+            if k in INT_COLUMNS and isinstance(v, float):
+                v = int(round(v))
             clean[k] = v
         rows.append(clean)
     return rows

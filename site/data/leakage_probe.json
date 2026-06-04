@@ -1,7 +1,99 @@
 {
-  "_pending": true,
-  "_note": "Computation pending \u2014 run `./do pipeline precompute` with AITO_API_URL + AITO_API_KEY set.",
-  "vintages": [],
-  "features": [],
-  "drift_score": null
+  "vintages": [
+    2017
+  ],
+  "features": [
+    {
+      "feature": "moat_type = switching_costs",
+      "type": "qual",
+      "per_vintage": {
+        "2017": 1.25
+      },
+      "drift": 0.0,
+      "lift_mean": 1.25
+    },
+    {
+      "feature": "market_position = dominant",
+      "type": "qual",
+      "per_vintage": {
+        "2017": 1.09
+      },
+      "drift": 0.0,
+      "lift_mean": 1.09
+    },
+    {
+      "feature": "market_quality = secular_growth",
+      "type": "qual",
+      "per_vintage": {
+        "2017": 1.08
+      },
+      "drift": 0.0,
+      "lift_mean": 1.08
+    },
+    {
+      "feature": "capital_allocation = 4",
+      "type": "qual",
+      "per_vintage": {
+        "2017": 1.05
+      },
+      "drift": 0.0,
+      "lift_mean": 1.05
+    },
+    {
+      "feature": "leadership_quality = 4",
+      "type": "qual",
+      "per_vintage": {
+        "2017": 1.04
+      },
+      "drift": 0.0,
+      "lift_mean": 1.04
+    },
+    {
+      "feature": "market_quality = stable",
+      "type": "qual",
+      "per_vintage": {
+        "2017": 1.0
+      },
+      "drift": 0.0,
+      "lift_mean": 1.0
+    },
+    {
+      "feature": "moat_strength = wide",
+      "type": "qual",
+      "per_vintage": {
+        "2017": 1.0
+      },
+      "drift": 0.0,
+      "lift_mean": 1.0
+    },
+    {
+      "feature": "moat_strength = narrow",
+      "type": "qual",
+      "per_vintage": {
+        "2017": 1.0
+      },
+      "drift": 0.0,
+      "lift_mean": 1.0
+    },
+    {
+      "feature": "moat_type = brand",
+      "type": "qual",
+      "per_vintage": {
+        "2017": 1.0
+      },
+      "drift": 0.0,
+      "lift_mean": 1.0
+    },
+    {
+      "feature": "strategic_clarity = 4",
+      "type": "qual",
+      "per_vintage": {
+        "2017": 1.0
+      },
+      "drift": 0.0,
+      "lift_mean": 1.0
+    }
+  ],
+  "drift_score": 0.0,
+  "interpretation": "Drift = (max \u2212 min) / mean lift across vintages, averaged over the top 10 features. Low values (< 0.5) suggest the LLM is not smuggling future knowledge into feature grades; high values (> 1.0) suggest unstable lifts \u2014 investigate the offending feature."
 }

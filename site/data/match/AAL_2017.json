@@ -1,0 +1,82 @@
+{
+  "focal": {
+    "ticker": "AAL",
+    "vintage": 2017,
+    "name": "American Airlines"
+  },
+  "matches": [
+    {
+      "ticker": "AIG",
+      "vintage": 2017,
+      "name": "American International Group",
+      "similarity": 2.15,
+      "description": "Competitive advantage is driven by a \"significant international presence\" and \"expansive global footprint\" and scale in underwriting and distribution, but the company also emphasizes needing to \"improve our ROE,\" execute de\u2011risking and a Legacy Portfolio, and faces intense market and regulatory pres",
+      "outcome": {
+        "text": "+46%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
+      "ticker": "APTV",
+      "vintage": 2017,
+      "name": "Aptiv",
+      "similarity": 2.15,
+      "description": "Primary advantage is scale: the filing describes a \"worldwide design and manufacturing footprint\" and an industry model to \"engineer globally and execute regionally\" to serve large OEMs, which supports scale economies. The moat is narrow because the company repeatedly acknowledges intense competitio",
+      "outcome": {
+        "text": "+4%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
+      "ticker": "DVN",
+      "vintage": 2017,
+      "name": "Devon Energy",
+      "similarity": 2.15,
+      "description": "Competitive advantage primarily from scale and asset portfolio (\"deep inventory of development opportunities\", control of EnLink midstream) that enable operational leverage and marketing/midstream integration, but the filing also highlights commodity volatility and active divestiture/acquisition act",
+      "outcome": {
+        "text": "+44%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
+      "ticker": "EQT",
+      "vintage": 2017,
+      "name": "EQT Corporation",
+      "similarity": 2.15,
+      "description": "The primary advantage is scale and integrated midstream ownership (\"EQT Midstream provides gathering, transmission and storage services ... through its ownership and control of EQT Midstream Partners, LP (EQM)\"), giving cost and logistics benefits, but the filing shows commodity-price sensitivity, i",
+      "outcome": {
+        "text": "+73%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
+      "ticker": "FLR",
+      "vintage": 2017,
+      "name": "FLR",
+      "similarity": 2.15,
+      "description": "Competitive strengths emphasize \u201cFinancial Strength\u201d (access to surety bonding capacity and letters of credit), a \u201cGlobal Execution Platform\u201d and integrated solutions that derive from size and scale; however the filing also describes significant cyclical pressures and competitive project dynamics, s",
+      "outcome": {
+        "text": "-10%",
+        "window": "'17\u2192'26",
+        "sentiment": "negative"
+      }
+    },
+    {
+      "ticker": "HAL",
+      "vintage": 2017,
+      "name": "Halliburton",
+      "similarity": 2.15,
+      "description": "Competitive advantages cited are scale and integrated capabilities (e.g., \"manufacturing our own equipment,\" large R&D program and extensive patents) and buying power for raw materials, but the filing also documents sustained pricing pressure, lost activity and divestiture/regulatory risk, so the sc",
+      "outcome": {
+        "text": "-9%",
+        "window": "'17\u2192'26",
+        "sentiment": "negative"
+      }
+    }
+  ],
+  "pullquote_html": "Nearest analogues by feature similarity \u2014 live from Aito <code style=\"font-family:'JetBrains Mono'\">_similarity</code>."
+}

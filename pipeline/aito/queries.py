@@ -41,11 +41,21 @@ class Focal:
     short_name: str  # sector / subtitle text under the chip
 
 
+# Focal set for v1 (2017 vintage — the only vintage with LLM grades loaded).
+# Chosen for outcome spread: two winners of different moat types, one wide-moat
+# name that nonetheless only matched the market (moat ≠ destiny), one cyclical
+# disaster (cautionary).
 FOCAL_COMPANIES: list[Focal] = [
-    Focal(ticker="NVDA", vintage=2014, name="NVIDIA Corporation", chip_label="NVDA · '14", short_name="graphics, semiconductors"),
-    Focal(ticker="SHLD", vintage=2014, name="Sears Holdings", chip_label="SHLD · '14", short_name="Sears Holdings"),
-    Focal(ticker="COST", vintage=2017, name="Costco Wholesale", chip_label="COST · '17", short_name="Costco Wholesale"),
-    Focal(ticker="META", vintage=2020, name="Meta Platforms", chip_label="META · '20", short_name="platforms, advertising"),
+    Focal(ticker="NVDA", vintage=2017, name="NVIDIA Corporation", chip_label="NVDA · '17", short_name="graphics, semiconductors"),
+    Focal(ticker="COST", vintage=2017, name="Costco Wholesale", chip_label="COST · '17", short_name="warehouse retail"),
+    Focal(ticker="MMM", vintage=2017, name="3M Company", chip_label="MMM · '17", short_name="industrial conglomerate"),
+    Focal(ticker="AAL", vintage=2017, name="American Airlines", chip_label="AAL · '17", short_name="airlines, cyclical"),
+]
+
+# Feature columns used to define a company's "profile" for similarity search.
+SIMILARITY_PROFILE_COLUMNS = [
+    "market_position", "moat_type", "moat_strength", "market_quality",
+    "leadership_quality", "sector",
 ]
 
 OUTCOME_BUCKET_LABELS = {
@@ -62,7 +72,12 @@ OUTCOME_BUCKET_LABELS = {
 
 def _measure_latency(client: AitoClient, body: dict, kind: str) -> tuple[dict, float]:
     """Run a query and return (result, latency_ms)."""
-    op = {"predict": client.predict, "relate": client.relate, "match": client.match}[kind]
+    op = {
+        "predict": client.predict,
+        "relate": client.relate,
+        "match": client.match,
+        "similarity": client.similarity,
+    }[kind]
     t0 = time.perf_counter()
     result = op(body)
     return result, (time.perf_counter() - t0) * 1000
@@ -180,6 +195,12 @@ def emit_relate(
     """
     vintages = sorted(set(int(v) for v in companies_df["vintage_year"].dropna()))
 
+    # Aito's relate needs an explicit list of columns to assess (no `$features`
+    # wildcard). We give it the qualitative + structural features present in v1.
+    relate_columns = [
+        c for c in RELATE_FEATURE_COLUMNS if c in companies_df.columns
+    ]
+
     # Run relate per vintage, building a {feature_key: {vintage: lift}} table.
     per_feature: dict[str, dict[int, float]] = {}
     feature_meta: dict[str, str] = {}  # feature_key -> ftype (qual|quant)
@@ -187,16 +208,19 @@ def emit_relate(
         body = {
             "from": COMPANIES_TABLE,
             "where": {"outcome_bucket": "great", "vintage_year": v},
-            "relate": "$features",
+            "relate": relate_columns,
             "limit": 60,
         }
         result, ms = _measure_latency(client, body, "relate")
         latency_samples.append(ms)
         for hit in result.get("hits", []):
-            key = _flatten_relate_feature(hit)
-            lift = float(hit.get("lift") or hit.get("$lift") or 0.0)
+            parsed = _parse_relate_hit(hit)
+            if parsed is None:
+                continue
+            key, field = parsed
+            lift = float(hit.get("lift") or 0.0)
             per_feature.setdefault(key, {})[v] = lift
-            feature_meta.setdefault(key, "qual" if _is_qualitative(hit) else "quant")
+            feature_meta.setdefault(key, "qual" if field in QUALITATIVE_FIELDS else "quant")
 
     # Build aggregate rows (mean / min / max across vintages where the feature appeared).
     agg_rows: list[dict] = []
@@ -268,8 +292,29 @@ def emit_relate(
     (out_dir / "leakage_probe.json").write_text(json.dumps(leakage_payload, indent=2), encoding="utf-8")
 
 
+RELATE_FEATURE_COLUMNS = [
+    "market_position", "moat_type", "moat_strength", "market_quality",
+    "leadership_quality", "capital_allocation", "strategic_clarity",
+    "execution_track_record", "sector", "survived_intact",
+]
+
+
+def _parse_relate_hit(hit: dict) -> tuple[str, str] | None:
+    """Parse Aito relate hit shape {"related": {field: {"$has": value}}, ...}.
+
+    Returns (display_key, field_name) or None if unparseable.
+    """
+    related = hit.get("related")
+    if not isinstance(related, dict) or not related:
+        return None
+    field = next(iter(related))
+    prop = related[field]
+    value = prop.get("$has") if isinstance(prop, dict) else prop
+    return f"{field} = {value}", field
+
+
 def _flatten_relate_feature(hit: dict) -> str:
-    """Aito relate hits can name the related field + value in a few shapes."""
+    """Legacy helper retained for any older callers."""
     if "feature" in hit and isinstance(hit["feature"], dict):
         f = hit["feature"]
         return f"{f.get('field', '?')} = {f.get('value', '?')}"
@@ -557,26 +602,52 @@ def emit_match_per_focal(
 ) -> None:
     match_dir = out_dir / "match"
     match_dir.mkdir(parents=True, exist_ok=True)
+    end_year = date.today().year
     for focal in FOCAL_COMPANIES:
+        # Build the similarity proposition from the focal's FEATURE PROFILE, not
+        # its identity — keying on {ticker, vintage} just matches the row to
+        # itself and returns 1.0 ties for everything else. We want companies
+        # with a similar moat/position/quality fingerprint.
+        frow = companies_df[
+            (companies_df["ticker"] == focal.ticker)
+            & (companies_df["vintage_year"] == focal.vintage)
+        ]
+        if frow.empty:
+            print(f"  ⚠ {focal.ticker}·{focal.vintage}: no row for similarity")
+            continue
+        fr = frow.iloc[0]
+        proposition = {}
+        for c in SIMILARITY_PROFILE_COLUMNS:
+            if c not in fr.index or pd.isna(fr[c]):
+                continue
+            v = fr[c]
+            if hasattr(v, "item"):
+                v = v.item()
+            if c == "leadership_quality" and isinstance(v, float):
+                v = int(round(v))
+            proposition[c] = v
         body = {
             "from": COMPANIES_TABLE,
-            "match": {"ticker": focal.ticker, "vintage_year": focal.vintage},
-            "limit": 6,
+            "similarity": proposition,
+            "limit": 10,
         }
         try:
-            result, ms = _measure_latency(client, body, "match")
+            result, ms = _measure_latency(client, body, "similarity")
         except Exception as e:
-            print(f"  ⚠ {focal.ticker}·{focal.vintage} match failed: {e}")
+            print(f"  ⚠ {focal.ticker}·{focal.vintage} similarity failed: {e}")
             continue
         latency_samples.append(ms)
         matches = []
-        for hit in result.get("hits", [])[:6]:
+        for hit in result.get("hits", []):
             ticker = str(hit.get("ticker") or "")
             vintage = int(hit.get("vintage_year") or 0)
+            if ticker == focal.ticker and vintage == focal.vintage:
+                continue  # skip the focal row itself
             outcome_text = ""
             sentiment = "neutral"
-            if hit.get("total_return_pct_local") is not None:
-                pct = float(hit["total_return_pct_local"])
+            ret = hit.get("total_return_pct_local")
+            if ret is not None:
+                pct = float(ret)
                 outcome_text = f"{pct:+.0f}%"
                 sentiment = "positive" if pct > 0 else "negative"
             if str(hit.get("terminal_event", "")).lower() in ("acquired", "bankrupt", "delisted"):
@@ -587,19 +658,21 @@ def emit_match_per_focal(
                     "ticker": ticker,
                     "vintage": vintage,
                     "name": str(hit.get("company_name") or ticker),
-                    "similarity": round(float(hit.get("$score") or 0.0), 2),
-                    "description": str(hit.get("market_position_rationale") or "")[:300],
+                    "similarity": round(float(hit.get("$score") or 0.0), 3),
+                    "description": str(hit.get("moat_rationale") or hit.get("market_position_rationale") or "")[:300],
                     "outcome": {
                         "text": outcome_text,
-                        "window": f"'{vintage % 100:02d}→'{26}",
+                        "window": f"'{vintage % 100:02d}→'{end_year % 100:02d}",
                         "sentiment": sentiment,
                     },
                 }
             )
+            if len(matches) >= 6:
+                break
         payload = {
-            "focal": {"ticker": focal.ticker, "vintage": focal.vintage, "name": focal.short_name},
+            "focal": {"ticker": focal.ticker, "vintage": focal.vintage, "name": focal.name},
             "matches": matches,
-            "pullquote_html": "Nearest analogues by feature distance — live from Aito _match.",
+            "pullquote_html": "Nearest analogues by feature similarity — live from Aito <code style=\"font-family:'JetBrains Mono'\">_similarity</code>.",
         }
         (match_dir / f"{focal.ticker}_{focal.vintage}.json").write_text(
             json.dumps(payload, indent=2), encoding="utf-8"

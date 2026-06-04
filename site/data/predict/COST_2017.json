@@ -1,54 +1,73 @@
 {
-  "_note": "Placeholder values pending pipeline run.",
   "ticker": "COST",
   "vintage": 2017,
-  "company_name": "Costco Wholesale",
-  "exchange": "NASDAQ",
-  "sector": "consumer staples · retail",
-  "market_cap": "$72B",
+  "company_name": "Costco",
+  "exchange": "NYSE",
+  "sector": "Consumer Staples",
+  "market_cap": "",
   "vintage_label": "January 2017",
-  "window_label": "nine-year",
+  "window_label": "9-year",
   "grades": [
     {
       "label": "Market Position",
       "value": "Strong",
       "pip_filled": 4,
       "pip_total": 5,
-      "evidence": "Dominant in warehouse-club retail; ~90 million paying members. The 10-K describes a price-leadership flywheel — scale buying → lower prices → more members → more scale."
+      "evidence": "The filing shows a large and growing membership base (47.6 million paid members in 2016, 90% U.S./Canada renewal rate) and repeated references to competing with major retailers and other warehouse clubs, indicating Costco is a top-tier, category-leading operator though it coexists with other national competitors (e.g., Sam\u2019s Club, BJ\u2019s, Wal\u2011Mart)."
     },
     {
       "label": "Moat Type & Strength",
-      "value": "Scale + brand · wide",
-      "pip_filled": 4,
+      "value": "scale_economies / wide",
+      "pip_filled": 5,
       "pip_total": 5,
-      "evidence": "Membership renewal rate >90%. Treasure-hunt SKU rotation builds visit habit. Combined scale economies and trust brand. The flywheel is documented across multiple Letters."
+      "evidence": "Management emphasizes \"volume purchasing, efficient distribution and reduced handling\" that allow operation \"profitably at significantly lower gross margins,\" limited SKUs (~3,700 per warehouse), and a strong private\u2011label (Kirkland Signature) \u2014 all scale-driven advantages that are described as durable and broadly embedded in the business model."
     },
     {
       "label": "Market Quality",
       "value": "Stable",
-      "pip_filled": 3,
+      "pip_filled": 4,
       "pip_total": 5,
-      "evidence": "Grocery and general-merchandise retail; modest secular growth. Less optionality than tech but more durable in any macro regime."
+      "evidence": "The filing describes a highly competitive but steady retail/wholesale market with predictable membership renewals and ongoing demand (online was ~4% of sales in 2016), suggesting a mature, stable market rather than one in secular decline or rapid disruption."
     },
     {
       "label": "Leadership Quality",
-      "value": "Disciplined · 4/5",
+      "value": "4/5",
       "pip_filled": 4,
       "pip_total": 5,
-      "evidence": "Craig Jelinek (CEO from 2012) maintains the Sinegal-era price discipline. Compensation modest by S&P 500 standards. Capital returned via special dividends rather than buybacks at peak multiples."
+      "evidence": "Capital allocation shows discipline and shareholder returns (regular dividends, a $5.00 special dividend in 2015, consistent buybacks and repayment of notes) alongside substantial, planned reinvestment (capital expenditures ~$2.65B in 2016 and guidance ~$2.6\u20132.8B for 2017). Strategy is coherent and consistent (membership model, low prices, limited SKUs, expansion of warehouses and ancillary services), and execution is evidenced by membership and cardholder growth, high renewal rates, and 29 new warehouses opened in 2016, supporting an overall 4/5 leadership score."
     }
   ],
   "prediction": {
-    "confidence": "MEDIUM",
+    "confidence": "HIGH",
     "peak": "Good",
     "buckets": [
-      { "label": "Disaster", "range": "−50%+", "prob": 0.022 },
-      { "label": "Poor", "range": "−50–0%", "prob": 0.064 },
-      { "label": "Market", "range": "0–100%", "prob": 0.207 },
-      { "label": "Good", "range": "100–300%", "prob": 0.461 },
-      { "label": "Great", "range": "300%+", "prob": 0.246 }
+      {
+        "label": "Disaster",
+        "range": "< -63%",
+        "prob": 0.0045
+      },
+      {
+        "label": "Poor",
+        "range": "-63% to +0%",
+        "prob": 0.0257
+      },
+      {
+        "label": "Market",
+        "range": "+0% to +89%",
+        "prob": 0.1832
+      },
+      {
+        "label": "Good",
+        "range": "+89% to +215%",
+        "prob": 0.5583
+      },
+      {
+        "label": "Great",
+        "range": ">= +215%",
+        "prob": 0.2282
+      }
     ]
   },
-  "pullquote": "\"The engine saw a strong position, wide moat, stable market, and disciplined leadership — the textbook compounder profile. It assigned 46% probability to 'good' and 25% to 'great'. The realised return through 2026 sits near the high end of the 'good' bucket.\"",
-  "pullquote_attr": "From the demo notebook · 2017 vintage holdout"
+  "pullquote": "Generated from a live Aito _predict query on the loaded data.",
+  "pullquote_attr": "From the demo pipeline \u00b7 auto-regenerated"
 }

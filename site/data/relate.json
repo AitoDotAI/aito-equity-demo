@@ -1,6 +1,130 @@
 {
-  "_pending": true,
-  "_note": "Computation pending \u2014 run `./do pipeline precompute` with AITO_API_URL + AITO_API_KEY set.",
   "target": "outcome_bucket = great",
-  "rows": []
+  "rows": [
+    {
+      "feature": "moat_type = switching_costs",
+      "type": "qual",
+      "lift": 1.25,
+      "lift_min": 1.25,
+      "lift_max": 1.25,
+      "bar_pct": 24,
+      "per_vintage": {
+        "2017": 1.25
+      },
+      "n_vintages": 1
+    },
+    {
+      "feature": "market_position = dominant",
+      "type": "qual",
+      "lift": 1.09,
+      "lift_min": 1.09,
+      "lift_max": 1.09,
+      "bar_pct": 21,
+      "per_vintage": {
+        "2017": 1.09
+      },
+      "n_vintages": 1
+    },
+    {
+      "feature": "market_quality = secular_growth",
+      "type": "qual",
+      "lift": 1.08,
+      "lift_min": 1.08,
+      "lift_max": 1.08,
+      "bar_pct": 21,
+      "per_vintage": {
+        "2017": 1.08
+      },
+      "n_vintages": 1
+    },
+    {
+      "feature": "capital_allocation = 4",
+      "type": "qual",
+      "lift": 1.05,
+      "lift_min": 1.05,
+      "lift_max": 1.05,
+      "bar_pct": 21,
+      "per_vintage": {
+        "2017": 1.05
+      },
+      "n_vintages": 1
+    },
+    {
+      "feature": "leadership_quality = 4",
+      "type": "qual",
+      "lift": 1.04,
+      "lift_min": 1.04,
+      "lift_max": 1.04,
+      "bar_pct": 20,
+      "per_vintage": {
+        "2017": 1.04
+      },
+      "n_vintages": 1
+    },
+    {
+      "feature": "market_quality = stable",
+      "type": "qual",
+      "lift": 1.0,
+      "lift_min": 1.0,
+      "lift_max": 1.0,
+      "bar_pct": 19,
+      "per_vintage": {
+        "2017": 1.0
+      },
+      "n_vintages": 1
+    },
+    {
+      "feature": "moat_strength = wide",
+      "type": "qual",
+      "lift": 1.0,
+      "lift_min": 1.0,
+      "lift_max": 1.0,
+      "bar_pct": 19,
+      "per_vintage": {
+        "2017": 1.0
+      },
+      "n_vintages": 1
+    },
+    {
+      "feature": "moat_strength = narrow",
+      "type": "qual",
+      "lift": 1.0,
+      "lift_min": 1.0,
+      "lift_max": 1.0,
+      "bar_pct": 20,
+      "per_vintage": {
+        "2017": 1.0
+      },
+      "n_vintages": 1
+    },
+    {
+      "feature": "moat_type = brand",
+      "type": "qual",
+      "lift": 1.0,
+      "lift_min": 1.0,
+      "lift_max": 1.0,
+      "bar_pct": 19,
+      "per_vintage": {
+        "2017": 1.0
+      },
+      "n_vintages": 1
+    },
+    {
+      "feature": "strategic_clarity = 4",
+      "type": "qual",
+      "lift": 1.0,
+      "lift_min": 1.0,
+      "lift_max": 1.0,
+      "bar_pct": 20,
+      "per_vintage": {
+        "2017": 1.0
+      },
+      "n_vintages": 1
+    }
+  ],
+  "n_vintages": 1,
+  "vintages": [
+    2017
+  ],
+  "pullquote_html": "Lifts are averaged across 1 vintages; whiskers show the per-vintage min-max range. Stable lifts across vintages indicate the LLM grader is not leaking post-vintage knowledge into its features."
 }

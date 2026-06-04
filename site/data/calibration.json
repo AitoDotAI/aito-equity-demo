@@ -1,5 +1,67 @@
 {
-  "_pending": true,
-  "_note": "Computation pending \u2014 run `./do pipeline precompute` with AITO_API_URL + AITO_API_KEY set.",
-  "deciles": []
+  "deciles": [
+    {
+      "label": "D1",
+      "predicted": 0.024,
+      "actual": 0.024,
+      "n": 41
+    },
+    {
+      "label": "D2",
+      "predicted": 0.098,
+      "actual": 0.146,
+      "n": 41
+    },
+    {
+      "label": "D3",
+      "predicted": 0.156,
+      "actual": 0.122,
+      "n": 41
+    },
+    {
+      "label": "D4",
+      "predicted": 0.194,
+      "actual": 0.293,
+      "n": 41
+    },
+    {
+      "label": "D5",
+      "predicted": 0.245,
+      "actual": 0.244,
+      "n": 41
+    },
+    {
+      "label": "D6",
+      "predicted": 0.306,
+      "actual": 0.244,
+      "n": 41
+    },
+    {
+      "label": "D7",
+      "predicted": 0.352,
+      "actual": 0.317,
+      "n": 41
+    },
+    {
+      "label": "D8",
+      "predicted": 0.449,
+      "actual": 0.268,
+      "n": 41
+    },
+    {
+      "label": "D9",
+      "predicted": 0.533,
+      "actual": 0.512,
+      "n": 41
+    },
+    {
+      "label": "D10",
+      "predicted": 0.685,
+      "actual": 0.667,
+      "n": 48
+    }
+  ],
+  "n_observations": 417,
+  "brier_score": 0.1757,
+  "methodology": "In-sample calibration. For each row with a recorded outcome, P(great) predicted from its features (no outcome lookup); rows binned into deciles by predicted probability; mean predicted vs realised frequency plotted per bin. Lower Brier is better; perfect = 0, random = 0.25."
 }

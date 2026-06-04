@@ -1,0 +1,73 @@
+{
+  "ticker": "MMM",
+  "vintage": 2017,
+  "company_name": "3M",
+  "exchange": "NYSE",
+  "sector": "Industrials",
+  "market_cap": "",
+  "vintage_label": "January 2017",
+  "window_label": "9-year",
+  "grades": [
+    {
+      "label": "Market Position",
+      "value": "Strong",
+      "pip_filled": 4,
+      "pip_total": 5,
+      "evidence": "3M describes itself as \u201ca diversified global manufacturer\u201d and \u201camong the leading manufacturers of products for many of the markets it serves,\u201d with well\u2011known product franchises (Scotch\u00ae, Post\u2011it\u00ae, Thinsulate\u2122, VHB\u2122) and broad positions across five high\u2011margin business segments (each posting ~21%+ operating margins)."
+    },
+    {
+      "label": "Moat Type & Strength",
+      "value": "scale_economies / wide",
+      "pip_filled": 5,
+      "pip_total": 5,
+      "evidence": "The filing emphasizes technology innovation, broad product breadth and global manufacturing scale (multiple leading product lines and serving many end markets), sustained R&D (R&D ~5.8% of sales) and high, consistent operating margins (22.9% in 2015), indicating reinforcing scale and manufacturing advantages. "
+    },
+    {
+      "label": "Market Quality",
+      "value": "Stable",
+      "pip_filled": 4,
+      "pip_total": 5,
+      "evidence": "3M operates across a mix of industrial, health care, consumer and electronics markets that the filing treats as durable and diversified (organic local\u2011currency growth in Health Care and Consumer, and predictable cash flows and dividend track record), suggesting steady, predictable end\u2011market demand rather than a single secular boom or structural decline. "
+    },
+    {
+      "label": "Leadership Quality",
+      "value": "4/5",
+      "pip_filled": 4,
+      "pip_total": 5,
+      "evidence": "Capital allocation: management repurchased \u201cmore than $5 billion of its own stock each year\u201d and the Board authorized a $10 billion repurchase program while also making targeted acquisitions (Capital Safety, Polypore, Ivera), indicating active capital deployment but with higher leverage (debt/total capital rose to 48% in 2015). Strategic clarity: the company outlines a coherent multi\u2011year business transformation (ERP implementation), clear segment structure and a stated focus on technology innovation and disruptive R&D initiatives. Execution track record: results show sustained, high operating margins (~22%), consistent operating cash flow ($6.4 billion in 2015) and use of restructuring to manage costs, though 2015 organic growth slowed and FX impacted results, consistent with competent execution overall."
+    }
+  ],
+  "prediction": {
+    "confidence": "HIGH",
+    "peak": "Good",
+    "buckets": [
+      {
+        "label": "Disaster",
+        "range": "< -63%",
+        "prob": 0.0045
+      },
+      {
+        "label": "Poor",
+        "range": "-63% to +0%",
+        "prob": 0.0257
+      },
+      {
+        "label": "Market",
+        "range": "+0% to +89%",
+        "prob": 0.1832
+      },
+      {
+        "label": "Good",
+        "range": "+89% to +215%",
+        "prob": 0.5583
+      },
+      {
+        "label": "Great",
+        "range": ">= +215%",
+        "prob": 0.2282
+      }
+    ]
+  },
+  "pullquote": "Generated from a live Aito _predict query on the loaded data.",
+  "pullquote_attr": "From the demo pipeline \u00b7 auto-regenerated"
+}

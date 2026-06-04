@@ -1,0 +1,73 @@
+{
+  "ticker": "AAL",
+  "vintage": 2017,
+  "company_name": "nan",
+  "exchange": "NYSE",
+  "sector": "nan",
+  "market_cap": "",
+  "vintage_label": "January 2017",
+  "window_label": "9-year",
+  "grades": [
+    {
+      "label": "Market Position",
+      "value": "Strong",
+      "pip_filled": 4,
+      "pip_total": 5,
+      "evidence": "Following the 2013 Merger AAG describes itself as the combined carrier (\"We completed the Merger on December 9, 2013\") with large scale (e.g., consolidated ASMs and 1,533 aircraft at year-end) and multi-hub network \u2014 a top-tier U.S. carrier but not a monopoly."
+    },
+    {
+      "label": "Moat Type & Strength",
+      "value": "scale_economies / narrow",
+      "pip_filled": 3,
+      "pip_total": 5,
+      "evidence": "The filing emphasizes scale and network (consolidation via the Merger, large ASMs and fleet) and management measures CASM metrics to leverage cost structure, indicating scale economies as the primary advantage; however the company repeatedly cites intense competition, low-cost carriers and fuel/labor pressure (\"competitive practices in the industry, including the impact of low cost carriers\"), so the advantage is contested and narrow."
+    },
+    {
+      "label": "Market Quality",
+      "value": "Cyclical",
+      "pip_filled": 3,
+      "pip_total": 5,
+      "evidence": "The filing repeatedly warns demand and results depend on macro and commodity cycles (\"difficult to predict the price of oil or the strength of the economy\", \"periods of high volatility in fuel costs\") indicating an industry driven by economic and fuel cycles."
+    },
+    {
+      "label": "Leadership Quality",
+      "value": "3/5",
+      "pip_filled": 3,
+      "pip_total": 5,
+      "evidence": "Management has a coherent integration strategy (\"significant actions to restore our competitiveness and to complete our integration\") and showed improved operating income in 2015, plus a material $3.0 billion deferred tax valuation allowance reversal; but capital allocation is mixed \u2014 heavy special items, large executive equity/payments and substantial indebtedness are noted \u2014 and execution is uneven, with some margin improvement largely driven by lower fuel rather than underlying CASM excluding fuel (which rose)."
+    }
+  ],
+  "prediction": {
+    "confidence": "MEDIUM",
+    "peak": "Market",
+    "buckets": [
+      {
+        "label": "Disaster",
+        "range": "< -63%",
+        "prob": 0.0282
+      },
+      {
+        "label": "Poor",
+        "range": "-63% to +0%",
+        "prob": 0.2579
+      },
+      {
+        "label": "Market",
+        "range": "+0% to +89%",
+        "prob": 0.3119
+      },
+      {
+        "label": "Good",
+        "range": "+89% to +215%",
+        "prob": 0.225
+      },
+      {
+        "label": "Great",
+        "range": ">= +215%",
+        "prob": 0.1769
+      }
+    ]
+  },
+  "pullquote": "Generated from a live Aito _predict query on the loaded data.",
+  "pullquote_attr": "From the demo pipeline \u00b7 auto-regenerated"
+}

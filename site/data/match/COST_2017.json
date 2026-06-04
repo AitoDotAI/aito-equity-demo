@@ -1,55 +1,82 @@
 {
-  "_note": "Placeholder analogues pending pipeline run.",
-  "focal": { "ticker": "COST", "vintage": 2017, "name": "Costco Wholesale" },
+  "focal": {
+    "ticker": "COST",
+    "vintage": 2017,
+    "name": "Costco Wholesale"
+  },
   "matches": [
     {
+      "ticker": "KO",
+      "vintage": 2017,
+      "name": "Coca-Cola Company (The)",
+      "similarity": 3.764,
+      "description": "The Company emphasizes its ownership of \"numerous valuable nonalcoholic beverage brands\" (e.g., Coca-Cola, Diet Coke, Sprite) and stresses trademarks and formulae as \"essential to the success of our business,\" supported by a unique global distribution system \u2014 a combination that describes a wide, du",
+      "outcome": {
+        "text": "+161%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
+      "ticker": "PEP",
+      "vintage": 2017,
+      "name": "PepsiCo",
+      "similarity": 3.764,
+      "description": "The company \u2018\u2018owns numerous valuable trademarks which are essential to our worldwide businesses\u2019\u2019 (lists Pepsi, Lay\u2019s, Doritos, Cheetos, Quaker brands) and couples those brands with extensive distribution (DSD, customer warehouse and distributor networks), implying a stable, reinforcing brand-based ",
+      "outcome": {
+        "text": "+90%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
+      "ticker": "TSN",
+      "vintage": 2017,
+      "name": "Tyson Foods",
+      "similarity": 2.957,
+      "description": "Primary advantages are scale and vertical integration: the company notes a \"vertically\u2011integrated chicken process\" with breeding through processing, operates numerous plants and feed mills, and leverages \"national distribution systems,\" creating cost and distribution advantages that are structural a",
+      "outcome": {
+        "text": "+32%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
       "ticker": "WMT",
-      "vintage": 2010,
+      "vintage": 2017,
       "name": "Walmart",
-      "similarity": 0.79,
-      "description": "Dominant low-cost retailer, scale moat, stable category. Less membership-driven loyalty than Costco; lower margin trajectory.",
-      "outcome": { "text": "+170%", "window": "'10→'22", "sentiment": "positive" }
+      "similarity": 2.957,
+      "description": "The company emphasizes price leadership and everyday low cost (EDLP/EDLC) and a massive physical and digital footprint (11,500+ stores, e-commerce in 11 countries) that create purchasing, distribution and cost advantages that are reinforcing and difficult for competitors to replicate.",
+      "outcome": {
+        "text": "+506%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
     },
     {
-      "ticker": "HD",
-      "vintage": 2010,
-      "name": "Home Depot",
-      "similarity": 0.76,
-      "description": "Category-dominant big-box, scale + brand moat, stable category. Disciplined capital allocation under Frank Blake.",
-      "outcome": { "text": "+540%", "window": "'10→'22", "sentiment": "positive" }
+      "ticker": "CHD",
+      "vintage": 2017,
+      "name": "Church & Dwight",
+      "similarity": 2.789,
+      "description": "The primary advantage is branded consumer recognition and portfolio scale (multiple \"power/mega\" brands and ability to \"leverage R&D and marketing investments\"), but the filing repeatedly warns of \"heightened competitive activity,\" price/promotional pressure and potential impairment risk to intangib",
+      "outcome": {
+        "text": "+142%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
     },
     {
-      "ticker": "TJX",
-      "vintage": 2013,
-      "name": "TJX Companies",
-      "similarity": 0.72,
-      "description": "Off-price retail, treasure-hunt model, scale buying advantage, consistent operator. Closest peer in 'flywheel-discipline' archetype.",
-      "outcome": { "text": "+200%", "window": "'13→'25", "sentiment": "positive" }
-    },
-    {
-      "ticker": "BJ",
-      "vintage": 2018,
-      "name": "BJ's Wholesale Club",
-      "similarity": 0.69,
-      "description": "Direct warehouse-club competitor, similar membership model, smaller scale and weaker brand. Same archetype, smaller magnitude.",
-      "outcome": { "text": "+340%", "window": "'18→'25", "sentiment": "positive" }
-    },
-    {
-      "ticker": "DG",
-      "vintage": 2014,
-      "name": "Dollar General",
-      "similarity": 0.64,
-      "description": "Discount retail, rural footprint moat, stable category. Different customer than Costco but similar 'low-end discipline' archetype.",
-      "outcome": { "text": "+220%", "window": "'14→'24", "sentiment": "positive" }
-    },
-    {
-      "ticker": "BBBY",
-      "vintage": 2014,
-      "name": "Bed Bath & Beyond",
-      "similarity": 0.55,
-      "description": "Specialty retail with apparent moat that eroded — coupon-trained customer base, no membership lock-in, weak digital. Cautionary parallel.",
-      "outcome": { "text": "bankrupt 2023", "window": "'14→'23", "sentiment": "negative" }
+      "ticker": "CLX",
+      "vintage": 2017,
+      "name": "Clorox",
+      "similarity": 2.789,
+      "description": "Management emphasizes that \"brand equity value is critical\" and that most consumer products are protected by registered trademarks which the Company \"vigorously protects,\" providing a defensible brand moat; at the same time the Risk Factors repeatedly note fierce competition and private-label threat",
+      "outcome": {
+        "text": "+4%",
+        "window": "'17\u2192'26",
+        "sentiment": "positive"
+      }
     }
   ],
-  "pullquote_html": "Costco's nearest neighbours are the category-dominant compounders of the last cycle. The one cautionary case (BBBY) lacked Costco's <em>membership-locked customer</em> — the feature that converts a strong position into a durable one."
+  "pullquote_html": "Nearest analogues by feature similarity \u2014 live from Aito <code style=\"font-family:'JetBrains Mono'\">_similarity</code>."
 }
