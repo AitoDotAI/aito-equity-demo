@@ -1223,6 +1223,175 @@
     color: var(--ink-fade);
   }
 
+  /* ===== LIVE QUERY CONSOLE ===== */
+  .console-tabs {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--rule);
+    border-bottom: none;
+    background: var(--paper-2);
+  }
+  .console-tab {
+    flex: 1;
+    padding: 11px 18px;
+    background: transparent;
+    border: none;
+    border-right: 1px solid var(--rule);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-fade);
+    letter-spacing: 0.04em;
+    transition: all 0.15s;
+  }
+  .console-tab:last-child { border-right: none; }
+  .console-tab:hover { background: rgba(168, 134, 44, 0.08); color: var(--ink); }
+  .console-tab.active {
+    background: var(--ink);
+    color: var(--gold);
+    font-weight: 600;
+  }
+  .console-tab .endpoint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-fade);
+    margin-right: 6px;
+  }
+  .console-tab.active .endpoint { color: rgba(244, 237, 225, 0.6); }
+
+  .console-editor-wrap {
+    border: 1px solid var(--rule);
+    background: #fbf6ec;
+    position: relative;
+  }
+  .console-editor {
+    width: 100%;
+    min-height: 220px;
+    padding: 16px 18px;
+    border: none;
+    background: transparent;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--ink);
+    resize: vertical;
+    outline: none;
+    box-sizing: border-box;
+  }
+  .console-editor::selection { background: rgba(168, 134, 44, 0.25); }
+
+  .console-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 16px;
+    border: 1px solid var(--rule);
+    border-top: none;
+    background: var(--paper-2);
+  }
+  .console-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 7px 16px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--gold);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .console-btn:hover { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+  .console-btn.secondary {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--rule);
+  }
+  .console-btn.secondary:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .console-status {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-fade);
+  }
+  .console-status .latency b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .console-status .source-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 9px;
+    border-radius: 2px;
+    font-size: 9.5px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .console-status .source-pill.aito { background: rgba(18, 181, 173, 0.18); color: #0a766f; }
+  .console-status .source-pill.mock { background: rgba(168, 134, 44, 0.18); color: #6e5818; }
+  .console-status .source-pill.error { background: rgba(139, 26, 26, 0.18); color: var(--accent); }
+
+  .console-response {
+    margin-top: 18px;
+    background: var(--ink);
+    color: var(--paper);
+    border: 1px solid var(--ink);
+    padding: 18px 22px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.55;
+    max-height: 520px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .console-response .k { color: #c8a8ff; }
+  .console-response .s { color: #84e8e1; }
+  .console-response .n { color: #ffb380; }
+  .console-response .b { color: #ffb380; }
+  .console-response .nul { color: rgba(244, 237, 225, 0.45); font-style: italic; }
+  .console-response .placeholder {
+    color: rgba(244, 237, 225, 0.5);
+    font-style: italic;
+  }
+
+  .console-hint {
+    margin-top: 10px;
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--ink-fade);
+  }
+
+  .copy-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    padding: 9px 18px;
+    background: var(--ink);
+    color: var(--gold);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.22s ease;
+    z-index: 1100;
+  }
+  .copy-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
   /* ===== VIEW VISIBILITY ===== */
   .view { display: none; }
   .view.active { display: block; }
@@ -1269,8 +1438,11 @@
       <div class="nav-item" data-view="universe">
         <span class="nav-num">iv.</span><span>The Universe</span>
       </div>
+      <div class="nav-item" data-view="console">
+        <span class="nav-num">v.</span><span>Live Query</span>
+      </div>
       <div class="nav-item" data-view="method">
-        <span class="nav-num">v.</span><span>On Methodology</span>
+        <span class="nav-num">vi.</span><span>On Methodology</span>
       </div>
     </div>
 
@@ -1433,6 +1605,42 @@
 
       </section>
 
+      <!-- ============ VIEW 6: LIVE QUERY CONSOLE ============ -->
+      <section class="view" id="view-console">
+        <div class="article-header">
+          <div class="article-eyebrow">THE API · UNVARNISHED</div>
+          <h1 class="article-title">Live <em>Query</em></h1>
+          <p class="article-deck">The same engine, the same endpoint, the same wire format you'd hit from your own code. Edit the body, hit Run, see the response and timing. Copy the curl and walk away with it.</p>
+          <div class="article-byline">Routes through a tiny <code style="font-family:'JetBrains Mono';font-size:12px;background:var(--paper-2);padding:1px 6px;">/api/query</code> proxy so the Aito key stays server-side · `from` constrained to <code style="font-family:'JetBrains Mono';font-size:12px;background:var(--paper-2);padding:1px 6px;">companies</code></div>
+        </div>
+
+        <div class="console-tabs">
+          <button class="console-tab active" data-kind="predict"><span class="endpoint">POST</span>/_predict</button>
+          <button class="console-tab" data-kind="relate"><span class="endpoint">POST</span>/_relate</button>
+          <button class="console-tab" data-kind="match"><span class="endpoint">POST</span>/_match</button>
+        </div>
+
+        <div class="console-editor-wrap">
+          <textarea class="console-editor" id="console-editor" spellcheck="false" autocomplete="off"></textarea>
+        </div>
+
+        <div class="console-actions">
+          <button class="console-btn" id="console-run">Run ↵</button>
+          <button class="console-btn secondary" id="console-curl">Copy as curl</button>
+          <button class="console-btn secondary" id="console-reset">Reset</button>
+          <div class="console-status">
+            <span class="latency" id="console-latency">—</span>
+            <span class="source-pill" id="console-source" style="display:none;"></span>
+          </div>
+        </div>
+
+        <div class="console-hint">
+          <strong>Tip.</strong> Ctrl-Enter (or Cmd-Enter) to run. The body is a literal Aito query — anything you'd POST to <code style="font-family:'JetBrains Mono'">/api/v1/_predict</code> directly works here, as long as <code style="font-family:'JetBrains Mono'">from = "companies"</code>.
+        </div>
+
+        <pre class="console-response" id="console-response"><span class="placeholder">// run a query to see the response</span></pre>
+      </section>
+
       <!-- ============ VIEW 5: THE UNIVERSE ============ -->
       <section class="view" id="view-universe">
         <div class="article-header">
@@ -1578,6 +1786,27 @@
       <div class="aito-section" data-view="similar">
         <div class="aito-section-label">Architectural Note</div>
         <p>Similarity, prediction, and relate are <strong>the same engine, the same index, the same endpoint family</strong>. No separate vector store, no embedding pipeline, no synchronisation problem.</p>
+      </div>
+
+      <div class="aito-section" data-view="console">
+        <div class="aito-section-label">What this is</div>
+        <p>The same API every other view consumes, exposed directly. The body in the editor is what gets POSTed to Aito; the response panel shows exactly what comes back.</p>
+        <p>Use it to <strong>verify the methodology yourself</strong> — change the where-clause, see which features move the prediction, swap the focal company, watch the latency.</p>
+      </div>
+
+      <div class="aito-section" data-view="console">
+        <div class="aito-section-label">Guardrails</div>
+        <ul class="aito-bullets">
+          <li><code style="font-family:'JetBrains Mono';color:var(--aito-purple);">from</code> must equal <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">companies</code> — the only table loaded</li>
+          <li>15-second upstream timeout</li>
+          <li>API key stays server-side; "Copy as curl" gives you the direct-to-Aito snippet for your own key</li>
+          <li>Returns <code style="font-family:'JetBrains Mono';color:var(--aito-purple);">source: mock</code> if AITO creds aren't configured on the demo</li>
+        </ul>
+      </div>
+
+      <div class="aito-section" data-view="console">
+        <div class="aito-section-label">Sample bodies</div>
+        <p>Each tab loads with a realistic example. Edit freely — Aito accepts any combination of <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">where</code>, <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">predict</code>, <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">relate</code>, <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">match</code>, and <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">limit</code> per endpoint.</p>
       </div>
 
       <div class="aito-section" data-view="universe">
@@ -1824,6 +2053,7 @@
     thesis: 'Does the Thesis Hold?',
     similar: 'Historical Analogues',
     universe: 'The Universe',
+    console: 'Live Query',
     method: 'On Methodology'
   };
 
@@ -2013,6 +2243,169 @@
     renderUniverseRows();
   }
 
+  // ── Live Query console ──────────────────────────────────────────
+  const CONSOLE_SAMPLES = {
+    predict: {
+      from: "companies",
+      where: {
+        market_position: "dominant",
+        moat_strength: "wide",
+        market_quality: "secular_growth",
+        founder_still_ceo: true
+      },
+      predict: "outcome_bucket"
+    },
+    relate: {
+      from: "companies",
+      where: { outcome_bucket: "great" },
+      relate: "$features",
+      limit: 12
+    },
+    match: {
+      from: "companies",
+      match: { ticker: "NVDA", vintage_year: 2014 },
+      limit: 6
+    }
+  };
+  const consoleState = { kind: "predict", lastBody: null, lastResponse: null };
+
+  function jsonHighlight(value, indent = 0) {
+    const pad = '  '.repeat(indent);
+    if (value === null) return `<span class="nul">null</span>`;
+    if (typeof value === 'boolean') return `<span class="b">${value}</span>`;
+    if (typeof value === 'number') return `<span class="n">${value}</span>`;
+    if (typeof value === 'string') return `<span class="s">${esc(JSON.stringify(value))}</span>`;
+    if (Array.isArray(value)) {
+      if (value.length === 0) return '[]';
+      const items = value.map(v => `${pad}  ${jsonHighlight(v, indent + 1)}`).join(',\n');
+      return `[\n${items}\n${pad}]`;
+    }
+    if (typeof value === 'object') {
+      const keys = Object.keys(value);
+      if (keys.length === 0) return '{}';
+      const items = keys.map(k => `${pad}  <span class="k">"${esc(k)}"</span>: ${jsonHighlight(value[k], indent + 1)}`).join(',\n');
+      return `{\n${items}\n${pad}}`;
+    }
+    return esc(String(value));
+  }
+
+  function showToast(msg) {
+    let toast = document.querySelector('.copy-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.className = 'copy-toast';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1400);
+  }
+
+  function loadConsoleSample(kind) {
+    consoleState.kind = kind;
+    document.querySelectorAll('.console-tab').forEach(t =>
+      t.classList.toggle('active', t.dataset.kind === kind)
+    );
+    document.getElementById('console-editor').value = JSON.stringify(CONSOLE_SAMPLES[kind], null, 2);
+    document.getElementById('console-response').innerHTML =
+      '<span class="placeholder">// run a query to see the response</span>';
+    document.getElementById('console-latency').textContent = '—';
+    document.getElementById('console-source').style.display = 'none';
+  }
+
+  function readEditorBody() {
+    const text = document.getElementById('console-editor').value;
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+      throw new Error(`Invalid JSON in editor: ${e.message}`);
+    }
+  }
+
+  async function runConsoleQuery() {
+    const respEl = document.getElementById('console-response');
+    const latencyEl = document.getElementById('console-latency');
+    const sourceEl = document.getElementById('console-source');
+    let body;
+    try {
+      body = readEditorBody();
+    } catch (e) {
+      respEl.innerHTML = `<span class="placeholder">${esc(e.message)}</span>`;
+      latencyEl.innerHTML = '—';
+      sourceEl.className = 'source-pill error';
+      sourceEl.textContent = 'json error';
+      sourceEl.style.display = 'inline-flex';
+      return;
+    }
+    consoleState.lastBody = body;
+    latencyEl.innerHTML = '<b>...</b> running';
+    sourceEl.style.display = 'none';
+    respEl.innerHTML = '<span class="placeholder">// awaiting response…</span>';
+    const t0 = performance.now();
+    try {
+      const r = await fetch('./api/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kind: consoleState.kind, body }),
+      });
+      const ms = (performance.now() - t0).toFixed(0);
+      const payload = await r.json();
+      consoleState.lastResponse = payload;
+      const upstream = payload.latency_ms;
+      latencyEl.innerHTML = upstream != null
+        ? `upstream <b>${Number(upstream).toFixed(1)} ms</b> · roundtrip <b>${ms} ms</b>`
+        : `roundtrip <b>${ms} ms</b>`;
+      const src = payload.source || (payload.ok === false ? 'error' : 'unknown');
+      sourceEl.className = `source-pill ${src}`;
+      sourceEl.textContent = src;
+      sourceEl.style.display = 'inline-flex';
+      respEl.innerHTML = jsonHighlight(payload);
+    } catch (e) {
+      latencyEl.innerHTML = `failed in <b>${(performance.now() - t0).toFixed(0)} ms</b>`;
+      sourceEl.className = 'source-pill error';
+      sourceEl.textContent = 'network';
+      sourceEl.style.display = 'inline-flex';
+      respEl.innerHTML = `<span class="placeholder">${esc(e.message)}</span>`;
+    }
+  }
+
+  function copyConsoleCurl() {
+    let body;
+    try {
+      body = readEditorBody();
+    } catch (e) {
+      showToast(`invalid JSON`);
+      return;
+    }
+    const endpoint = `_${consoleState.kind}`;
+    const bodyStr = JSON.stringify(body);
+    const curl = `curl -X POST "$AITO_API_URL/api/v1/${endpoint}" \\
+  -H "x-api-key: $AITO_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '${bodyStr.replace(/'/g, "'\\''")}'`;
+    navigator.clipboard.writeText(curl).then(
+      () => showToast('curl copied'),
+      () => showToast('copy failed — check permissions')
+    );
+  }
+
+  function setupConsole() {
+    document.querySelectorAll('.console-tab').forEach(t => {
+      t.addEventListener('click', () => loadConsoleSample(t.dataset.kind));
+    });
+    document.getElementById('console-run').addEventListener('click', runConsoleQuery);
+    document.getElementById('console-curl').addEventListener('click', copyConsoleCurl);
+    document.getElementById('console-reset').addEventListener('click', () => loadConsoleSample(consoleState.kind));
+    const editor = document.getElementById('console-editor');
+    editor.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        runConsoleQuery();
+      }
+    });
+    loadConsoleSample('predict');
+  }
+
   // ── Boot ────────────────────────────────────────────────────────
   (async () => {
     try {
@@ -2027,6 +2420,7 @@
       renderRelate(relate);
       renderCalibration(calibration);
       renderUniverse(universe);
+      setupConsole();
 
       const initialKey = `${companies[0].ticker}_${companies[0].vintage}`;
       renderChips(companies, initialKey);
