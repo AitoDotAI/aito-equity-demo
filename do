@@ -33,6 +33,15 @@
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
+# Load .env so cred-gating in `pipeline all` works at the shell level (the
+# Python modules also load it via python-dotenv; this is for the bash checks).
+if [ -f .env ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . ./.env
+  set +a
+fi
+
 PORT="${PORT:-8401}"
 
 die() { echo "✗ $*" >&2; exit 1; }
@@ -62,12 +71,25 @@ cmd_pipeline() {
     load)       uv run python -m pipeline.aito.load "$@" ;;
     precompute) uv run python -m pipeline.aito.queries "$@" ;;
     all)
-      say "universe"   && cmd_pipeline universe
+      # Free, deterministic stages always run.
+      say "universe"   && cmd_pipeline universe "$@"
       say "filings"    && cmd_pipeline filings
-      say "extract"    && cmd_pipeline extract
       say "outcomes"   && cmd_pipeline outcomes
-      say "load"       && cmd_pipeline load
-      say "precompute" && cmd_pipeline precompute
+      # Cost-gated: extraction calls the LLM. Requires explicit --confirm-cost.
+      if [ -n "${OPENAI_MODEL_API_KEY:-}" ]; then
+        say "extract (LLM — needs --confirm-cost to actually spend; dry-run otherwise)"
+        cmd_pipeline extract --resume
+      else
+        say "extract — SKIPPED (OPENAI_MODEL_API_KEY not set)"
+      fi
+      # Cred-gated: load + precompute need a live Aito instance.
+      if [ -n "${AITO_API_URL:-}" ] && [ -n "${AITO_API_KEY:-}" ]; then
+        say "load"       && cmd_pipeline load
+        say "precompute" && cmd_pipeline precompute
+      else
+        say "load + precompute — SKIPPED (AITO_API_URL / AITO_API_KEY not set)"
+        say "  → run './do pipeline precompute --static-only' to refresh meta/universe from local CSVs"
+      fi
       ;;
     help|-h|--help|"")
       sed -n '/── Pipeline/,/── Tests/p' "$0" | sed -n '/^#/p'
