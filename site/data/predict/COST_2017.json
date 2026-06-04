@@ -49,22 +49,22 @@
       {
         "label": "Poor",
         "range": "-63% to +0%",
-        "prob": 0.0397
+        "prob": 0.0485
       },
       {
         "label": "Market",
         "range": "+0% to +89%",
-        "prob": 0.24
+        "prob": 0.2448
       },
       {
         "label": "Good",
         "range": "+89% to +215%",
-        "prob": 0.4828
+        "prob": 0.46
       },
       {
         "label": "Great",
         "range": ">= +215%",
-        "prob": 0.2329
+        "prob": 0.2422
       }
     ]
   },

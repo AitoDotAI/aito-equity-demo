@@ -5,140 +5,146 @@
       "feature": "sector = Information Technology",
       "field": "sector",
       "type": "quant",
-      "lift": 2.33,
-      "n": 65,
-      "lift_min": 2.26,
-      "lift_max": 2.37,
+      "lift": 2.32,
+      "n": 116,
+      "lift_min": 2.17,
+      "lift_max": 2.47,
       "bar_pct": 46,
       "per_vintage": {
-        "2014": 2.26,
-        "2017": 2.37
+        "2014": 2.47,
+        "2017": 2.35,
+        "2020": 2.17
       }
+    },
+    {
+      "feature": "capital_allocation = 5",
+      "field": "capital_allocation",
+      "type": "qual",
+      "lift": 2.1,
+      "n": 8,
+      "lift_min": null,
+      "lift_max": null,
+      "bar_pct": 42,
+      "per_vintage": {}
     },
     {
       "feature": "leadership_quality = 5",
       "field": "leadership_quality",
       "type": "qual",
-      "lift": 1.95,
-      "n": 31,
-      "lift_min": 1.81,
-      "lift_max": 2.06,
+      "lift": 1.98,
+      "n": 56,
+      "lift_min": 1.88,
+      "lift_max": 2.13,
       "bar_pct": 39,
       "per_vintage": {
-        "2014": 1.81,
-        "2017": 2.06
-      }
-    },
-    {
-      "feature": "moat_type = network_effects",
-      "field": "moat_type",
-      "type": "qual",
-      "lift": 1.68,
-      "n": 30,
-      "lift_min": 1.67,
-      "lift_max": 1.76,
-      "bar_pct": 33,
-      "per_vintage": {
-        "2014": 1.76,
-        "2017": 1.67
+        "2014": 1.96,
+        "2017": 2.13,
+        "2020": 1.88
       }
     },
     {
       "feature": "execution_track_record = 5",
       "field": "execution_track_record",
       "type": "qual",
-      "lift": 1.68,
-      "n": 36,
-      "lift_min": 1.58,
-      "lift_max": 1.75,
-      "bar_pct": 33,
+      "lift": 1.71,
+      "n": 67,
+      "lift_min": 1.59,
+      "lift_max": 1.82,
+      "bar_pct": 34,
       "per_vintage": {
-        "2014": 1.58,
-        "2017": 1.75
+        "2014": 1.59,
+        "2017": 1.82,
+        "2020": 1.71
       }
     },
     {
-      "feature": "sector = Consumer Discretionary",
-      "field": "sector",
-      "type": "quant",
-      "lift": 1.54,
-      "n": 57,
-      "lift_min": 1.38,
-      "lift_max": 1.65,
-      "bar_pct": 30,
+      "feature": "moat_type = network_effects",
+      "field": "moat_type",
+      "type": "qual",
+      "lift": 1.57,
+      "n": 60,
+      "lift_min": 1.39,
+      "lift_max": 1.74,
+      "bar_pct": 31,
       "per_vintage": {
-        "2014": 1.38,
-        "2017": 1.65
-      }
-    },
-    {
-      "feature": "sector = Industrials",
-      "field": "sector",
-      "type": "quant",
-      "lift": 1.5,
-      "n": 83,
-      "lift_min": 1.49,
-      "lift_max": 1.51,
-      "bar_pct": 30,
-      "per_vintage": {
-        "2014": 1.49,
-        "2017": 1.51
+        "2014": 1.67,
+        "2017": 1.74,
+        "2020": 1.39
       }
     },
     {
       "feature": "moat_type = switching_costs",
       "field": "moat_type",
       "type": "qual",
-      "lift": 1.43,
-      "n": 40,
-      "lift_min": 1.27,
-      "lift_max": 1.54,
+      "lift": 1.56,
+      "n": 80,
+      "lift_min": 1.3,
+      "lift_max": 1.69,
+      "bar_pct": 31,
+      "per_vintage": {
+        "2014": 1.3,
+        "2017": 1.53,
+        "2020": 1.69
+      }
+    },
+    {
+      "feature": "sector = Industrials",
+      "field": "sector",
+      "type": "quant",
+      "lift": 1.48,
+      "n": 157,
+      "lift_min": 1.45,
+      "lift_max": 1.51,
+      "bar_pct": 29,
+      "per_vintage": {
+        "2014": 1.48,
+        "2017": 1.51,
+        "2020": 1.45
+      }
+    },
+    {
+      "feature": "sector = Consumer Discretionary",
+      "field": "sector",
+      "type": "quant",
+      "lift": 1.41,
+      "n": 100,
+      "lift_min": 1.24,
+      "lift_max": 1.64,
       "bar_pct": 28,
       "per_vintage": {
-        "2014": 1.27,
-        "2017": 1.54
-      }
-    },
-    {
-      "feature": "moat_strength = wide",
-      "field": "moat_strength",
-      "type": "qual",
-      "lift": 1.34,
-      "n": 123,
-      "lift_min": 1.27,
-      "lift_max": 1.41,
-      "bar_pct": 26,
-      "per_vintage": {
-        "2014": 1.41,
-        "2017": 1.27
-      }
-    },
-    {
-      "feature": "moat_type = cost_advantage",
-      "field": "moat_type",
-      "type": "qual",
-      "lift": 1.28,
-      "n": 21,
-      "lift_min": 1.19,
-      "lift_max": 1.35,
-      "bar_pct": 25,
-      "per_vintage": {
-        "2014": 1.19,
-        "2017": 1.35
+        "2014": 1.38,
+        "2017": 1.64,
+        "2020": 1.24
       }
     },
     {
       "feature": "strategic_clarity = 5",
       "field": "strategic_clarity",
       "type": "qual",
-      "lift": 1.28,
-      "n": 116,
+      "lift": 1.29,
+      "n": 201,
       "lift_min": 1.19,
-      "lift_max": 1.37,
+      "lift_max": 1.36,
       "bar_pct": 25,
       "per_vintage": {
-        "2014": 1.37,
-        "2017": 1.19
+        "2014": 1.3,
+        "2017": 1.19,
+        "2020": 1.36
+      }
+    },
+    {
+      "feature": "moat_strength = wide",
+      "field": "moat_strength",
+      "type": "qual",
+      "lift": 1.27,
+      "n": 222,
+      "lift_min": 1.15,
+      "lift_max": 1.39,
+      "bar_pct": 25,
+      "per_vintage": {
+        "2014": 1.39,
+        "2017": 1.29,
+        "2020": 1.15
       }
     }
   ],

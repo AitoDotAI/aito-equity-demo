@@ -39,32 +39,32 @@
   ],
   "prediction": {
     "confidence": "LOW",
-    "peak": "Poor",
+    "peak": "Good",
     "buckets": [
       {
         "label": "Disaster",
         "range": "< -63%",
-        "prob": 0.0503
+        "prob": 0.0515
       },
       {
         "label": "Poor",
         "range": "-63% to +0%",
-        "prob": 0.2737
+        "prob": 0.2244
       },
       {
         "label": "Market",
         "range": "+0% to +89%",
-        "prob": 0.2408
+        "prob": 0.2021
       },
       {
         "label": "Good",
         "range": "+89% to +215%",
-        "prob": 0.2396
+        "prob": 0.2634
       },
       {
         "label": "Great",
         "range": ">= +215%",
-        "prob": 0.1955
+        "prob": 0.2585
       }
     ]
   },

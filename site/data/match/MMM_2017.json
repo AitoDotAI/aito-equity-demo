@@ -6,10 +6,22 @@
   },
   "matches": [
     {
+      "ticker": "NSC",
+      "vintage": 2020,
+      "name": "Norfolk Southern",
+      "similarity": 3.993,
+      "description": "Competitive advantage is rooted in capital-intensive network scale and infrastructure (\"net property of approximately $31 billion on a historical cost basis\"), extensive owned and leased route miles and equipment, high barriers to entry and a large contracted/exempt revenue base (\"Approximately 90% ",
+      "outcome": {
+        "text": "+85%",
+        "window": "'20\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
       "ticker": "LMT",
       "vintage": 2014,
       "name": "Lockheed Martin",
-      "similarity": 3.77,
+      "similarity": 3.721,
       "description": "The primary advantage is scale: long-duration, multi-contract programs (e.g., F-35 with concurrent development and LRIP, expected to continue for many years), a large backlog ($82.3B), and extensive government relationships and facilities\u2014all reinforcing large fixed-cost absorption and production sc",
       "outcome": {
         "text": "+401%",
@@ -18,10 +30,22 @@
       }
     },
     {
+      "ticker": "WM",
+      "vintage": 2014,
+      "name": "Waste Management",
+      "similarity": 3.721,
+      "description": "The filing emphasizes high capital requirements and permitting barriers\u2014\"significant capital requirements of developing and operating a landfill serve as a barrier to landfill ownership\"\u2014and the value of internalization and the largest network, indicating durable scale advantages.",
+      "outcome": {
+        "text": "+524%",
+        "window": "'14\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
       "ticker": "LMT",
       "vintage": 2017,
       "name": "Lockheed Martin",
-      "similarity": 3.77,
+      "similarity": 3.721,
       "description": "Competitive advantage is driven primarily by large-scale, long\u2011duration programs, backlog and integrated capabilities (e.g., F-35 multi-year production and sustainment, substantial backlog including Sikorsky) that create production and sustainment scale and high barriers to entry; the filing highlig",
       "outcome": {
         "text": "+171%",
@@ -30,50 +54,26 @@
       }
     },
     {
-      "ticker": "MMM",
-      "vintage": 2014,
-      "name": "3M",
-      "similarity": 3.332,
-      "description": "The filing highlights durable, recognizable product brands and a broad portfolio across industrial, health care, consumer and safety businesses (e.g., Scotch\u00ae, Post-it\u00ae, Filtrete\u2122), supported by global scale and the ability to raise selling prices (selling prices rose 1.4% in 2012), implying a wide ",
-      "outcome": {
-        "text": "+95%",
-        "window": "'14\u2192'26",
-        "sentiment": "positive"
-      }
-    },
-    {
       "ticker": "CTAS",
-      "vintage": 2014,
+      "vintage": 2020,
       "name": "Cintas",
-      "similarity": 2.845,
-      "description": "The primary advantage is scale: the extensive route/facility footprint, five manufacturing facilities and distribution centers provide cost and distribution efficiencies (e.g., local rental processing plants and routes). However, the risk factors explicitly note intense competition and potential pri",
+      "similarity": 3.721,
+      "description": "Competitive advantage is driven by scale \u2014 extensive local delivery routes, manufacturing and distribution footprint and large installed base \u2014 which the filing highlights as central to serving \"primary markets [that] are local in nature and highly fragmented,\" a dynamic where scale confers durable ",
       "outcome": {
-        "text": "+1241%",
-        "window": "'14\u2192'26",
+        "text": "+174%",
+        "window": "'20\u2192'26",
         "sentiment": "positive"
       }
     },
     {
-      "ticker": "CTAS",
-      "vintage": 2017,
-      "name": "Cintas",
-      "similarity": 2.845,
-      "description": "Competitive advantage appears driven by scale and distribution (the Company operates thousands of local routes and multiple manufacturing and distribution facilities), which creates cost and service delivery advantages, but the filing also notes local, regional and national competitors and a \"highly",
+      "ticker": "LMT",
+      "vintage": 2020,
+      "name": "Lockheed Martin",
+      "similarity": 3.721,
+      "description": "Competitive advantage is driven by large-scale, long-duration government contracts and program positions (e.g., F-35 production/backlog: \"we have 396 production aircraft in backlog\" and an objective of 2,456 aircraft) plus integrated capabilities across defense, space and services\u2014creating high fixe",
       "outcome": {
-        "text": "+551%",
-        "window": "'17\u2192'26",
-        "sentiment": "positive"
-      }
-    },
-    {
-      "ticker": "GWW",
-      "vintage": 2017,
-      "name": "W. W. Grainger",
-      "similarity": 2.845,
-      "description": "The filing emphasizes scale advantages\u2014extensive DC and branch network, ~1.4 million stocked products, large eCommerce platform (\"eCommerce revenues were $3.3 billion in 2015... represented 41% of total revenues\"), and vendor relationships\u2014as the primary competitive edge; however branch closures, re",
-      "outcome": {
-        "text": "+503%",
-        "window": "'17\u2192'26",
+        "text": "+61%",
+        "window": "'20\u2192'26",
         "sentiment": "positive"
       }
     }

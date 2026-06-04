@@ -9,7 +9,7 @@
       "ticker": "DLTR",
       "vintage": 2014,
       "name": "Dollar Tree",
-      "similarity": 4.244,
+      "similarity": 4.19,
       "description": "Filing emphasizes buying power and supply-chain investments (\"substantial buying power\", \"investments in technology\", automatic replenishment and distribution center expansion) and rising selling square footage from ~30.3M to 40.5M, supporting a scale-based advantage that appears stable and reinforc",
       "outcome": {
         "text": "+68%",
@@ -18,10 +18,22 @@
       }
     },
     {
+      "ticker": "WMT",
+      "vintage": 2014,
+      "name": "Walmart",
+      "similarity": 4.19,
+      "description": "The company emphasizes EDLP as its pricing philosophy (\u201cprice items at a low price every day\u201d) and describes extensive store networks, private labels and global operations (26 countries), implying durable scale advantages and purchasing/distribution economics that support a wide moat.",
+      "outcome": {
+        "text": "+484%",
+        "window": "'14\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
       "ticker": "COST",
       "vintage": 2014,
       "name": "Costco",
-      "similarity": 3.934,
+      "similarity": 3.885,
       "description": "The filing repeatedly attributes low-price ability to \"high sales volumes and rapid inventory turnover\" and efficient distribution (depots, cross-docking), plus recurring membership fees and a high Executive-member penetration that reinforce volume economics and pricerelated advantages.",
       "outcome": {
         "text": "+991%",
@@ -33,7 +45,7 @@
       "ticker": "DG",
       "vintage": 2014,
       "name": "Dollar General",
-      "similarity": 3.934,
+      "similarity": 3.885,
       "description": "The company emphasizes low\u2011cost operating structure, extensive distribution network (11 distribution centers plus leased space), and purchasing power from a large store base ('attractive store economics' and 'strong purchasing power'), which create reinforcing scale advantages across sourcing, distr",
       "outcome": {
         "text": "+101%",
@@ -42,37 +54,25 @@
       }
     },
     {
+      "ticker": "COST",
+      "vintage": 2020,
+      "name": "Costco",
+      "similarity": 3.885,
+      "description": "The primary advantage is scale: the company emphasizes \"volume purchasing, efficient distribution and reduced handling of merchandise\" enabling significantly lower gross margins, plus a strong private-label (Kirkland Signature) and high recurring membership fees that reinforce the scale benefits.",
+      "outcome": {
+        "text": "+281%",
+        "window": "'20\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
       "ticker": "HSY",
       "vintage": 2014,
       "name": "Hershey Company (The)",
-      "similarity": 3.752,
+      "similarity": 3.7,
       "description": "The company states that the \u201cfoundation of our marketing strategy is our strong brand equities,\u201d invests heavily in advertising and product innovation, and repeatedly leverages those brands across geographies and product lines\u2014indicating a durable, reinforcing brand advantage.",
       "outcome": {
         "text": "+172%",
-        "window": "'14\u2192'26",
-        "sentiment": "positive"
-      }
-    },
-    {
-      "ticker": "KO",
-      "vintage": 2014,
-      "name": "Coca-Cola Company (The)",
-      "similarity": 3.752,
-      "description": "The Company emphasizes Trademark Coca\u2011Cola and other global trademarks and a worldwide bottling system; the proxy and 10\u2011K highlight pervasive brand franchises and an \"unrivaled distribution system,\" suggesting a durable, reinforcing brand advantage across markets.",
-      "outcome": {
-        "text": "+195%",
-        "window": "'14\u2192'26",
-        "sentiment": "positive"
-      }
-    },
-    {
-      "ticker": "PEP",
-      "vintage": 2014,
-      "name": "PepsiCo",
-      "similarity": 3.752,
-      "description": "The filing emphasizes durable trademarks and brands (long list of household names) and \"go-to-market systems and strong brands,\" along with scale and integrated portfolio benefits (\"Power of One\"), implying a stable, reinforcing brand-based advantage across markets.",
-      "outcome": {
-        "text": "+164%",
         "window": "'14\u2192'26",
         "sentiment": "positive"
       }

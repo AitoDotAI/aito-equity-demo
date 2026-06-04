@@ -1,7 +1,7 @@
 {
   "observations": 1520,
   "features": 15,
-  "p50_latency_ms": 63,
+  "p50_latency_ms": 65,
   "training_runs": 0,
   "vintages": [
     2014,
