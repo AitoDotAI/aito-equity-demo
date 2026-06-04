@@ -1,6 +1,7 @@
 {
   "_pending": true,
   "_note": "Computation pending \u2014 run `./do pipeline precompute` with AITO_API_URL + AITO_API_KEY set.",
-  "target": "outcome_bucket = great",
-  "rows": []
+  "vintages": [],
+  "features": [],
+  "drift_score": null
 }

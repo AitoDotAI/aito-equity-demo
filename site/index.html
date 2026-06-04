@@ -1223,6 +1223,151 @@
     color: var(--ink-fade);
   }
 
+  /* ===== PENDING STATES + RELATE WHISKERS ===== */
+  .pending-banner {
+    background: #fbf6ec;
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--gold);
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    font-family: 'Source Serif 4', serif;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .pending-banner b {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .pending-banner code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--paper-2);
+    padding: 1px 6px;
+  }
+
+  /* whisker range on relate bars */
+  .relate-bar { position: relative; }
+  .relate-bar-range {
+    position: absolute;
+    top: 50%;
+    height: 1.5px;
+    background: var(--ink-fade);
+    transform: translateY(-50%);
+    z-index: 1;
+  }
+  .relate-bar-range::before,
+  .relate-bar-range::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    width: 1.5px;
+    height: 7px;
+    background: var(--ink-fade);
+  }
+  .relate-bar-range::before { left: 0; }
+  .relate-bar-range::after  { right: 0; }
+  .relate-bar-fill { position: relative; z-index: 0; }
+  .relate-lift-range {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--ink-fade);
+    margin-left: 4px;
+  }
+
+  /* leakage table inside Methodology view */
+  .leakage-wrap {
+    background: #fbf6ec;
+    border: 1px solid var(--rule);
+    padding: 22px 24px;
+    margin-top: 20px;
+  }
+  .leakage-wrap h4 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .leakage-wrap .lead {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+  table.leakage-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Source Serif 4', serif;
+    font-size: 12.5px;
+  }
+  table.leakage-table thead th {
+    text-align: left;
+    padding: 7px 10px;
+    border-bottom: 1.5px solid var(--rule);
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+    font-weight: 600;
+  }
+  table.leakage-table thead th.num,
+  table.leakage-table tbody td.num {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  table.leakage-table tbody td {
+    padding: 7px 10px;
+    color: var(--ink-soft);
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: middle;
+  }
+  table.leakage-table tbody td.feature {
+    font-family: 'Fraunces', serif;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  td.drift-good { color: var(--green); }
+  td.drift-warn { color: var(--gold); }
+  td.drift-bad  { color: var(--accent); }
+  .leakage-summary {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--rule);
+    font-family: 'Source Serif 4', serif;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .leakage-summary b {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--ink);
+  }
+
+  /* calibration caption when real */
+  .calib-caption {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--rule-soft);
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--ink-fade);
+  }
+  .calib-caption b {
+    font-family: 'JetBrains Mono', monospace;
+    font-style: normal;
+    color: var(--ink);
+  }
+
   /* ===== LIVE QUERY CONSOLE ===== */
   .console-tabs {
     display: flex;
@@ -1595,12 +1740,18 @@
           <div style="background: #fbf6ec; border: 1px solid var(--rule); padding: 20px 22px;">
             <div style="font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-fade); font-weight: 600; margin-bottom: 10px;">Engine</div>
             <ul style="list-style: none; padding: 0; font-family: 'Source Serif 4', serif; font-size: 13px; line-height: 1.85; color: var(--ink-soft);">
-              <li>· Claude Sonnet for LLM feature extraction</li>
+              <li>· OpenAI gpt-5-mini for LLM feature extraction</li>
               <li>· <strong style="font-family: 'JetBrains Mono'; font-size: 12px;">aito.ai</strong> predictive database</li>
               <li>· Single endpoint, no training pipeline</li>
               <li>· Open repository: aito-equity-demo</li>
             </ul>
           </div>
+        </div>
+
+        <div class="section-rule"><span>Leakage diagnostic</span></div>
+
+        <div class="leakage-wrap" id="leakage-wrap">
+          <!-- rendered from data/leakage_probe.json -->
         </div>
 
       </section>
@@ -1968,25 +2119,59 @@
   }
 
   // ── Render: view 2 (relate + calibration) ───────────────────────
+  function pendingBanner(note) {
+    return `<div class="pending-banner"><b>Computation pending</b>${esc(note || 'Run the pipeline to populate this chart.')}</div>`;
+  }
+
   function renderRelate(r) {
-    document.getElementById('relate-grid').innerHTML = r.rows.map((row, i) => {
+    const grid = document.getElementById('relate-grid');
+    const pull = document.getElementById('thesis-pullquote');
+    if (r._pending) {
+      grid.innerHTML = '';
+      grid.insertAdjacentHTML('beforebegin', '');
+      // attach pending banner ABOVE the grid (insert in place)
+      grid.innerHTML = pendingBanner(r._note);
+      pull.innerHTML = 'Once the pipeline runs against a configured Aito instance, this chart shows the feature lifts associated with the <em>great</em> outcome bucket — averaged across vintages with min-max whiskers.';
+      return;
+    }
+
+    grid.innerHTML = r.rows.map((row, i) => {
       const isQuant = row.type === 'quant';
       const tag = isQuant ? '<span class="type-tag quant">quant.</span>' : '<span class="type-tag">qual.</span>';
       const fillCls = isQuant ? 'relate-bar-fill quant' : 'relate-bar-fill';
       const lift = `×${row.lift.toFixed(2)}`;
+      const hasRange = (row.lift_min != null && row.lift_max != null && row.lift_max > row.lift_min);
+      let whisker = '';
+      let rangeText = '';
+      if (hasRange) {
+        const minPct = Math.min(100, (row.lift_min / 5) * 100);
+        const maxPct = Math.min(100, (row.lift_max / 5) * 100);
+        const w = maxPct - minPct;
+        whisker = `<div class="relate-bar-range" style="left: ${minPct.toFixed(1)}%; width: ${w.toFixed(1)}%;"></div>`;
+        rangeText = ` <span class="relate-lift-range">[${row.lift_min.toFixed(1)}–${row.lift_max.toFixed(1)}]</span>`;
+      }
       return `<div class="relate-row">
         <div class="relate-rank">${roman(i + 1)}.</div>
         <div class="relate-feature">${row.feature_html || esc(row.feature)}${tag}</div>
-        <div class="relate-bar"><div class="${fillCls}" style="width: ${row.bar_pct}%"></div></div>
-        <div class="relate-lift">${lift}</div>
+        <div class="relate-bar">${whisker}<div class="${fillCls}" style="width: ${row.bar_pct}%"></div></div>
+        <div class="relate-lift">${lift}${rangeText}</div>
       </div>`;
     }).join('');
 
-    document.getElementById('thesis-pullquote').innerHTML = r.pullquote_html || esc(r.pullquote || '');
+    pull.innerHTML = r.pullquote_html || esc(r.pullquote || '');
   }
 
   function renderCalibration(c) {
-    document.getElementById('calib-bars').innerHTML = c.deciles.map(d => `
+    const container = document.getElementById('calib-bars');
+    if (c._pending) {
+      const parent = container.closest('.calib-chart');
+      const existing = parent.querySelector('.pending-banner');
+      if (existing) existing.remove();
+      container.innerHTML = '';
+      parent.querySelector(':scope > div')?.insertAdjacentHTML('afterend', pendingBanner(c._note));
+      return;
+    }
+    container.innerHTML = c.deciles.map(d => `
       <div class="calib-bar">
         <div class="calib-bar-pair">
           <div class="calib-bar-predicted" style="height: ${(d.predicted * 100).toFixed(0)}%"></div>
@@ -1995,6 +2180,58 @@
         <div class="calib-bar-label">${esc(d.label)}</div>
       </div>
     `).join('');
+
+    // Caption with n + Brier
+    const parent = container.closest('.calib-chart');
+    parent.querySelectorAll('.calib-caption').forEach(el => el.remove());
+    if (c.n_observations != null) {
+      const cap = document.createElement('div');
+      cap.className = 'calib-caption';
+      cap.innerHTML = `Brier score <b>${c.brier_score?.toFixed?.(3) ?? c.brier_score}</b> · N = <b>${c.n_observations.toLocaleString()}</b> observations. ${esc(c.methodology || '')}`;
+      parent.appendChild(cap);
+    }
+  }
+
+  function renderLeakage(payload) {
+    const wrap = document.getElementById('leakage-wrap');
+    if (!wrap) return;
+    if (payload._pending) {
+      wrap.innerHTML = `<h4>Leakage probe</h4><div class="lead">Cross-vintage stability check on feature lifts — a low drift score bounds LLM training-data leakage. Currently pending.</div>` + pendingBanner(payload._note);
+      return;
+    }
+    const vintages = payload.vintages || [];
+    const features = payload.features || [];
+    const driftClass = d => d < 0.25 ? 'drift-good' : (d < 0.6 ? 'drift-warn' : 'drift-bad');
+    const tbody = features.map(f => `
+      <tr>
+        <td class="feature">${esc(f.feature)}</td>
+        ${vintages.map(v => {
+          const lift = f.per_vintage?.[String(v)];
+          return `<td class="num">${lift != null ? '×' + lift.toFixed(2) : '—'}</td>`;
+        }).join('')}
+        <td class="num ${driftClass(f.drift)}">${f.drift.toFixed(2)}</td>
+      </tr>
+    `).join('');
+    const drift = payload.drift_score;
+    const driftWord = drift == null ? '—' : (drift < 0.25 ? 'tight' : drift < 0.6 ? 'acceptable' : 'concerning');
+    wrap.innerHTML = `
+      <h4>Leakage probe — per-vintage lift stability</h4>
+      <div class="lead">For each top feature, lift computed independently per vintage. Drift = (max − min) / mean lift. Tight drift → bounded LLM lookahead bias.</div>
+      <table class="leakage-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            ${vintages.map(v => `<th class="num">${v}</th>`).join('')}
+            <th class="num">Drift</th>
+          </tr>
+        </thead>
+        <tbody>${tbody}</tbody>
+      </table>
+      <div class="leakage-summary">
+        Average drift across top features: <b>${drift != null ? drift.toFixed(2) : '—'}</b> (${driftWord}).
+        <span style="font-style: italic;">${esc(payload.interpretation || '')}</span>
+      </div>
+    `;
   }
 
   // ── Render: view 3 (match) ──────────────────────────────────────
@@ -2409,17 +2646,19 @@
   // ── Boot ────────────────────────────────────────────────────────
   (async () => {
     try {
-      const [meta, companies, relate, calibration, universe] = await Promise.all([
+      const [meta, companies, relate, calibration, universe, leakage] = await Promise.all([
         fetchJson('./data/meta.json'),
         fetchJson('./data/companies.json'),
         fetchJson('./data/relate.json'),
         fetchJson('./data/calibration.json'),
-        fetchJson('./data/universe.json')
+        fetchJson('./data/universe.json'),
+        fetchJson('./data/leakage_probe.json').catch(() => ({ _pending: true, _note: 'leakage_probe.json not generated yet' }))
       ]);
       renderMeta(meta);
       renderRelate(relate);
       renderCalibration(calibration);
       renderUniverse(universe);
+      renderLeakage(leakage);
       setupConsole();
 
       const initialKey = `${companies[0].ticker}_${companies[0].vintage}`;

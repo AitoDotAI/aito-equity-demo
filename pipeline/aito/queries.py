@@ -163,37 +163,109 @@ def emit_companies(out_dir: Path) -> None:
     (out_dir / "companies.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
-def emit_relate(client: AitoClient, out_dir: Path, latency_samples: list[float]) -> None:
-    body = {
-        "from": COMPANIES_TABLE,
-        "where": {"outcome_bucket": "great"},
-        "relate": "$features",
-        "limit": 12,
-    }
-    result, ms = _measure_latency(client, body, "relate")
-    latency_samples.append(ms)
-    rows = []
-    for hit in result.get("hits", []):
-        feature_str = _flatten_relate_feature(hit)
-        lift = float(hit.get("lift") or hit.get("$lift") or 0.0)
-        ftype = "qual" if _is_qualitative(hit) else "quant"
-        rows.append(
+def emit_relate(
+    client: AitoClient,
+    companies_df: pd.DataFrame,
+    out_dir: Path,
+    latency_samples: list[float],
+) -> None:
+    """Compute per-vintage relate, then aggregate into:
+      - relate.json: mean lift per feature + min/max whisker range across vintages
+      - leakage_probe.json: same data presented as a per-vintage comparison
+        (stable lifts → bounded LLM training-data leakage)
+
+    Three vintages = three folds. Mean lift is the headline number; the
+    spread across vintages is the in-built cross-validation signal —
+    a more methodologically honest CI than a bootstrap on a single corpus.
+    """
+    vintages = sorted(set(int(v) for v in companies_df["vintage_year"].dropna()))
+
+    # Run relate per vintage, building a {feature_key: {vintage: lift}} table.
+    per_feature: dict[str, dict[int, float]] = {}
+    feature_meta: dict[str, str] = {}  # feature_key -> ftype (qual|quant)
+    for v in vintages:
+        body = {
+            "from": COMPANIES_TABLE,
+            "where": {"outcome_bucket": "great", "vintage_year": v},
+            "relate": "$features",
+            "limit": 60,
+        }
+        result, ms = _measure_latency(client, body, "relate")
+        latency_samples.append(ms)
+        for hit in result.get("hits", []):
+            key = _flatten_relate_feature(hit)
+            lift = float(hit.get("lift") or hit.get("$lift") or 0.0)
+            per_feature.setdefault(key, {})[v] = lift
+            feature_meta.setdefault(key, "qual" if _is_qualitative(hit) else "quant")
+
+    # Build aggregate rows (mean / min / max across vintages where the feature appeared).
+    agg_rows: list[dict] = []
+    for key, by_vintage in per_feature.items():
+        lifts = list(by_vintage.values())
+        if not lifts:
+            continue
+        mean_lift = sum(lifts) / len(lifts)
+        agg_rows.append(
             {
-                "feature": feature_str,
-                "type": ftype,
-                "lift": round(lift, 2),
-                "bar_pct": min(100, int(lift / 5 * 100)),
+                "feature": key,
+                "type": feature_meta.get(key, "quant"),
+                "lift": round(mean_lift, 2),
+                "lift_min": round(min(lifts), 2),
+                "lift_max": round(max(lifts), 2),
+                "bar_pct": min(100, int(mean_lift / 5 * 100)),
+                "per_vintage": {str(v): round(by_vintage[v], 2) for v in by_vintage},
+                "n_vintages": len(lifts),
             }
         )
-    payload = {
+    agg_rows.sort(key=lambda r: r["lift"], reverse=True)
+    top = agg_rows[:10]
+
+    relate_payload = {
         "target": "outcome_bucket = great",
-        "rows": rows[:10],
+        "rows": top,
+        "n_vintages": len(vintages),
+        "vintages": vintages,
         "pullquote_html": (
-            "Across the universe, these features are most associated with landing in the "
-            "<em>great</em> outcome bucket."
+            "Lifts are averaged across "
+            f"{len(vintages)} vintages; whiskers show the per-vintage min-max range. "
+            "Stable lifts across vintages indicate the LLM grader is not leaking "
+            "post-vintage knowledge into its features."
         ),
     }
-    (out_dir / "relate.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    (out_dir / "relate.json").write_text(json.dumps(relate_payload, indent=2), encoding="utf-8")
+
+    # Leakage probe: same data, methodology-card framing.
+    leakage_features = []
+    drifts: list[float] = []
+    for r in top:
+        lifts_present = [r["per_vintage"][k] for k in r["per_vintage"]]
+        if not lifts_present or r["lift"] == 0:
+            continue
+        drift = (max(lifts_present) - min(lifts_present)) / r["lift"]
+        drifts.append(drift)
+        leakage_features.append(
+            {
+                "feature": r["feature"],
+                "type": r["type"],
+                "per_vintage": r["per_vintage"],
+                "drift": round(drift, 2),
+                "lift_mean": r["lift"],
+            }
+        )
+    avg_drift = round(sum(drifts) / len(drifts), 2) if drifts else None
+    leakage_payload = {
+        "vintages": vintages,
+        "features": leakage_features,
+        "drift_score": avg_drift,
+        "interpretation": (
+            "Drift = (max − min) / mean lift across vintages, averaged over the top "
+            f"{len(leakage_features)} features. "
+            "Low values (< 0.5) suggest the LLM is not smuggling future knowledge into "
+            "feature grades; high values (> 1.0) suggest unstable lifts — investigate "
+            "the offending feature."
+        ),
+    }
+    (out_dir / "leakage_probe.json").write_text(json.dumps(leakage_payload, indent=2), encoding="utf-8")
 
 
 def _flatten_relate_feature(hit: dict) -> str:
@@ -218,27 +290,125 @@ def _is_qualitative(hit: dict) -> bool:
     return field in QUALITATIVE_FIELDS
 
 
-def emit_calibration(client: AitoClient, out_dir: Path, latency_samples: list[float]) -> None:
-    """Calibration plot: predicted vs realised by decile.
+CALIBRATION_FEATURE_COLS = (
+    "market_position",
+    "moat_type",
+    "moat_strength",
+    "market_quality",
+    "leadership_quality",
+    "founder_still_ceo",
+    "sector",
+)
 
-    Methodology: for each row, call `_predict` on outcome_bucket given the
-    company's grades; bucket the resulting P(great) into deciles; compare
-    predicted P(great) to the actual frequency of `outcome_bucket = great`
-    within that decile.
 
-    This is a relatively expensive cross-validation pass — we sample a
-    subset rather than processing the whole universe.
+def emit_calibration(
+    client: AitoClient,
+    companies_df: pd.DataFrame,
+    out_dir: Path,
+    latency_samples: list[float],
+    sample_cap: int = 500,
+) -> None:
+    """Compute real calibration: for each row with a recorded outcome, predict
+    P(great) from its features; bin into deciles by predicted probability;
+    plot mean predicted vs realised frequency per bin.
+
+    Caveats:
+      - This is an *in-sample* calibration over the full corpus (Aito has all
+        rows loaded). A leave-vintage-out holdout would be more rigorous; see
+        leakage_probe for the cross-vintage stability check that approximates it.
+      - We cap at `sample_cap` predict calls to keep this stage to ~30s of
+        Aito work even on cold instances.
     """
-    # Placeholder: emit a synthetic well-calibrated curve so the chart still
-    # renders. Real calibration computation is a separate, larger job —
-    # marked as a follow-up in pipeline notebooks.
-    deciles = [
-        {"label": f"{d}0%", "predicted": d / 10, "actual": max(0.0, d / 10 + (0.05 if d % 2 else -0.03))}
-        for d in range(1, 11)
-    ]
+    pairs: list[tuple[float, int]] = []  # (predicted P(great), actual: 1 if great else 0)
+    n_calls = 0
+    n_skipped_no_features = 0
+    n_skipped_no_outcome = 0
+
+    for _, row in companies_df.iterrows():
+        if n_calls >= sample_cap:
+            break
+        outcome = row.get("outcome_bucket")
+        if outcome is None or (isinstance(outcome, float) and outcome != outcome):
+            n_skipped_no_outcome += 1
+            continue
+        where: dict = {}
+        for f in CALIBRATION_FEATURE_COLS:
+            v = row.get(f)
+            if v is None or (isinstance(v, float) and v != v):
+                continue
+            where[f] = bool(v) if isinstance(v, (bool,)) else v
+        if not where:
+            n_skipped_no_features += 1
+            continue
+        body = {"from": COMPANIES_TABLE, "where": where, "predict": "outcome_bucket"}
+        try:
+            result, ms = _measure_latency(client, body, "predict")
+            latency_samples.append(ms)
+        except Exception:
+            continue
+        p_great = 0.0
+        for hit in result.get("hits", []):
+            label = hit.get("feature") or hit.get("$value")
+            if label == "great":
+                p_great = float(hit.get("$p") or hit.get("p") or 0.0)
+                break
+        pairs.append((p_great, 1 if outcome == "great" else 0))
+        n_calls += 1
+
+    if not pairs:
+        # Nothing scored — emit a clear pending marker so the UI can show
+        # "computation pending" rather than a misleading chart.
+        (out_dir / "calibration.json").write_text(
+            json.dumps(
+                {
+                    "_pending": True,
+                    "_note": (
+                        "No (predicted, actual) pairs computed. "
+                        f"Skipped {n_skipped_no_features} rows lacking LLM features, "
+                        f"{n_skipped_no_outcome} rows lacking outcomes. "
+                        "Run extraction stage and reload Aito."
+                    ),
+                    "deciles": [],
+                },
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+        return
+
+    # Bin into deciles by predicted probability.
+    pairs_sorted = sorted(pairs, key=lambda p: p[0])
+    n = len(pairs_sorted)
+    n_per_bin = max(1, n // 10)
+    deciles = []
+    for i in range(10):
+        lo = i * n_per_bin
+        hi = (i + 1) * n_per_bin if i < 9 else n
+        bin_pairs = pairs_sorted[lo:hi]
+        if not bin_pairs:
+            continue
+        predicted_mean = sum(p[0] for p in bin_pairs) / len(bin_pairs)
+        actual_freq = sum(p[1] for p in bin_pairs) / len(bin_pairs)
+        deciles.append(
+            {
+                "label": f"D{i + 1}",
+                "predicted": round(predicted_mean, 3),
+                "actual": round(actual_freq, 3),
+                "n": len(bin_pairs),
+            }
+        )
+
+    brier = sum((p - a) ** 2 for p, a in pairs) / n
     payload = {
-        "_note": "Placeholder. Real calibration computation pending — see notebooks/02_predict.ipynb.",
         "deciles": deciles,
+        "n_observations": n,
+        "brier_score": round(brier, 4),
+        "methodology": (
+            "In-sample calibration. For each row with a recorded outcome, P(great) "
+            "predicted from its features (no outcome lookup); rows binned into "
+            "deciles by predicted probability; mean predicted vs realised frequency "
+            "plotted per bin. Lower Brier is better; perfect = 0, random = 0.25."
+        ),
     }
     (out_dir / "calibration.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
@@ -436,6 +606,17 @@ def emit_match_per_focal(
         )
 
 
+def _emit_pending(out_dir: Path, filename: str, extra: dict) -> None:
+    """Emit a clearly-marked pending JSON file. The frontend renders 'computation
+    pending' instead of fake numbers when it sees `_pending: true`."""
+    payload = {
+        "_pending": True,
+        "_note": "Computation pending — run `./do pipeline precompute` with AITO_API_URL + AITO_API_KEY set.",
+        **extra,
+    }
+    (out_dir / filename).write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
 def precompute_all(out_dir: Path = SITE_DATA, static_only: bool = False) -> None:
     """Emit every JSON file the static site reads.
 
@@ -449,16 +630,19 @@ def precompute_all(out_dir: Path = SITE_DATA, static_only: bool = False) -> None
 
     if not static_only:
         with AitoClient() as client:
-            print("→ relate")
-            emit_relate(client, out_dir, latency_samples)
-            print("→ calibration (placeholder)")
-            emit_calibration(client, out_dir, latency_samples)
+            print("→ relate + leakage probe (per-vintage relate × 3)")
+            emit_relate(client, companies_df, out_dir, latency_samples)
+            print("→ calibration (real predict per row)")
+            emit_calibration(client, companies_df, out_dir, latency_samples)
             print(f"→ predict × {len(FOCAL_COMPANIES)}")
             emit_predict_per_focal(client, companies_df, out_dir, latency_samples)
             print(f"→ match × {len(FOCAL_COMPANIES)}")
             emit_match_per_focal(client, companies_df, out_dir, latency_samples)
     else:
-        print("→ (skipping Aito queries; static-only mode)")
+        print("→ (skipping Aito queries; static-only mode — emitting pending markers)")
+        _emit_pending(out_dir, "relate.json", {"target": "outcome_bucket = great", "rows": []})
+        _emit_pending(out_dir, "calibration.json", {"deciles": []})
+        _emit_pending(out_dir, "leakage_probe.json", {"vintages": [], "features": [], "drift_score": None})
 
     print("→ meta")
     emit_meta(companies_df, latency_samples, out_dir)
