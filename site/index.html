@@ -1311,21 +1311,19 @@
   .factor-group-tag.market     { background: rgba(74,107,58,0.16);  color: var(--green); }
 
   /* two-directional lift cell: bar grows from a center baseline */
-  .lift-cell { width: 200px; }
-  .lift-bar-track {
-    position: relative; height: 16px; background: rgba(0,0,0,0.03);
-    display: flex; align-items: center;
-  }
-  .lift-bar {
-    height: 16px; position: absolute; top: 0;
-  }
-  .lift-bar.up   { background: var(--green);  left: 0; }
-  .lift-bar.down { background: var(--red);    left: 0; }
+  .lift-cell { width: 220px; }
+  .lift-row { display: flex; align-items: center; gap: 8px; }
   .lift-val {
-    position: relative; z-index: 2; font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; padding-left: 6px; color: var(--ink);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--ink); width: 42px; flex: 0 0 42px; text-align: right;
   }
   .lift-val.muted { color: var(--ink-fade); }
+  .lift-bar-track {
+    position: relative; height: 16px; flex: 1; background: rgba(0,0,0,0.03);
+  }
+  .lift-bar { height: 16px; position: absolute; top: 0; left: 0; }
+  .lift-bar.up   { background: var(--green); }
+  .lift-bar.down { background: var(--red); }
   .lift-1x-mark {
     position: absolute; top: -2px; bottom: -2px; width: 1px;
     background: var(--ink-fade); opacity: 0.4; z-index: 1;
@@ -1339,6 +1337,7 @@
 
   tr.factor-detail-row > td { padding: 0 !important; background: var(--paper-2); }
   .factor-detail { padding: 16px 18px 18px 34px; border-bottom: 2px solid var(--rule); }
+  .dd-desc { font-family: 'Source Serif 4', serif; font-style: italic; font-size: 13px; color: var(--ink-soft); margin-bottom: 14px; max-width: 640px; }
   .dd-stats { display: flex; gap: 28px; margin-bottom: 12px; }
   .dd-stat-val { font-family: 'Fraunces', serif; font-weight: 600; font-size: 20px; color: var(--ink); }
   .dd-stat-lbl { font-family: 'Inter', sans-serif; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-fade); margin-top: 2px; }
@@ -2709,7 +2708,7 @@
       col: 'fwd_20d_bucket', retCol: 'fwd_20d_return',
       up: ['up','sharp_up'], down: ['down','sharp_down'],
       upLabel: 'up (drift)', downLabel: 'down (drift)',
-      deck: "Same engine, a trading horizon: lift toward a positive vs negative <em>20-day return after the 10-K filing</em>. Watch how the signal changes — quality fades, momentum carries.",
+      deck: "A deliberate <em>negative control</em>: lift toward a positive vs negative 20-day return after the 10-K filing. Static attributes (being a utility, having a wide moat) are not events — nothing happened on a given day for the market to react to — so they <em>should</em> be noise here, and they are (lifts hug ×1.0). Real short-horizon prediction needs an event feed: news arriving at a point in time. That's the next build.",
     },
   };
   const FIELD_GROUP = {};
@@ -2735,6 +2734,32 @@
     expanded: null,      // currently expanded feature key
     target: 'longterm',  // 'longterm' | 'drift'
   };
+
+  // Short human descriptions for a feature value, shown in the drill-down.
+  const SCORE_DESC = {
+    capital_allocation: { 5:'Exemplary capital allocation — reinvestment, buyback discipline, smart M&A.', 4:'Disciplined capital allocation.', 3:'Average — neither clearly value-creative nor destructive.', 2:'Weak — value-eroding deployment or poor M&A.', 1:'Poor — chronic value destruction.' },
+    strategic_clarity: { 5:'Exceptionally coherent, consistent strategy; resists fad-chasing.', 4:'Clear, consistent strategy.', 3:'Adequate clarity; some drift.', 2:'Muddled or shifting strategy.', 1:'Incoherent / reactive strategy.' },
+    execution_track_record: { 5:'Consistently delivers on guidance and margin targets.', 4:'Reliable execution.', 3:'Mixed execution record.', 2:'Frequently misses its own targets.', 1:'Chronic execution failure.' },
+    leadership_quality: { 5:'Top-tier management (capital allocation + clarity + execution).', 4:'Strong management.', 3:'Competent, unremarkable management.', 2:'Weak management.', 1:'Poor management.' },
+  };
+  const CAT_DESC = {
+    market_position: { dominant:'Category leader with pricing power; competitors react to it.', strong:'Top-tier but not category-defining.', competitive:'Viable mid-pack; no structural edge.', lagging:'Losing share; competitors set the pace.' },
+    moat_strength: { wide:'Durable, widening competitive advantage.', narrow:'Real but contested / eroding moat.', none:'No defensible advantage; competes on execution.' },
+    moat_type: { network_effects:'Value rises as users join (platform / marketplace).', switching_costs:'Customers locked in by friction / integration.', scale_economies:'Unit-cost advantage from size.', brand:'Premium pricing from brand strength.', regulatory:'Licence / patent / regulatory barrier.', cost_advantage:'Structural low-cost producer.', none:'No identifiable moat.' },
+    market_quality: { secular_growth:'Long-duration tailwinds; structurally larger in a decade.', stable:'Predictable, durable demand.', cyclical:'Swings with macro / commodity / capex cycles.', declining:'Secular shrinkage.', disrupted:'Incumbent model being replaced.' },
+    valuation_bucket: { cheap:'P/E < 15 at vintage.', fair:'P/E 15–30.', expensive:'P/E > 30.', negative_earnings:'Loss-making at vintage.' },
+    growth_bucket: { high:'Revenue CAGR ≥ 15% (3y).', moderate:'Revenue CAGR 0–15%.', shrinking:'Revenue declining.' },
+    leverage_bucket: { low:'Debt/equity < 0.5.', moderate:'Debt/equity 0.5–1.5.', high:'Debt/equity > 1.5.', negative_equity:'Negative book equity.' },
+    profitability_bucket: { high:'ROE ≥ 20%.', solid:'ROE 10–20%.', low:'ROE < 10%.', negative:'Negative ROE.' },
+    momentum_bucket: { strong:'Trailing 12-month return ≥ +30%.', neutral:'Trailing return −10% to +30%.', weak:'Trailing return ≤ −10%.' },
+    volatility_bucket: { high:'Annualised vol ≥ 40%.', medium:'Annualised vol 22–40%.', low:'Annualised vol ≤ 22%.' },
+    pre_filing_mom_bucket: { strong:'Up ≥ 30% into the filing.', neutral:'Flat-ish into the filing.', weak:'Down ≥ 10% into the filing.' },
+  };
+  function featureDesc(field, value) {
+    if (SCORE_DESC[field]) return SCORE_DESC[field][parseInt(value, 10)] || null;
+    if (CAT_DESC[field]) return CAT_DESC[field][value] || null;
+    return null;
+  }
 
   function computeFactors() {
     const T = FACTOR_TARGETS[factorState.target];
@@ -2777,15 +2802,19 @@
   }
 
   function liftBar(value, dir) {
-    if (value == null) return '<div class="lift-bar-track"><span class="lift-val muted">—</span></div>';
+    if (value == null) return '<div class="lift-row"><span class="lift-val muted">—</span><div class="lift-bar-track"></div></div>';
     const cap = factorState.maxLift;
     const pct = Math.min(100, (value / cap) * 100);
     const onePct = Math.min(100, (1 / cap) * 100);
     const muted = value < 1.05 ? ' muted' : '';
-    return `<div class="lift-bar-track">
-      <div class="lift-bar ${dir}" style="width:${pct.toFixed(1)}%"></div>
-      <div class="lift-1x-mark" style="left:${onePct.toFixed(1)}%"></div>
+    // Number sits in a fixed left gutter on the light background — never over
+    // the coloured bar — so it stays readable at any lift.
+    return `<div class="lift-row">
       <span class="lift-val${muted}">×${value.toFixed(2)}</span>
+      <div class="lift-bar-track">
+        <div class="lift-bar ${dir}" style="width:${pct.toFixed(1)}%"></div>
+        <div class="lift-1x-mark" style="left:${onePct.toFixed(1)}%"></div>
+      </div>
     </div>`;
   }
 
@@ -2840,7 +2869,11 @@
       ? `<div class="dd-stat"><div class="dd-stat-val">${annualised == null ? '—' : (annualised >= 0 ? '+' : '') + annualised.toFixed(1) + '%'}</div><div class="dd-stat-lbl">annualised</div></div>`
       : '';
 
+    const desc = featureDesc(field, value);
+    const descHtml = desc ? `<div class="dd-desc">${esc(desc)}</div>` : '';
+
     return `<tr class="factor-detail-row"><td colspan="4"><div class="factor-detail">
+      ${descHtml}
       <div class="dd-stats">
         <div class="dd-stat"><div class="dd-stat-val">${members.length}</div><div class="dd-stat-lbl">companies</div></div>
         <div class="dd-stat"><div class="dd-stat-val">${meanRet == null ? '—' : (meanRet >= 0 ? '+' : '') + meanRet.toFixed(isLong ? 0 : 1) + '%'}</div><div class="dd-stat-lbl">mean ${retLabel}</div></div>
