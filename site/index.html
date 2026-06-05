@@ -1268,10 +1268,19 @@
   .react-val.flat { color: var(--ink-fade); }
   .react-up { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--ink-fade); margin-top: 1px; }
 
-  td.news-persist { font-family: 'Source Serif 4', serif; font-size: 11.5px; font-style: italic; color: var(--ink-soft); max-width: 200px; }
-  .persist-tag { font-family: 'Inter', sans-serif; font-style: normal; font-size: 8.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; padding: 1px 6px; border-radius: 2px; }
+  td.news-persist { font-family: 'Source Serif 4', serif; font-size: 11.5px; font-style: italic; color: var(--ink-soft); max-width: 160px; }
+  .persist-tag { font-family: 'Inter', sans-serif; font-style: normal; font-size: 8.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; padding: 2px 8px; border-radius: 2px; }
   .persist-tag.continues { background: rgba(74,107,58,0.16); color: #3c5630; }
-  .persist-tag.reverts { background: rgba(139,58,42,0.14); color: var(--red); }
+  .persist-tag.reverts { background: rgba(168,134,44,0.18); color: #6e5818; }
+  .persist-tag.neutral { background: var(--rule-soft); color: var(--ink-fade); }
+
+  .news-path { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 2px; }
+  .path-pt { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; }
+  .path-pt.pos { color: #3c5630; }
+  .path-pt.neg { color: var(--red); }
+  .path-pt.flat { color: var(--ink-fade); }
+  .path-arrow { color: var(--ink-fade); font-size: 9px; margin: 0 1px; }
+  .news-path .react-up { width: 100%; text-align: center; }
 
   tr.news-detail-row > td { padding: 0 !important; background: var(--paper-2); }
   .news-detail { padding: 12px 16px 16px 34px; border-bottom: 2px solid var(--rule); }
@@ -1854,10 +1863,10 @@
               <tr>
                 <th>News theme</th>
                 <th class="center">Events</th>
-                <th class="center">+1 day</th>
-                <th class="center">+1 week</th>
-                <th class="center">+20 days</th>
-                <th>Persistence</th>
+                <th class="center">Day-1 <span style="color:var(--green)">winners</span> → 1d · 20d · 1yr</th>
+                <th class="center">Day-1 <span style="color:var(--red)">losers</span> → 1d · 20d · 1yr</th>
+                <th class="center">1-yr gap</th>
+                <th>Verdict</th>
               </tr>
             </thead>
             <tbody id="news-tbody"></tbody>
@@ -2785,48 +2794,57 @@
   // ── News Reaction (8-K event study) ─────────────────────────────
   const newsState = { themes: [], expanded: null };
 
-  function reactCell(stat) {
-    if (!stat) return '<div class="react-cell">—</div>';
-    const m = stat.mean;
-    const cls = m > 0.3 ? 'pos' : (m < -0.3 ? 'neg' : 'flat');
-    const cap = 6; // % at which the bar saturates
-    const w = Math.min(50, Math.abs(m) / cap * 50);
-    const bar = cls === 'flat' ? '' :
-      `<div class="react-bar ${m >= 0 ? 'pos' : 'neg'}" style="width:${w.toFixed(1)}%"></div>`;
-    return `<div class="react-cell">
-      <div class="react-bar-wrap">
-        <div class="react-bar-mid"></div>${bar}
-        <span class="react-val ${cls}">${m >= 0 ? '+' : ''}${m.toFixed(1)}%</span>
-      </div>
-      <div class="react-up">${stat.pct_up.toFixed(0)}% up · n=${stat.n.toLocaleString()}</div>
-    </div>`;
+  function pathCell(cohort, dir) {
+    // cohort: {n, '1d','20d','1yr'}; render the 3-point path.
+    if (!cohort || cohort.n == null) return '<div class="react-cell">—</div>';
+    const fmt = v => v == null ? '—' : (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+    const cls = v => v == null ? 'flat' : (v > 0.3 ? 'pos' : (v < -0.3 ? 'neg' : 'flat'));
+    const pts = ['1d','20d','1yr'].map(h => `<span class="path-pt ${cls(cohort[h])}">${fmt(cohort[h])}</span>`).join('<span class="path-arrow">→</span>');
+    return `<div class="news-path">${pts}<div class="react-up">n=${cohort.n.toLocaleString()}</div></div>`;
   }
 
-  function persistCell(p) {
-    if (!p || p.corr_1d_20d == null) return '—';
-    const continues = p.corr_1d_20d > 0.05;
-    const reverts = p.corr_1d_20d < -0.05;
-    const tag = continues ? '<span class="persist-tag continues">continues</span>'
-              : reverts ? '<span class="persist-tag reverts">reverts</span>'
-              : '<span class="persist-tag" style="background:var(--rule-soft);color:var(--ink-fade)">neutral</span>';
-    return `${tag} <span style="font-family:'JetBrains Mono';font-size:10px">ρ=${p.corr_1d_20d.toFixed(2)}</span>`;
+  function gapCell(t) {
+    if (t.gap_1yr == null) return '—';
+    const cls = t.gap_1yr >= 3 ? 'pos' : (t.gap_1yr <= 1 ? 'flat' : '');
+    return `<span class="react-val ${cls}" style="font-size:13px">${t.gap_1yr >= 0 ? '+' : ''}${t.gap_1yr.toFixed(1)}%</span>`;
   }
 
-  function newsDetailHtml(theme) {
-    const ex = theme.examples || [];
+  function verdictCell(t) {
+    if (!t.verdict) return '<span style="color:var(--ink-fade);font-style:italic">— (needs 1yr data)</span>';
+    const map = {
+      fundamentals: ['continues','fundamentals shifted','the day-1 winners stay ahead a year out'],
+      sentiment: ['reverts','sentiment','the gap closes — the reaction faded'],
+      mixed: ['neutral','partial','the gap narrows but holds somewhat'],
+    };
+    const [cls, label, hint] = map[t.verdict];
+    return `<span class="persist-tag ${cls}">${label}</span>`;
+  }
+
+  function newsDetailHtml(t) {
+    const ex = t.examples || [];
     const rows = ex.map(e => `<tr>
       <td>${esc(e.ticker)}</td>
       <td>${esc(e.date)}</td>
       <td class="ndr ${e.react_1d >= 0 ? 'return-pos' : 'return-neg'}">${e.react_1d == null ? '—' : (e.react_1d>=0?'+':'')+e.react_1d.toFixed(1)+'%'}</td>
-      <td class="ndr ${e.react_5d >= 0 ? 'return-pos' : 'return-neg'}">${e.react_5d == null ? '—' : (e.react_5d>=0?'+':'')+e.react_5d.toFixed(1)+'%'}</td>
       <td class="ndr ${e.react_20d >= 0 ? 'return-pos' : 'return-neg'}">${e.react_20d == null ? '—' : (e.react_20d>=0?'+':'')+e.react_20d.toFixed(1)+'%'}</td>
+      <td class="ndr ${e.react_252d >= 0 ? 'return-pos' : 'return-neg'}">${e.react_252d == null ? '—' : (e.react_252d>=0?'+':'')+e.react_252d.toFixed(1)+'%'}</td>
     </tr>`).join('');
-    const p = theme.persistence;
-    const persistLine = p ? `Among ${theme.theme} events, a positive day-1 is followed by <b>${p.after_positive_1d>=0?'+':''}${p.after_positive_1d}%</b> at 20 days; a negative day-1 by <b>${p.after_negative_1d>=0?'+':''}${p.after_negative_1d}%</b>. Correlation(1d, 20d) = ${p.corr_1d_20d}.` : '';
+    const u = t.cohorts?.up, d = t.cohorts?.down;
+    let story = '';
+    if (u && d && u['1yr'] != null && d['1yr'] != null) {
+      const interp = t.verdict === 'fundamentals'
+        ? "the day-1 verdict was informative — the move reflected a real shift, not a mood."
+        : t.verdict === 'sentiment'
+        ? "the day-1 move was largely sentiment — a year out, the cohorts converge."
+        : "the day-1 signal partly persists — some information, some mood.";
+      story = `On a <b>${esc(t.theme)}</b> 8-K: events that <em>rose</em> on day-1 are at <b>${u['1yr']>=0?'+':''}${u['1yr']}%</b> a year later; events that <em>fell</em> are at <b>${d['1yr']>=0?'+':''}${d['1yr']}%</b>. The gap is <b>${t.gap_1yr>=0?'+':''}${t.gap_1yr}%</b> — ${interp}`;
+    }
+    const overall = t.h['20d'] ? `Overall (both directions combined) the 20-day mean is just ${t.h['20d'].mean>=0?'+':''}${t.h['20d'].mean}% — the average hides the split.` : '';
     return `<tr class="news-detail-row"><td colspan="6"><div class="news-detail">
-      ${persistLine ? `<div class="dd-desc" style="margin-bottom:12px">${persistLine}</div>` : ''}
+      ${story ? `<div class="dd-desc" style="margin-bottom:6px">${story}</div>` : ''}
+      ${overall ? `<div class="dd-desc" style="margin-bottom:12px;font-size:12px">${overall}</div>` : ''}
       <div class="nd-label">Largest movers (by 20-day reaction)</div>
-      <table class="nd-table"><thead><tr><th>Ticker</th><th>Filed</th><th>+1d</th><th>+1w</th><th>+20d</th></tr></thead>
+      <table class="nd-table"><thead><tr><th>Ticker</th><th>Filed</th><th>+1d</th><th>+20d</th><th>+1yr</th></tr></thead>
       <tbody>${rows}</tbody></table>
     </div></td></tr>`;
   }
@@ -2835,22 +2853,22 @@
     const tbody = document.getElementById('news-tbody');
     if (!tbody) return;
     if (payload._pending || !payload.themes || !payload.themes.length) {
-      tbody.innerHTML = `<tr><td colspan="6" style="padding:32px;text-align:center;font-style:italic;color:var(--ink-fade)">8-K event study pending — run <code style="font-family:'JetBrains Mono'">./do pipeline events</code></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" style="padding:32px;text-align:center;font-style:italic;color:var(--ink-fade)">8-K event study pending — run <code style="font-family:'JetBrains Mono'">./do pipeline news</code></td></tr>`;
       return;
     }
     newsState.themes = payload.themes;
     const byline = document.querySelector('[data-bind="news-byline"]');
-    if (byline) byline.textContent = `${payload.n_events.toLocaleString()} 8-K events · ${payload.n_tickers} companies · reaction close-to-close from the day before the filing (day-of move included in +1d)`;
+    if (byline) byline.textContent = `${payload.n_events.toLocaleString()} 8-K events · ${payload.n_tickers} companies · cohorts split on the day-1 move; tracked to 1 year to test sentiment vs fundamentals`;
 
     tbody.innerHTML = newsState.themes.map(t => {
       const open = newsState.expanded === t.theme;
       const main = `<tr class="news-row${open ? ' open' : ''}" data-theme="${esc(t.theme)}">
         <td class="news-theme"><span class="news-caret">${open ? '▾' : '▸'}</span>${esc(t.theme)}</td>
         <td class="news-n">${t.n.toLocaleString()}</td>
-        <td class="react-cell">${reactCell(t.h['1d'])}</td>
-        <td class="react-cell">${reactCell(t.h['5d'])}</td>
-        <td class="react-cell">${reactCell(t.h['20d'])}</td>
-        <td class="news-persist">${persistCell(t.persistence)}</td>
+        <td class="react-cell">${pathCell(t.cohorts?.up, 'up')}</td>
+        <td class="react-cell">${pathCell(t.cohorts?.down, 'down')}</td>
+        <td class="react-cell">${gapCell(t)}</td>
+        <td class="news-persist">${verdictCell(t)}</td>
       </tr>`;
       return main + (open ? newsDetailHtml(t) : '');
     }).join('');

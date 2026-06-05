@@ -810,14 +810,29 @@ NEWS_THEME_ORDER = [
 
 
 def emit_news_reaction(out_dir: Path, events_csv: Path = Path("data/news_events.csv"), min_n: int = 30) -> None:
-    """Aggregate the 8-K event study into per-theme reaction stats at each
-    horizon (+1d / +5d / +20d): mean, median, %-up, n, plus the day-1→day-20
-    persistence (does the immediate move continue or revert)."""
+    """Per-theme 8-K reaction at +1d / +20d / +1yr, plus the gut-vs-fundamentals
+    test: split each theme by the day-1 sign (the market's immediate verdict)
+    and follow each cohort to a year. If the day-1 winners stay ahead of the
+    losers at 1yr, the reaction was informative (fundamentals shifted); if the
+    gap closes, it was sentiment that reverted.
+    """
     if not events_csv.exists():
         _emit_pending(out_dir, "news_reaction.json", {"themes": []})
         return
     df = pd.read_csv(events_csv)
-    horizons = [("1d", "react_1d"), ("5d", "react_5d"), ("20d", "react_20d")]
+    has_year = "react_252d" in df.columns
+    horizons = [("1d", "react_1d"), ("20d", "react_20d")]
+    if has_year:
+        horizons.append(("1yr", "react_252d"))
+
+    def cohort_path(sub: pd.DataFrame) -> dict:
+        # Median, not mean — a handful of 10x stocks in a bull-market window
+        # distorts the mean; the median is the typical event's experience.
+        out = {"n": int(len(sub))}
+        for label, col in horizons:
+            v = sub[col].dropna()
+            out[label] = round(float(v.median()), 2) if len(v) else None
+        return out
 
     themes = []
     for theme, grp in df.groupby("theme"):
@@ -835,18 +850,29 @@ def emit_news_reaction(out_dir: Path, events_csv: Path = Path("data/news_events.
                 "median": round(float(vals.median()), 2),
                 "pct_up": round(float((vals > 0).mean()) * 100, 1),
             }
-        # Persistence: among events with a positive day-1, mean day-20.
-        both = grp.dropna(subset=["react_1d", "react_20d"])
-        persistence = None
-        if len(both) >= min_n:
-            pos1 = both[both["react_1d"] > 0]["react_20d"]
-            neg1 = both[both["react_1d"] < 0]["react_20d"]
-            persistence = {
-                "after_positive_1d": round(float(pos1.mean()), 2) if len(pos1) else None,
-                "after_negative_1d": round(float(neg1.mean()), 2) if len(neg1) else None,
-                "corr_1d_20d": round(float(both["react_1d"].corr(both["react_20d"])), 3),
-            }
-        # A few example movers (largest |20d|) for drill-down colour.
+
+        # Cohorts: split on the sign of the day-1 reaction (market's verdict).
+        d1 = grp.dropna(subset=["react_1d"])
+        up = cohort_path(d1[d1["react_1d"] > 0])
+        down = cohort_path(d1[d1["react_1d"] < 0])
+
+        # Verdict: does the day-1 gap (median) persist at 1yr? Only assign when
+        # both cohorts have enough 1yr samples to be meaningful.
+        verdict, gap_1yr, persistence_ratio = None, None, None
+        MIN_COHORT_1YR = 40
+        up_1yr_n = int(d1[d1["react_1d"] > 0]["react_252d"].notna().sum()) if has_year else 0
+        down_1yr_n = int(d1[d1["react_1d"] < 0]["react_252d"].notna().sum()) if has_year else 0
+        if (has_year and up.get("1yr") is not None and down.get("1yr") is not None
+                and up_1yr_n >= MIN_COHORT_1YR and down_1yr_n >= MIN_COHORT_1YR):
+            gap_1d = (up.get("1d") or 0) - (down.get("1d") or 0)
+            gap_1yr = round(up["1yr"] - down["1yr"], 2)
+            if gap_1d > 0:
+                persistence_ratio = round(gap_1yr / gap_1d, 2)
+                verdict = "fundamentals" if gap_1yr >= 4 else ("sentiment" if gap_1yr <= 1.5 else "mixed")
+
+        both20 = grp.dropna(subset=["react_1d", "react_20d"])
+        corr_1d_20d = round(float(both20["react_1d"].corr(both20["react_20d"])), 3) if len(both20) >= min_n else None
+
         ex = grp.dropna(subset=["react_20d"]).reindex(
             grp.dropna(subset=["react_20d"])["react_20d"].abs().sort_values(ascending=False).index
         ).head(8)
@@ -854,20 +880,26 @@ def emit_news_reaction(out_dir: Path, events_csv: Path = Path("data/news_events.
             {
                 "ticker": r.ticker, "date": r.date,
                 "react_1d": None if pd.isna(r.react_1d) else float(r.react_1d),
-                "react_5d": None if pd.isna(r.react_5d) else float(r.react_5d),
                 "react_20d": None if pd.isna(r.react_20d) else float(r.react_20d),
+                "react_252d": None if (not has_year or pd.isna(getattr(r, "react_252d", None))) else float(r.react_252d),
             }
             for r in ex.itertuples(index=False)
         ]
-        themes.append({"theme": theme, "n": n, "h": h, "persistence": persistence, "examples": examples})
+        themes.append({
+            "theme": theme, "n": n, "h": h,
+            "cohorts": {"up": up, "down": down},
+            "gap_1yr": gap_1yr, "verdict": verdict, "persistence_ratio": persistence_ratio,
+            "corr_1d_20d": corr_1d_20d, "examples": examples,
+        })
 
     order = {t: i for i, t in enumerate(NEWS_THEME_ORDER)}
     themes.sort(key=lambda t: order.get(t["theme"], 99))
     payload = {
         "n_events": int(len(df)),
         "n_tickers": int(df["ticker"].nunique()),
+        "has_year": has_year,
         "themes": themes,
-        "note": "8-K filings 2020+ (recent EDGAR window). Reaction measured close-to-close from the trading day before the filing; the day-of move is included in +1d.",
+        "note": "8-K filings (recent EDGAR window). Reaction close-to-close from the day before the filing; day-of move included in +1d. Cohorts split on the day-1 sign; 1-year horizon available only for events at least ~1 year old.",
     }
     (out_dir / "news_reaction.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
 

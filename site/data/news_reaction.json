@@ -1,6 +1,7 @@
 {
-  "n_events": 60347,
+  "n_events": 60350,
   "n_tickers": 498,
+  "has_year": true,
   "themes": [
     {
       "theme": "earnings",
@@ -12,80 +13,93 @@
           "median": 0.16,
           "pct_up": 51.2
         },
-        "5d": {
-          "n": 19385,
-          "mean": 0.46,
-          "median": 0.38,
-          "pct_up": 52.6
-        },
         "20d": {
-          "n": 19304,
-          "mean": 1.41,
+          "n": 19337,
+          "mean": 1.4,
           "median": 1.19,
           "pct_up": 55.5
+        },
+        "1yr": {
+          "n": 17317,
+          "mean": 16.01,
+          "median": 10.23,
+          "pct_up": 64.5
         }
       },
-      "persistence": {
-        "after_positive_1d": 6.19,
-        "after_negative_1d": -3.63,
-        "corr_1d_20d": 0.579
+      "cohorts": {
+        "up": {
+          "n": 9923,
+          "1d": 3.46,
+          "20d": 5.34,
+          "1yr": 14.81
+        },
+        "down": {
+          "n": 9432,
+          "1d": -3.38,
+          "20d": -3.13,
+          "1yr": 5.11
+        }
       },
+      "gap_1yr": 9.7,
+      "verdict": "fundamentals",
+      "persistence_ratio": 1.42,
+      "corr_1d_20d": 0.578,
       "examples": [
         {
           "ticker": "RIG",
           "date": "2020-11-02",
           "react_1d": 29.85,
-          "react_5d": 59.7,
-          "react_20d": 201.49
+          "react_20d": 201.49,
+          "react_252d": 450.75
         },
         {
           "ticker": "BBBY",
           "date": "2020-03-13",
           "react_1d": -22.29,
-          "react_5d": 10.26,
-          "react_20d": 130.21
+          "react_20d": 130.21,
+          "react_252d": 2144.28
         },
         {
           "ticker": "COTY",
           "date": "2020-11-06",
           "react_1d": 33.23,
-          "react_5d": 43.41,
-          "react_20d": 123.05
+          "react_20d": 123.05,
+          "react_252d": 220.06
         },
         {
           "ticker": "FOSL",
           "date": "2020-11-12",
           "react_1d": 30.15,
-          "react_5d": 99.66,
-          "react_20d": 122.61
+          "react_20d": 122.61,
+          "react_252d": 184.76
         },
         {
           "ticker": "LUMN",
           "date": "2024-08-06",
           "react_1d": 155.98,
-          "react_5d": 93.44,
-          "react_20d": 107.72
+          "react_20d": 107.72,
+          "react_252d": 45.17
         },
         {
           "ticker": "XRX",
           "date": "2026-04-30",
           "react_1d": 71.97,
-          "react_5d": 50.96,
-          "react_20d": 106.37
+          "react_20d": 106.37,
+          "react_252d": null
         },
         {
           "ticker": "PBI",
           "date": "2020-07-30",
           "react_1d": 13.22,
-          "react_5d": 90.17,
-          "react_20d": 102.76
+          "react_20d": 102.76,
+          "react_252d": 179.19
         },
         {
           "ticker": "NCLH",
           "date": "2020-05-14",
           "react_1d": 5.92,
-          "react_5d": 36.08,
-          "react_20d": 98.84
+          "react_20d": 98.84,
+          "react_252d": 177.21
         }
       ]
     },
@@ -99,80 +113,93 @@
           "median": 0.33,
           "pct_up": 55.1
         },
-        "5d": {
-          "n": 383,
-          "mean": 0.75,
-          "median": 0.55,
-          "pct_up": 55.4
-        },
         "20d": {
-          "n": 382,
-          "mean": 1.78,
-          "median": 1.9,
-          "pct_up": 57.6
+          "n": 383,
+          "mean": 1.77,
+          "median": 1.89,
+          "pct_up": 57.4
+        },
+        "1yr": {
+          "n": 351,
+          "mean": 14.58,
+          "median": 10.66,
+          "pct_up": 63.2
         }
       },
-      "persistence": {
-        "after_positive_1d": 3.96,
-        "after_negative_1d": -0.93,
-        "corr_1d_20d": 0.382
+      "cohorts": {
+        "up": {
+          "n": 211,
+          "1d": 1.94,
+          "20d": 3.3,
+          "1yr": 9.81
+        },
+        "down": {
+          "n": 171,
+          "1d": -1.75,
+          "20d": -1.07,
+          "1yr": 12.39
+        }
       },
+      "gap_1yr": -2.58,
+      "verdict": "sentiment",
+      "persistence_ratio": -0.7,
+      "corr_1d_20d": 0.382,
       "examples": [
         {
           "ticker": "INTC",
           "date": "2025-09-15",
           "react_1d": 4.94,
-          "react_5d": 19.44,
-          "react_20d": 54.57
+          "react_20d": 54.57,
+          "react_252d": null
         },
         {
           "ticker": "TDC",
           "date": "2021-02-04",
           "react_1d": 34.64,
-          "react_5d": 69.86,
-          "react_20d": 50.0
+          "react_20d": 50.0,
+          "react_252d": 49.6
         },
         {
           "ticker": "BEAM",
           "date": "2023-10-31",
           "react_1d": 10.1,
-          "react_5d": 30.77,
-          "react_20d": 49.61
+          "react_20d": 49.61,
+          "react_252d": 14.65
         },
         {
           "ticker": "BBBY",
           "date": "2024-12-20",
           "react_1d": -6.18,
-          "react_5d": -6.18,
-          "react_20d": 35.14
+          "react_20d": 35.14,
+          "react_252d": 8.11
         },
         {
           "ticker": "MAS",
           "date": "2020-02-21",
           "react_1d": -0.66,
-          "react_5d": -8.99,
-          "react_20d": -35.09
+          "react_20d": -35.09,
+          "react_252d": 21.08
         },
         {
           "ticker": "THC",
           "date": "2019-01-29",
           "react_1d": 5.0,
-          "react_5d": 8.77,
-          "react_20d": 34.7
+          "react_20d": 34.7,
+          "react_252d": 62.25
         },
         {
           "ticker": "CNX",
           "date": "2016-04-06",
           "react_1d": 1.28,
-          "react_5d": 25.5,
-          "react_20d": 33.27
+          "react_20d": 33.27,
+          "react_252d": 51.92
         },
         {
           "ticker": "GNW",
           "date": "2021-09-23",
           "react_1d": 8.21,
-          "react_5d": 9.97,
-          "react_20d": 31.09
+          "react_20d": 31.09,
+          "react_252d": 4.99
         }
       ]
     },
@@ -186,80 +213,93 @@
           "median": 0.12,
           "pct_up": 52.2
         },
-        "5d": {
-          "n": 7795,
-          "mean": 0.55,
-          "median": 0.45,
-          "pct_up": 54.3
-        },
         "20d": {
-          "n": 7751,
+          "n": 7754,
           "mean": 1.16,
           "median": 1.06,
           "pct_up": 55.1
+        },
+        "1yr": {
+          "n": 7080,
+          "mean": 14.48,
+          "median": 9.32,
+          "pct_up": 63.9
         }
       },
-      "persistence": {
-        "after_positive_1d": 4.11,
-        "after_negative_1d": -2.08,
-        "corr_1d_20d": 0.422
+      "cohorts": {
+        "up": {
+          "n": 4080,
+          "1d": 1.74,
+          "20d": 3.29,
+          "1yr": 11.7
+        },
+        "down": {
+          "n": 3695,
+          "1d": -1.75,
+          "20d": -1.49,
+          "1yr": 7.13
+        }
       },
+      "gap_1yr": 4.57,
+      "verdict": "fundamentals",
+      "persistence_ratio": 1.31,
+      "corr_1d_20d": 0.422,
       "examples": [
         {
           "ticker": "NBR",
           "date": "2020-05-08",
           "react_1d": 30.37,
-          "react_5d": 26.87,
-          "react_20d": 528.06
+          "react_20d": 528.06,
+          "react_252d": 612.16
         },
         {
           "ticker": "GME",
           "date": "2021-01-11",
           "react_1d": 12.78,
-          "react_5d": 122.5,
-          "react_20d": 184.4
+          "react_20d": 184.4,
+          "react_252d": 641.38
         },
         {
           "ticker": "PCG",
           "date": "2019-01-23",
           "react_1d": 81.17,
-          "react_5d": 77.53,
-          "react_20d": 151.95
+          "react_20d": 151.95,
+          "react_252d": 78.31
         },
         {
           "ticker": "RIG",
           "date": "2020-11-18",
           "react_1d": 12.71,
-          "react_5d": 83.9,
-          "react_20d": 117.8
+          "react_20d": 117.8,
+          "react_252d": 165.25
         },
         {
           "ticker": "NBR",
           "date": "2020-10-30",
           "react_1d": 13.49,
-          "react_5d": 20.61,
-          "react_20d": 97.4
+          "react_20d": 97.4,
+          "react_252d": 287.15
         },
         {
           "ticker": "HPE",
           "date": "2026-05-04",
           "react_1d": 5.15,
-          "react_5d": 8.05,
-          "react_20d": 96.53
+          "react_20d": 96.53,
+          "react_252d": null
         },
         {
           "ticker": "PCG",
           "date": "2019-11-08",
           "react_1d": 3.99,
-          "react_5d": 23.26,
-          "react_20d": 85.71
+          "react_20d": 85.71,
+          "react_252d": 73.09
         },
         {
           "ticker": "DRI",
           "date": "2020-03-19",
           "react_1d": 14.17,
-          "react_5d": 77.28,
-          "react_20d": 85.45
+          "react_20d": 85.45,
+          "react_252d": 311.69
         }
       ]
     },
@@ -268,85 +308,98 @@
       "n": 10927,
       "h": {
         "1d": {
-          "n": 10925,
+          "n": 10927,
           "mean": -0.01,
           "median": 0.05,
           "pct_up": 50.8
         },
-        "5d": {
-          "n": 10907,
-          "mean": 0.22,
-          "median": 0.22,
-          "pct_up": 52.5
-        },
         "20d": {
-          "n": 10803,
+          "n": 10808,
           "mean": 0.92,
           "median": 0.85,
           "pct_up": 54.4
+        },
+        "1yr": {
+          "n": 9782,
+          "mean": 17.57,
+          "median": 9.76,
+          "pct_up": 63.8
         }
       },
-      "persistence": {
-        "after_positive_1d": 3.32,
-        "after_negative_1d": -1.59,
-        "corr_1d_20d": 0.389
+      "cohorts": {
+        "up": {
+          "n": 5550,
+          "1d": 1.52,
+          "20d": 2.74,
+          "1yr": 11.7
+        },
+        "down": {
+          "n": 5332,
+          "1d": -1.56,
+          "20d": -1.14,
+          "1yr": 7.94
+        }
       },
+      "gap_1yr": 3.76,
+      "verdict": "mixed",
+      "persistence_ratio": 1.22,
+      "corr_1d_20d": 0.389,
       "examples": [
         {
           "ticker": "GME",
           "date": "2021-02-23",
           "react_1d": 99.37,
-          "react_5d": 156.91,
-          "react_20d": 295.11
+          "react_20d": 295.11,
+          "react_252d": 156.65
         },
         {
           "ticker": "BBBY",
           "date": "2020-03-18",
           "react_1d": 49.44,
-          "react_5d": 103.0,
-          "react_20d": 241.2
+          "react_20d": 241.2,
+          "react_252d": 2690.64
         },
         {
           "ticker": "SNDK",
           "date": "2026-01-02",
           "react_1d": 15.46,
-          "react_5d": 58.99,
-          "react_20d": 180.24
+          "react_20d": 180.24,
+          "react_252d": null
         },
         {
           "ticker": "PBI",
           "date": "2020-07-14",
           "react_1d": 7.63,
-          "react_5d": 17.67,
-          "react_20d": 157.43
+          "react_20d": 157.43,
+          "react_252d": 263.02
         },
         {
           "ticker": "BBBY",
           "date": "2020-03-13",
           "react_1d": -22.29,
-          "react_5d": 10.26,
-          "react_20d": 130.21
+          "react_20d": 130.21,
+          "react_252d": 2144.28
         },
         {
           "ticker": "COTY",
           "date": "2020-11-06",
           "react_1d": 33.23,
-          "react_5d": 43.41,
-          "react_20d": 123.05
+          "react_20d": 123.05,
+          "react_252d": 220.06
         },
         {
           "ticker": "BBBY",
           "date": "2020-06-15",
           "react_1d": 12.2,
-          "react_5d": 38.63,
-          "react_20d": 118.38
+          "react_20d": 118.38,
+          "react_252d": 348.3
         },
         {
           "ticker": "XRX",
           "date": "2026-04-02",
           "react_1d": -2.38,
-          "react_5d": -3.17,
-          "react_20d": 114.29
+          "react_20d": 114.29,
+          "react_252d": null
         }
       ]
     },
@@ -355,85 +408,98 @@
       "n": 6826,
       "h": {
         "1d": {
-          "n": 6825,
+          "n": 6826,
           "mean": 0.24,
           "median": 0.13,
           "pct_up": 52.0
         },
-        "5d": {
-          "n": 6814,
-          "mean": 0.45,
-          "median": 0.27,
-          "pct_up": 52.7
-        },
         "20d": {
-          "n": 6753,
+          "n": 6758,
           "mean": 1.57,
           "median": 1.05,
           "pct_up": 55.7
+        },
+        "1yr": {
+          "n": 6145,
+          "mean": 19.18,
+          "median": 10.53,
+          "pct_up": 64.1
         }
       },
-      "persistence": {
-        "after_positive_1d": 4.35,
-        "after_negative_1d": -1.49,
-        "corr_1d_20d": 0.371
+      "cohorts": {
+        "up": {
+          "n": 3548,
+          "1d": 1.68,
+          "20d": 3.14,
+          "1yr": 12.05
+        },
+        "down": {
+          "n": 3248,
+          "1d": -1.72,
+          "20d": -1.17,
+          "1yr": 8.43
+        }
       },
+      "gap_1yr": 3.62,
+      "verdict": "mixed",
+      "persistence_ratio": 1.06,
+      "corr_1d_20d": 0.371,
       "examples": [
         {
           "ticker": "NBR",
           "date": "2020-05-06",
           "react_1d": 9.66,
-          "react_5d": 32.98,
-          "react_20d": 255.4
+          "react_20d": 255.4,
+          "react_252d": 650.25
         },
         {
           "ticker": "GME",
           "date": "2021-01-11",
           "react_1d": 12.78,
-          "react_5d": 122.5,
-          "react_20d": 184.4
+          "react_20d": 184.4,
+          "react_252d": 641.38
         },
         {
           "ticker": "BTU",
           "date": "2020-12-28",
           "react_1d": 31.98,
-          "react_5d": 99.42,
-          "react_20d": 171.51
+          "react_20d": 171.51,
+          "react_252d": 521.51
         },
         {
           "ticker": "NBR",
           "date": "2020-05-01",
           "react_1d": -10.86,
-          "react_5d": -4.14,
-          "react_20d": 165.58
+          "react_20d": 165.58,
+          "react_252d": 487.24
         },
         {
           "ticker": "RRC",
           "date": "2020-04-01",
           "react_1d": 5.26,
-          "react_5d": 63.6,
-          "react_20d": 155.7
+          "react_20d": 155.7,
+          "react_252d": 385.09
         },
         {
           "ticker": "PCG",
           "date": "2019-01-22",
           "react_1d": 10.51,
-          "react_5d": 93.5,
-          "react_20d": 151.87
+          "react_20d": 151.87,
+          "react_252d": 73.44
         },
         {
           "ticker": "LVS",
           "date": "2009-04-21",
           "react_1d": 21.98,
-          "react_5d": 50.43,
-          "react_20d": 115.73
+          "react_20d": 115.73,
+          "react_252d": 410.99
         },
         {
           "ticker": "TE",
           "date": "2025-09-11",
           "react_1d": -0.53,
-          "react_5d": -0.53,
-          "react_20d": 104.81
+          "react_20d": 104.81,
+          "react_252d": null
         }
       ]
     },
@@ -447,80 +513,93 @@
           "median": 0.17,
           "pct_up": 52.1
         },
-        "5d": {
-          "n": 429,
-          "mean": 1.02,
-          "median": 0.6,
-          "pct_up": 58.0
-        },
         "20d": {
           "n": 427,
           "mean": 3.31,
           "median": 2.29,
           "pct_up": 60.7
+        },
+        "1yr": {
+          "n": 389,
+          "mean": 32.64,
+          "median": 14.05,
+          "pct_up": 73.8
         }
       },
-      "persistence": {
-        "after_positive_1d": 4.84,
-        "after_negative_1d": 1.63,
-        "corr_1d_20d": 0.382
+      "cohorts": {
+        "up": {
+          "n": 224,
+          "1d": 1.44,
+          "20d": 2.92,
+          "1yr": 11.35
+        },
+        "down": {
+          "n": 203,
+          "1d": -1.66,
+          "20d": 1.26,
+          "1yr": 16.66
+        }
       },
+      "gap_1yr": -5.31,
+      "verdict": "sentiment",
+      "persistence_ratio": -1.71,
+      "corr_1d_20d": 0.382,
       "examples": [
         {
           "ticker": "CPRI",
           "date": "2020-04-06",
           "react_1d": 49.94,
-          "react_5d": 68.93,
-          "react_20d": 61.9
+          "react_20d": 61.9,
+          "react_252d": 494.84
         },
         {
           "ticker": "RCL",
           "date": "2020-04-02",
           "react_1d": -5.36,
-          "react_5d": 56.07,
-          "react_20d": 58.21
+          "react_20d": 58.21,
+          "react_252d": 245.94
         },
         {
           "ticker": "YUM",
           "date": "2020-03-24",
           "react_1d": 28.93,
-          "react_5d": 21.25,
-          "react_20d": 53.56
+          "react_20d": 53.56,
+          "react_252d": 93.16
         },
         {
           "ticker": "ROST",
           "date": "2020-03-19",
           "react_1d": 6.55,
-          "react_5d": 42.74,
-          "react_20d": 52.94
+          "react_20d": 52.94,
+          "react_252d": 102.76
         },
         {
           "ticker": "AIV",
           "date": "2020-03-24",
           "react_1d": 20.64,
-          "react_5d": 38.99,
-          "react_20d": 46.07
+          "react_20d": 46.07,
+          "react_252d": 129.87
         },
         {
           "ticker": "SYY",
           "date": "2020-03-24",
           "react_1d": 25.86,
-          "react_5d": 25.81,
-          "react_20d": 43.12
+          "react_20d": 43.12,
+          "react_252d": 121.11
         },
         {
           "ticker": "DAL",
           "date": "2020-03-12",
           "react_1d": -10.1,
-          "react_5d": -49.59,
-          "react_20d": -42.84
+          "react_20d": -42.84,
+          "react_252d": 16.78
         },
         {
           "ticker": "NEM",
           "date": "2020-03-19",
           "react_1d": -2.43,
-          "react_5d": 16.14,
-          "react_20d": 42.48
+          "react_20d": 42.48,
+          "react_252d": 52.67
         }
       ]
     },
@@ -534,167 +613,193 @@
           "median": 0.41,
           "pct_up": 52.3
         },
-        "5d": {
-          "n": 127,
-          "mean": 1.4,
-          "median": 1.07,
-          "pct_up": 57.5
-        },
         "20d": {
           "n": 124,
           "mean": 2.2,
           "median": 1.69,
           "pct_up": 56.5
+        },
+        "1yr": {
+          "n": 95,
+          "mean": 33.67,
+          "median": 19.56,
+          "pct_up": 71.6
         }
       },
-      "persistence": {
-        "after_positive_1d": 5.74,
-        "after_negative_1d": -1.59,
-        "corr_1d_20d": 0.345
+      "cohorts": {
+        "up": {
+          "n": 67,
+          "1d": 2.38,
+          "20d": 4.95,
+          "1yr": 24.2
+        },
+        "down": {
+          "n": 61,
+          "1d": -3.43,
+          "20d": -1.79,
+          "1yr": 13.18
+        }
       },
+      "gap_1yr": 11.02,
+      "verdict": "fundamentals",
+      "persistence_ratio": 1.9,
+      "corr_1d_20d": 0.345,
       "examples": [
         {
           "ticker": "BBBY",
           "date": "2019-06-27",
           "react_1d": 0.74,
-          "react_5d": 9.04,
-          "react_20d": 48.52
+          "react_20d": 48.52,
+          "react_252d": 108.15
         },
         {
           "ticker": "INTC",
           "date": "2025-09-18",
           "react_1d": 18.8,
-          "react_5d": 36.51,
-          "react_20d": 47.95
+          "react_20d": 47.95,
+          "react_252d": null
         },
         {
           "ticker": "NBR",
           "date": "2017-12-15",
           "react_1d": 2.51,
-          "react_5d": 15.59,
-          "react_20d": 47.85
+          "react_20d": 47.85,
+          "react_252d": -56.18
         },
         {
           "ticker": "INTC",
           "date": "2025-12-29",
           "react_1d": 3.04,
-          "react_5d": 10.61,
-          "react_20d": 34.75
+          "react_20d": 34.75,
+          "react_252d": null
         },
         {
           "ticker": "NBR",
           "date": "2021-07-07",
           "react_1d": -3.43,
-          "react_5d": -10.39,
-          "react_20d": -28.88
+          "react_20d": -28.88,
+          "react_252d": 5.49
         },
         {
           "ticker": "RIG",
           "date": "2024-03-06",
           "react_1d": 0.59,
-          "react_5d": 9.77,
-          "react_20d": 27.73
+          "react_20d": 27.73,
+          "react_252d": -41.8
         },
         {
           "ticker": "DVN",
           "date": "2015-12-11",
           "react_1d": -10.58,
-          "react_5d": -18.71,
-          "react_20d": -27.08
+          "react_20d": -27.08,
+          "react_252d": 38.33
         },
         {
           "ticker": "INTC",
           "date": "2025-08-21",
           "react_1d": 5.35,
-          "react_5d": 5.9,
-          "react_20d": 25.66
+          "react_20d": 25.66,
+          "react_252d": null
         }
       ]
     },
     {
       "theme": "restructuring",
-      "n": 294,
+      "n": 295,
       "h": {
         "1d": {
-          "n": 294,
-          "mean": -0.3,
-          "median": -0.19,
-          "pct_up": 45.9
-        },
-        "5d": {
-          "n": 293,
-          "mean": 0.28,
-          "median": -0.1,
-          "pct_up": 49.5
+          "n": 295,
+          "mean": -0.29,
+          "median": -0.18,
+          "pct_up": 46.1
         },
         "20d": {
           "n": 292,
           "mean": 1.49,
           "median": 0.21,
           "pct_up": 52.1
+        },
+        "1yr": {
+          "n": 261,
+          "mean": 17.84,
+          "median": 11.3,
+          "pct_up": 60.5
         }
       },
-      "persistence": {
-        "after_positive_1d": 4.5,
-        "after_negative_1d": -1.19,
-        "corr_1d_20d": 0.413
+      "cohorts": {
+        "up": {
+          "n": 136,
+          "1d": 2.42,
+          "20d": 2.34,
+          "1yr": 11.6
+        },
+        "down": {
+          "n": 157,
+          "1d": -2.11,
+          "20d": -1.89,
+          "1yr": 10.3
+        }
       },
+      "gap_1yr": 1.3,
+      "verdict": "sentiment",
+      "persistence_ratio": 0.29,
+      "corr_1d_20d": 0.413,
       "examples": [
         {
           "ticker": "RIG",
           "date": "2020-05-11",
           "react_1d": 21.58,
-          "react_5d": 6.47,
-          "react_20d": 105.76
+          "react_20d": 105.76,
+          "react_252d": 179.86
         },
         {
           "ticker": "DAL",
           "date": "2020-05-14",
           "react_1d": -1.13,
-          "react_5d": 19.32,
-          "react_20d": 56.77
+          "react_20d": 56.77,
+          "react_252d": 138.59
         },
         {
           "ticker": "EXPE",
           "date": "2020-02-25",
           "react_1d": -9.9,
-          "react_5d": -15.24,
-          "react_20d": -46.84
+          "react_20d": -46.84,
+          "react_252d": 45.48
         },
         {
           "ticker": "GM",
           "date": "2020-02-18",
           "react_1d": 0.46,
-          "react_5d": -8.66,
-          "react_20d": -40.83
+          "react_20d": -40.83,
+          "react_252d": 54.01
         },
         {
           "ticker": "F",
           "date": "2021-01-11",
           "react_1d": 8.67,
-          "react_5d": 11.33,
-          "react_20d": 32.56
+          "react_20d": 32.56,
+          "react_252d": 166.33
         },
         {
           "ticker": "RIG",
           "date": "2023-06-28",
           "react_1d": 3.55,
-          "react_5d": 17.74,
-          "react_20d": 32.26
+          "react_20d": 32.26,
+          "react_252d": -13.71
         },
         {
           "ticker": "CAG",
           "date": "2018-12-07",
           "react_1d": -3.83,
-          "react_5d": -5.47,
-          "react_20d": -32.19
+          "react_20d": -32.19,
+          "react_252d": -4.33
         },
         {
           "ticker": "GM",
           "date": "2025-10-14",
           "react_1d": 3.92,
-          "react_5d": 19.78,
-          "react_20d": 28.05
+          "react_20d": 28.05,
+          "react_252d": null
         }
       ]
     },
@@ -708,167 +813,193 @@
           "median": 0.15,
           "pct_up": 53.2
         },
-        "5d": {
-          "n": 3727,
-          "mean": 0.59,
-          "median": 0.43,
-          "pct_up": 54.9
-        },
         "20d": {
-          "n": 3564,
-          "mean": 1.51,
-          "median": 1.31,
+          "n": 3569,
+          "mean": 1.52,
+          "median": 1.32,
           "pct_up": 57.6
+        },
+        "1yr": {
+          "n": 3365,
+          "mean": 16.35,
+          "median": 10.68,
+          "pct_up": 65.5
         }
       },
-      "persistence": {
-        "after_positive_1d": 3.35,
-        "after_negative_1d": -0.6,
-        "corr_1d_20d": 0.32
+      "cohorts": {
+        "up": {
+          "n": 1989,
+          "1d": 1.48,
+          "20d": 2.71,
+          "1yr": 12.06
+        },
+        "down": {
+          "n": 1735,
+          "1d": -1.45,
+          "20d": -0.7,
+          "1yr": 8.19
+        }
       },
+      "gap_1yr": 3.87,
+      "verdict": "mixed",
+      "persistence_ratio": 1.32,
+      "corr_1d_20d": 0.319,
       "examples": [
         {
           "ticker": "FOSL",
           "date": "2020-05-21",
           "react_1d": 19.63,
-          "react_5d": 12.96,
-          "react_20d": 90.37
+          "react_20d": 90.37,
+          "react_252d": 348.52
         },
         {
           "ticker": "BTU",
           "date": "2021-05-06",
           "react_1d": 8.02,
-          "react_5d": 33.76,
-          "react_20d": 75.11
+          "react_20d": 75.11,
+          "react_252d": 368.78
         },
         {
           "ticker": "BBBY",
           "date": "2020-02-19",
           "react_1d": 3.98,
-          "react_5d": -14.89,
-          "react_20d": -63.98
+          "react_20d": -63.98,
+          "react_252d": 1005.45
         },
         {
           "ticker": "MGM",
           "date": "2020-05-08",
           "react_1d": -1.88,
-          "react_5d": -7.23,
-          "react_20d": 59.14
+          "react_20d": 59.14,
+          "react_252d": 164.42
         },
         {
           "ticker": "FOSL",
           "date": "2018-05-24",
           "react_1d": 4.91,
-          "react_5d": 21.17,
-          "react_20d": 58.49
+          "react_20d": 58.49,
+          "react_252d": -45.25
         },
         {
           "ticker": "AA",
           "date": "2020-05-11",
           "react_1d": -9.67,
-          "react_5d": -3.35,
-          "react_20d": 56.01
+          "react_20d": 56.01,
+          "react_252d": 412.02
         },
         {
           "ticker": "TE",
           "date": "2025-12-05",
           "react_1d": 17.81,
-          "react_5d": 4.7,
-          "react_20d": 49.71
+          "react_20d": 49.71,
+          "react_252d": null
         },
         {
           "ticker": "CPRI",
           "date": "2023-08-04",
           "react_1d": 1.7,
-          "react_5d": 50.33,
-          "react_20d": 49.25
+          "react_20d": 49.25,
+          "react_252d": -8.12
         }
       ]
     },
     {
       "theme": "other material news",
-      "n": 10090,
+      "n": 10092,
       "h": {
         "1d": {
-          "n": 10085,
+          "n": 10092,
           "mean": 0.13,
           "median": 0.15,
           "pct_up": 52.6
         },
-        "5d": {
-          "n": 10051,
-          "mean": 0.4,
-          "median": 0.41,
-          "pct_up": 54.8
-        },
         "20d": {
-          "n": 9946,
+          "n": 9957,
           "mean": 1.28,
           "median": 1.24,
           "pct_up": 57.1
+        },
+        "1yr": {
+          "n": 8718,
+          "mean": 15.4,
+          "median": 10.52,
+          "pct_up": 65.9
         }
       },
-      "persistence": {
-        "after_positive_1d": 3.31,
-        "after_negative_1d": -0.98,
-        "corr_1d_20d": 0.347
+      "cohorts": {
+        "up": {
+          "n": 5308,
+          "1d": 1.54,
+          "20d": 2.91,
+          "1yr": 12.5
+        },
+        "down": {
+          "n": 4745,
+          "1d": -1.48,
+          "20d": -0.66,
+          "1yr": 8.14
+        }
       },
+      "gap_1yr": 4.36,
+      "verdict": "fundamentals",
+      "persistence_ratio": 1.44,
+      "corr_1d_20d": 0.347,
       "examples": [
         {
           "ticker": "BBBY",
           "date": "2020-04-07",
           "react_1d": 24.0,
-          "react_5d": 54.0,
-          "react_20d": 195.45
+          "react_20d": 195.45,
+          "react_252d": 1096.0
         },
         {
           "ticker": "TE",
           "date": "2024-10-24",
           "react_1d": 0.99,
-          "react_5d": -3.96,
-          "react_20d": 150.5
+          "react_20d": 150.5,
+          "react_252d": 266.34
         },
         {
           "ticker": "BBBY",
           "date": "2020-04-10",
           "react_1d": 17.07,
-          "react_5d": 38.04,
-          "react_20d": 136.42
+          "react_20d": 136.42,
+          "react_252d": 945.03
         },
         {
           "ticker": "NCLH",
           "date": "2020-05-08",
           "react_1d": -2.25,
-          "react_5d": -9.0,
-          "react_20d": 123.83
+          "react_20d": 123.83,
+          "react_252d": 132.92
         },
         {
           "ticker": "UAL",
           "date": "2020-05-08",
           "react_1d": 5.36,
-          "react_5d": -12.44,
-          "react_20d": 114.02
+          "react_20d": 114.02,
+          "react_252d": 137.49
         },
         {
           "ticker": "INTC",
           "date": "2026-04-08",
           "react_1d": 16.65,
-          "react_5d": 22.74,
-          "react_20d": 113.59
+          "react_20d": 113.59,
+          "react_252d": null
         },
         {
           "ticker": "FOSL",
           "date": "2025-11-10",
           "react_1d": 11.58,
-          "react_5d": -5.79,
-          "react_20d": 110.0
+          "react_20d": 110.0,
+          "react_252d": null
         },
         {
           "ticker": "BBBY",
           "date": "2020-06-29",
           "react_1d": 1.17,
-          "react_5d": 61.57,
-          "react_20d": 107.72
+          "react_20d": 107.72,
+          "react_252d": 247.12
         }
       ]
     },
@@ -882,80 +1013,93 @@
           "median": 1.02,
           "pct_up": 60.0
         },
-        "5d": {
-          "n": 35,
-          "mean": 1.69,
-          "median": 0.22,
-          "pct_up": 57.1
-        },
         "20d": {
           "n": 35,
           "mean": 3.63,
           "median": 1.8,
           "pct_up": 57.1
+        },
+        "1yr": {
+          "n": 31,
+          "mean": 19.81,
+          "median": 16.46,
+          "pct_up": 71.0
         }
       },
-      "persistence": {
-        "after_positive_1d": 4.54,
-        "after_negative_1d": 2.26,
-        "corr_1d_20d": 0.248
+      "cohorts": {
+        "up": {
+          "n": 21,
+          "1d": 1.71,
+          "20d": 1.8,
+          "1yr": 23.59
+        },
+        "down": {
+          "n": 14,
+          "1d": -1.65,
+          "20d": 1.44,
+          "1yr": 11.9
+        }
       },
+      "gap_1yr": null,
+      "verdict": null,
+      "persistence_ratio": null,
+      "corr_1d_20d": 0.248,
       "examples": [
         {
           "ticker": "STI",
           "date": "2024-04-19",
           "react_1d": -8.67,
-          "react_5d": 53.33,
-          "react_20d": 42.0
+          "react_20d": 42.0,
+          "react_252d": -93.13
         },
         {
           "ticker": "STI",
           "date": "2025-11-26",
           "react_1d": 4.1,
-          "react_5d": -16.78,
-          "react_20d": -39.85
+          "react_20d": -39.85,
+          "react_252d": null
         },
         {
           "ticker": "TE",
           "date": "2025-09-05",
           "react_1d": 7.03,
-          "react_5d": 0.54,
-          "react_20d": 36.76
+          "react_20d": 36.76,
+          "react_252d": null
         },
         {
           "ticker": "LRCX",
           "date": "2025-09-11",
           "react_1d": 8.94,
-          "react_5d": 17.66,
-          "react_20d": 31.59
+          "react_20d": 31.59,
+          "react_252d": null
         },
         {
           "ticker": "SLG",
           "date": "2023-11-29",
           "react_1d": 1.36,
-          "react_5d": 14.17,
-          "react_20d": 30.72
+          "react_20d": 30.72,
+          "react_252d": 128.44
         },
         {
           "ticker": "TRIP",
           "date": "2014-02-11",
           "react_1d": 7.4,
-          "react_5d": 11.55,
-          "react_20d": 26.94
+          "react_20d": 26.94,
+          "react_252d": -19.96
         },
         {
           "ticker": "STI",
           "date": "2025-10-27",
           "react_1d": -17.1,
-          "react_5d": -22.78,
-          "react_20d": -26.06
+          "react_20d": -26.06,
+          "react_252d": null
         },
         {
           "ticker": "ROL",
           "date": "2023-03-30",
           "react_1d": 1.41,
-          "react_5d": 4.78,
-          "react_20d": 14.16
+          "react_20d": 14.16,
+          "react_252d": 24.75
         }
       ]
     },
@@ -969,80 +1113,93 @@
           "median": -0.12,
           "pct_up": 43.3
         },
-        "5d": {
-          "n": 30,
-          "mean": -0.97,
-          "median": -0.12,
-          "pct_up": 46.7
-        },
         "20d": {
           "n": 30,
           "mean": -0.63,
           "median": 0.32,
           "pct_up": 53.3
+        },
+        "1yr": {
+          "n": 29,
+          "mean": 84.93,
+          "median": 11.0,
+          "pct_up": 62.1
         }
       },
-      "persistence": {
-        "after_positive_1d": 3.35,
-        "after_negative_1d": -3.67,
-        "corr_1d_20d": 0.69
+      "cohorts": {
+        "up": {
+          "n": 13,
+          "1d": 1.9,
+          "20d": 2.22,
+          "1yr": 10.47
+        },
+        "down": {
+          "n": 17,
+          "1d": -1.84,
+          "20d": -1.04,
+          "1yr": 11.0
+        }
       },
+      "gap_1yr": null,
+      "verdict": null,
+      "persistence_ratio": null,
+      "corr_1d_20d": 0.69,
       "examples": [
         {
           "ticker": "RIG",
           "date": "2020-09-08",
           "react_1d": -21.64,
-          "react_5d": -20.15,
-          "react_20d": -41.04
+          "react_20d": -41.04,
+          "react_252d": 163.43
         },
         {
           "ticker": "RIG",
           "date": "2020-10-07",
           "react_1d": 13.92,
-          "react_5d": 5.06,
-          "react_20d": 22.78
+          "react_20d": 22.78,
+          "react_252d": 386.08
         },
         {
           "ticker": "GME",
           "date": "2020-11-10",
           "react_1d": 2.26,
-          "react_5d": 1.22,
-          "react_20d": 18.89
+          "react_20d": 18.89,
+          "react_252d": 1633.59
         },
         {
           "ticker": "GME",
           "date": "2019-03-06",
           "react_1d": -0.09,
-          "react_5d": -0.17,
-          "react_20d": -14.17
+          "react_20d": -14.17,
+          "react_252d": -64.7
         },
         {
           "ticker": "MUR",
           "date": "2022-07-20",
           "react_1d": -0.61,
-          "react_5d": 7.09,
-          "react_20d": 12.86
+          "react_20d": 12.86,
+          "react_252d": 37.14
         },
         {
           "ticker": "NBR",
           "date": "2017-05-04",
           "react_1d": 1.9,
-          "react_5d": -1.2,
-          "react_20d": -12.01
+          "react_20d": -12.01,
+          "react_252d": -23.13
         },
         {
           "ticker": "MUR",
           "date": "2022-05-02",
           "react_1d": 2.15,
-          "react_5d": -12.5,
-          "react_20d": 11.99
+          "react_20d": 11.99,
+          "react_252d": -8.02
         },
         {
           "ticker": "MUR",
           "date": "2021-11-02",
           "react_1d": -3.79,
-          "react_5d": 5.48,
-          "react_20d": -11.58
+          "react_20d": -11.58,
+          "react_252d": 70.57
         }
       ]
     },
@@ -1056,80 +1213,93 @@
           "median": -0.11,
           "pct_up": 45.0
         },
-        "5d": {
-          "n": 59,
-          "mean": -1.15,
-          "median": -0.69,
-          "pct_up": 44.1
-        },
         "20d": {
           "n": 59,
           "mean": -0.9,
           "median": 1.16,
           "pct_up": 55.9
+        },
+        "1yr": {
+          "n": 57,
+          "mean": 22.05,
+          "median": 6.04,
+          "pct_up": 57.9
         }
       },
-      "persistence": {
-        "after_positive_1d": 6.69,
-        "after_negative_1d": -6.03,
-        "corr_1d_20d": 0.765
+      "cohorts": {
+        "up": {
+          "n": 27,
+          "1d": 1.42,
+          "20d": 3.71,
+          "1yr": 8.09
+        },
+        "down": {
+          "n": 32,
+          "1d": -1.59,
+          "20d": -0.77,
+          "1yr": 5.39
+        }
       },
+      "gap_1yr": null,
+      "verdict": null,
+      "persistence_ratio": null,
+      "corr_1d_20d": 0.765,
       "examples": [
         {
           "ticker": "FLR",
           "date": "2020-03-19",
           "react_1d": 65.59,
-          "react_5d": 114.12,
-          "react_20d": 141.76
+          "react_20d": 141.76,
+          "react_252d": 550.0
         },
         {
           "ticker": "STI",
           "date": "2024-02-05",
           "react_1d": -53.64,
-          "react_5d": -80.13,
-          "react_20d": -87.97
+          "react_20d": -87.97,
+          "react_252d": -90.82
         },
         {
           "ticker": "STI",
           "date": "2025-02-03",
           "react_1d": 20.42,
-          "react_5d": 4.19,
-          "react_20d": -57.33
+          "react_20d": -57.33,
+          "react_252d": -62.72
         },
         {
           "ticker": "FISV",
           "date": "2025-10-29",
           "react_1d": -48.33,
-          "react_5d": -49.27,
-          "react_20d": -51.28
+          "react_20d": -51.28,
+          "react_252d": null
         },
         {
           "ticker": "RIG",
           "date": "2020-10-19",
           "react_1d": 3.8,
-          "react_5d": 2.53,
-          "react_20d": 49.37
+          "react_20d": 49.37,
+          "react_252d": 412.66
         },
         {
           "ticker": "STI",
           "date": "2025-04-16",
           "react_1d": -19.66,
-          "react_5d": -5.13,
-          "react_20d": -40.51
+          "react_20d": -40.51,
+          "react_252d": 1.37
         },
         {
           "ticker": "STI",
           "date": "2025-04-22",
           "react_1d": 0.0,
-          "react_5d": -0.97,
-          "react_20d": -33.79
+          "react_20d": -33.79,
+          "react_252d": -27.77
         },
         {
           "ticker": "HST",
           "date": "2020-10-19",
           "react_1d": -1.55,
-          "react_5d": 2.19,
-          "react_20d": 25.39
+          "react_20d": 25.39,
+          "react_252d": 51.42
         }
       ]
     },
@@ -1143,83 +1313,96 @@
           "median": 0.07,
           "pct_up": 51.4
         },
-        "5d": {
-          "n": 185,
-          "mean": 0.36,
-          "median": 0.3,
-          "pct_up": 52.4
-        },
         "20d": {
           "n": 185,
           "mean": 1.23,
           "median": 0.35,
           "pct_up": 50.8
+        },
+        "1yr": {
+          "n": 170,
+          "mean": 30.91,
+          "median": 14.25,
+          "pct_up": 70.6
         }
       },
-      "persistence": {
-        "after_positive_1d": 4.14,
-        "after_negative_1d": -1.7,
-        "corr_1d_20d": 0.475
+      "cohorts": {
+        "up": {
+          "n": 95,
+          "1d": 1.28,
+          "20d": 1.8,
+          "1yr": 14.91
+        },
+        "down": {
+          "n": 88,
+          "1d": -1.4,
+          "20d": -1.46,
+          "1yr": 10.44
+        }
       },
+      "gap_1yr": 4.47,
+      "verdict": "fundamentals",
+      "persistence_ratio": 1.67,
+      "corr_1d_20d": 0.475,
       "examples": [
         {
           "ticker": "NBR",
           "date": "2020-04-22",
           "react_1d": 6.09,
-          "react_5d": 25.18,
-          "react_20d": 100.55
+          "react_20d": 100.55,
+          "react_252d": 657.55
         },
         {
           "ticker": "SNDK",
           "date": "2025-02-14",
           "react_1d": 30.97,
-          "react_5d": 35.0,
-          "react_20d": 54.58
+          "react_20d": 54.58,
+          "react_252d": 1567.78
         },
         {
           "ticker": "FCX",
           "date": "2022-06-08",
           "react_1d": -6.61,
-          "react_5d": -14.96,
-          "react_20d": -35.47
+          "react_20d": -35.47,
+          "react_252d": -11.1
         },
         {
           "ticker": "SWK",
           "date": "2020-05-15",
           "react_1d": 15.52,
-          "react_5d": 16.31,
-          "react_20d": 30.33
+          "react_20d": 30.33,
+          "react_252d": 109.26
         },
         {
           "ticker": "FISV",
           "date": "2020-02-14",
           "react_1d": 0.98,
-          "react_5d": -3.69,
-          "react_20d": -28.81
+          "react_20d": -28.81,
+          "react_252d": -8.97
         },
         {
           "ticker": "NOV",
           "date": "2008-11-21",
           "react_1d": 40.65,
-          "react_5d": 29.62,
-          "react_20d": 27.32
+          "react_20d": 27.32,
+          "react_252d": 143.73
         },
         {
           "ticker": "JEF",
           "date": "2025-09-19",
           "react_1d": -0.99,
-          "react_5d": -5.19,
-          "react_20d": -26.52
+          "react_20d": -26.52,
+          "react_252d": null
         },
         {
           "ticker": "BTU",
           "date": "2021-07-26",
           "react_1d": -6.13,
-          "react_5d": 7.04,
-          "react_20d": 25.89
+          "react_20d": 25.89,
+          "react_252d": 99.82
         }
       ]
     }
   ],
-  "note": "8-K filings 2020+ (recent EDGAR window). Reaction measured close-to-close from the trading day before the filing; the day-of move is included in +1d."
+  "note": "8-K filings (recent EDGAR window). Reaction close-to-close from the day before the filing; day-of move included in +1d. Cohorts split on the day-1 sign; 1-year horizon available only for events at least ~1 year old."
 }

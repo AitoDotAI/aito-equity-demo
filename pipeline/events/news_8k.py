@@ -10,10 +10,14 @@ Per 8-K event:
   date            filing date
   theme           high-level theme from the item code(s)
   items           raw item codes
-  react_1d        close[+1] / anchor - 1   (anchor = close the day before)
-  react_5d        close[+5] / anchor - 1   (~1 week)
-  react_20d       close[+20] / anchor - 1  (~1 month)
-  react_1d_bucket / 5d / 20d   up/flat/down bands
+  react_1d        close[+1] / anchor - 1     (anchor = close the day before)
+  react_5d        close[+5] / anchor - 1     (~1 week)
+  react_20d       close[+20] / anchor - 1    (~1 month)
+  react_252d      close[+252] / anchor - 1   (~1 year — sentiment vs fundamentals)
+
+The 1-year horizon is the gut-vs-fundamentals test: condition on the
+day-1 sign (the market's immediate verdict) and ask whether the move
+persists a year out (fundamentals shifted) or decays back (sentiment).
 
 The anchor is the close the trading day BEFORE the filing, so the day-of
 reaction is captured. Source: cached EDGAR submissions (recent window,
@@ -116,7 +120,7 @@ def compute_reactions(ticker: str, events: list[dict]) -> list[dict]:
         return []
     ds = sorted(date.fromisoformat(e["date"]) for e in events)
     start = ds[0] - timedelta(days=15)
-    end = ds[-1] + timedelta(days=45)
+    end = ds[-1] + timedelta(days=420)  # ~1 trading year past the last event
     try:
         h = yf.Ticker(ticker).history(start=start.isoformat(), end=end.isoformat(), auto_adjust=True, actions=False)
     except Exception:
@@ -139,10 +143,10 @@ def compute_reactions(ticker: str, events: list[dict]) -> list[dict]:
             continue
         row = {
             "ticker": ticker, "date": e["date"], "theme": e["theme"], "items": e["items"],
-            "react_1d": None, "react_5d": None, "react_20d": None,
+            "react_1d": None, "react_5d": None, "react_20d": None, "react_252d": None,
         }
-        # k trading days after the event (after.iloc[k-1] is the k-th close at/after event)
-        for label, k in [("react_1d", 1), ("react_5d", 5), ("react_20d", 20)]:
+        # k trading days after the event (after.iloc[k] is the k-th close after the event day)
+        for label, k in [("react_1d", 1), ("react_5d", 5), ("react_20d", 20), ("react_252d", 252)]:
             if len(after) > k:
                 row[label] = round((float(after.iloc[k]) / anchor - 1) * 100, 2)
         out.append(row)
