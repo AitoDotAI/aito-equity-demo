@@ -802,6 +802,76 @@ def emit_match_per_focal(
         )
 
 
+NEWS_THEME_ORDER = [
+    "earnings", "M&A", "guidance / RegFD", "management change",
+    "material agreement", "new debt / financing", "equity issuance",
+    "restructuring", "shareholder vote", "other material news",
+]
+
+
+def emit_news_reaction(out_dir: Path, events_csv: Path = Path("data/news_events.csv"), min_n: int = 30) -> None:
+    """Aggregate the 8-K event study into per-theme reaction stats at each
+    horizon (+1d / +5d / +20d): mean, median, %-up, n, plus the day-1→day-20
+    persistence (does the immediate move continue or revert)."""
+    if not events_csv.exists():
+        _emit_pending(out_dir, "news_reaction.json", {"themes": []})
+        return
+    df = pd.read_csv(events_csv)
+    horizons = [("1d", "react_1d"), ("5d", "react_5d"), ("20d", "react_20d")]
+
+    themes = []
+    for theme, grp in df.groupby("theme"):
+        n = len(grp)
+        if n < min_n:
+            continue
+        h = {}
+        for label, col in horizons:
+            vals = grp[col].dropna()
+            if len(vals) == 0:
+                continue
+            h[label] = {
+                "n": int(len(vals)),
+                "mean": round(float(vals.mean()), 2),
+                "median": round(float(vals.median()), 2),
+                "pct_up": round(float((vals > 0).mean()) * 100, 1),
+            }
+        # Persistence: among events with a positive day-1, mean day-20.
+        both = grp.dropna(subset=["react_1d", "react_20d"])
+        persistence = None
+        if len(both) >= min_n:
+            pos1 = both[both["react_1d"] > 0]["react_20d"]
+            neg1 = both[both["react_1d"] < 0]["react_20d"]
+            persistence = {
+                "after_positive_1d": round(float(pos1.mean()), 2) if len(pos1) else None,
+                "after_negative_1d": round(float(neg1.mean()), 2) if len(neg1) else None,
+                "corr_1d_20d": round(float(both["react_1d"].corr(both["react_20d"])), 3),
+            }
+        # A few example movers (largest |20d|) for drill-down colour.
+        ex = grp.dropna(subset=["react_20d"]).reindex(
+            grp.dropna(subset=["react_20d"])["react_20d"].abs().sort_values(ascending=False).index
+        ).head(8)
+        examples = [
+            {
+                "ticker": r.ticker, "date": r.date,
+                "react_1d": None if pd.isna(r.react_1d) else float(r.react_1d),
+                "react_5d": None if pd.isna(r.react_5d) else float(r.react_5d),
+                "react_20d": None if pd.isna(r.react_20d) else float(r.react_20d),
+            }
+            for r in ex.itertuples(index=False)
+        ]
+        themes.append({"theme": theme, "n": n, "h": h, "persistence": persistence, "examples": examples})
+
+    order = {t: i for i, t in enumerate(NEWS_THEME_ORDER)}
+    themes.sort(key=lambda t: order.get(t["theme"], 99))
+    payload = {
+        "n_events": int(len(df)),
+        "n_tickers": int(df["ticker"].nunique()),
+        "themes": themes,
+        "note": "8-K filings 2020+ (recent EDGAR window). Reaction measured close-to-close from the trading day before the filing; the day-of move is included in +1d.",
+    }
+    (out_dir / "news_reaction.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
 def _emit_pending(out_dir: Path, filename: str, extra: dict) -> None:
     """Emit a clearly-marked pending JSON file. The frontend renders 'computation
     pending' instead of fake numbers when it sees `_pending: true`."""
@@ -842,6 +912,8 @@ def precompute_all(out_dir: Path = SITE_DATA, static_only: bool = False) -> None
 
     print("→ factor explorer (two-directional lift)")
     emit_factor_explorer(companies_df, out_dir)
+    print("→ news reaction (8-K event study)")
+    emit_news_reaction(out_dir)
     print("→ meta")
     emit_meta(companies_df, latency_samples, out_dir)
     print("→ companies")

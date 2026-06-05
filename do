@@ -71,6 +71,7 @@ cmd_pipeline() {
     fundamentals) uv run python -m pipeline.fundamentals.sec_xbrl "$@" ;;
     market)       uv run python -m pipeline.fundamentals.market_factors "$@" ;;
     events)       uv run python -m pipeline.events.post_filing "$@" ;;
+    news)         uv run python -m pipeline.events.news_8k "$@" ;;
     load)         uv run python -m pipeline.aito.load "$@" ;;
     precompute)   uv run python -m pipeline.aito.queries "$@" ;;
     all)
@@ -81,6 +82,7 @@ cmd_pipeline() {
       say "fundamentals" && cmd_pipeline fundamentals
       say "market"       && cmd_pipeline market
       say "events"       && cmd_pipeline events
+      say "news"         && cmd_pipeline news
       # Cost-gated: extraction calls the LLM. Requires explicit --confirm-cost.
       if [ -n "${OPENAI_MODEL_API_KEY:-}" ]; then
         say "extract (LLM — needs --confirm-cost to actually spend; dry-run otherwise)"

@@ -1,0 +1,1225 @@
+{
+  "n_events": 60347,
+  "n_tickers": 498,
+  "themes": [
+    {
+      "theme": "earnings",
+      "n": 19393,
+      "h": {
+        "1d": {
+          "n": 19393,
+          "mean": 0.11,
+          "median": 0.16,
+          "pct_up": 51.2
+        },
+        "5d": {
+          "n": 19385,
+          "mean": 0.46,
+          "median": 0.38,
+          "pct_up": 52.6
+        },
+        "20d": {
+          "n": 19304,
+          "mean": 1.41,
+          "median": 1.19,
+          "pct_up": 55.5
+        }
+      },
+      "persistence": {
+        "after_positive_1d": 6.19,
+        "after_negative_1d": -3.63,
+        "corr_1d_20d": 0.579
+      },
+      "examples": [
+        {
+          "ticker": "RIG",
+          "date": "2020-11-02",
+          "react_1d": 29.85,
+          "react_5d": 59.7,
+          "react_20d": 201.49
+        },
+        {
+          "ticker": "BBBY",
+          "date": "2020-03-13",
+          "react_1d": -22.29,
+          "react_5d": 10.26,
+          "react_20d": 130.21
+        },
+        {
+          "ticker": "COTY",
+          "date": "2020-11-06",
+          "react_1d": 33.23,
+          "react_5d": 43.41,
+          "react_20d": 123.05
+        },
+        {
+          "ticker": "FOSL",
+          "date": "2020-11-12",
+          "react_1d": 30.15,
+          "react_5d": 99.66,
+          "react_20d": 122.61
+        },
+        {
+          "ticker": "LUMN",
+          "date": "2024-08-06",
+          "react_1d": 155.98,
+          "react_5d": 93.44,
+          "react_20d": 107.72
+        },
+        {
+          "ticker": "XRX",
+          "date": "2026-04-30",
+          "react_1d": 71.97,
+          "react_5d": 50.96,
+          "react_20d": 106.37
+        },
+        {
+          "ticker": "PBI",
+          "date": "2020-07-30",
+          "react_1d": 13.22,
+          "react_5d": 90.17,
+          "react_20d": 102.76
+        },
+        {
+          "ticker": "NCLH",
+          "date": "2020-05-14",
+          "react_1d": 5.92,
+          "react_5d": 36.08,
+          "react_20d": 98.84
+        }
+      ]
+    },
+    {
+      "theme": "M&A",
+      "n": 383,
+      "h": {
+        "1d": {
+          "n": 383,
+          "mean": 0.46,
+          "median": 0.33,
+          "pct_up": 55.1
+        },
+        "5d": {
+          "n": 383,
+          "mean": 0.75,
+          "median": 0.55,
+          "pct_up": 55.4
+        },
+        "20d": {
+          "n": 382,
+          "mean": 1.78,
+          "median": 1.9,
+          "pct_up": 57.6
+        }
+      },
+      "persistence": {
+        "after_positive_1d": 3.96,
+        "after_negative_1d": -0.93,
+        "corr_1d_20d": 0.382
+      },
+      "examples": [
+        {
+          "ticker": "INTC",
+          "date": "2025-09-15",
+          "react_1d": 4.94,
+          "react_5d": 19.44,
+          "react_20d": 54.57
+        },
+        {
+          "ticker": "TDC",
+          "date": "2021-02-04",
+          "react_1d": 34.64,
+          "react_5d": 69.86,
+          "react_20d": 50.0
+        },
+        {
+          "ticker": "BEAM",
+          "date": "2023-10-31",
+          "react_1d": 10.1,
+          "react_5d": 30.77,
+          "react_20d": 49.61
+        },
+        {
+          "ticker": "BBBY",
+          "date": "2024-12-20",
+          "react_1d": -6.18,
+          "react_5d": -6.18,
+          "react_20d": 35.14
+        },
+        {
+          "ticker": "MAS",
+          "date": "2020-02-21",
+          "react_1d": -0.66,
+          "react_5d": -8.99,
+          "react_20d": -35.09
+        },
+        {
+          "ticker": "THC",
+          "date": "2019-01-29",
+          "react_1d": 5.0,
+          "react_5d": 8.77,
+          "react_20d": 34.7
+        },
+        {
+          "ticker": "CNX",
+          "date": "2016-04-06",
+          "react_1d": 1.28,
+          "react_5d": 25.5,
+          "react_20d": 33.27
+        },
+        {
+          "ticker": "GNW",
+          "date": "2021-09-23",
+          "react_1d": 8.21,
+          "react_5d": 9.97,
+          "react_20d": 31.09
+        }
+      ]
+    },
+    {
+      "theme": "guidance / RegFD",
+      "n": 7810,
+      "h": {
+        "1d": {
+          "n": 7810,
+          "mean": 0.17,
+          "median": 0.12,
+          "pct_up": 52.2
+        },
+        "5d": {
+          "n": 7795,
+          "mean": 0.55,
+          "median": 0.45,
+          "pct_up": 54.3
+        },
+        "20d": {
+          "n": 7751,
+          "mean": 1.16,
+          "median": 1.06,
+          "pct_up": 55.1
+        }
+      },
+      "persistence": {
+        "after_positive_1d": 4.11,
+        "after_negative_1d": -2.08,
+        "corr_1d_20d": 0.422
+      },
+      "examples": [
+        {
+          "ticker": "NBR",
+          "date": "2020-05-08",
+          "react_1d": 30.37,
+          "react_5d": 26.87,
+          "react_20d": 528.06
+        },
+        {
+          "ticker": "GME",
+          "date": "2021-01-11",
+          "react_1d": 12.78,
+          "react_5d": 122.5,
+          "react_20d": 184.4
+        },
+        {
+          "ticker": "PCG",
+          "date": "2019-01-23",
+          "react_1d": 81.17,
+          "react_5d": 77.53,
+          "react_20d": 151.95
+        },
+        {
+          "ticker": "RIG",
+          "date": "2020-11-18",
+          "react_1d": 12.71,
+          "react_5d": 83.9,
+          "react_20d": 117.8
+        },
+        {
+          "ticker": "NBR",
+          "date": "2020-10-30",
+          "react_1d": 13.49,
+          "react_5d": 20.61,
+          "react_20d": 97.4
+        },
+        {
+          "ticker": "HPE",
+          "date": "2026-05-04",
+          "react_1d": 5.15,
+          "react_5d": 8.05,
+          "react_20d": 96.53
+        },
+        {
+          "ticker": "PCG",
+          "date": "2019-11-08",
+          "react_1d": 3.99,
+          "react_5d": 23.26,
+          "react_20d": 85.71
+        },
+        {
+          "ticker": "DRI",
+          "date": "2020-03-19",
+          "react_1d": 14.17,
+          "react_5d": 77.28,
+          "react_20d": 85.45
+        }
+      ]
+    },
+    {
+      "theme": "management change",
+      "n": 10927,
+      "h": {
+        "1d": {
+          "n": 10925,
+          "mean": -0.01,
+          "median": 0.05,
+          "pct_up": 50.8
+        },
+        "5d": {
+          "n": 10907,
+          "mean": 0.22,
+          "median": 0.22,
+          "pct_up": 52.5
+        },
+        "20d": {
+          "n": 10803,
+          "mean": 0.92,
+          "median": 0.85,
+          "pct_up": 54.4
+        }
+      },
+      "persistence": {
+        "after_positive_1d": 3.32,
+        "after_negative_1d": -1.59,
+        "corr_1d_20d": 0.389
+      },
+      "examples": [
+        {
+          "ticker": "GME",
+          "date": "2021-02-23",
+          "react_1d": 99.37,
+          "react_5d": 156.91,
+          "react_20d": 295.11
+        },
+        {
+          "ticker": "BBBY",
+          "date": "2020-03-18",
+          "react_1d": 49.44,
+          "react_5d": 103.0,
+          "react_20d": 241.2
+        },
+        {
+          "ticker": "SNDK",
+          "date": "2026-01-02",
+          "react_1d": 15.46,
+          "react_5d": 58.99,
+          "react_20d": 180.24
+        },
+        {
+          "ticker": "PBI",
+          "date": "2020-07-14",
+          "react_1d": 7.63,
+          "react_5d": 17.67,
+          "react_20d": 157.43
+        },
+        {
+          "ticker": "BBBY",
+          "date": "2020-03-13",
+          "react_1d": -22.29,
+          "react_5d": 10.26,
+          "react_20d": 130.21
+        },
+        {
+          "ticker": "COTY",
+          "date": "2020-11-06",
+          "react_1d": 33.23,
+          "react_5d": 43.41,
+          "react_20d": 123.05
+        },
+        {
+          "ticker": "BBBY",
+          "date": "2020-06-15",
+          "react_1d": 12.2,
+          "react_5d": 38.63,
+          "react_20d": 118.38
+        },
+        {
+          "ticker": "XRX",
+          "date": "2026-04-02",
+          "react_1d": -2.38,
+          "react_5d": -3.17,
+          "react_20d": 114.29
+        }
+      ]
+    },
+    {
+      "theme": "material agreement",
+      "n": 6826,
+      "h": {
+        "1d": {
+          "n": 6825,
+          "mean": 0.24,
+          "median": 0.13,
+          "pct_up": 52.0
+        },
+        "5d": {
+          "n": 6814,
+          "mean": 0.45,
+          "median": 0.27,
+          "pct_up": 52.7
+        },
+        "20d": {
+          "n": 6753,
+          "mean": 1.57,
+          "median": 1.05,
+          "pct_up": 55.7
+        }
+      },
+      "persistence": {
+        "after_positive_1d": 4.35,
+        "after_negative_1d": -1.49,
+        "corr_1d_20d": 0.371
+      },
+      "examples": [
+        {
+          "ticker": "NBR",
+          "date": "2020-05-06",
+          "react_1d": 9.66,
+          "react_5d": 32.98,
+          "react_20d": 255.4
+        },
+        {
+          "ticker": "GME",
+          "date": "2021-01-11",
+          "react_1d": 12.78,
+          "react_5d": 122.5,
+          "react_20d": 184.4
+        },
+        {
+          "ticker": "BTU",
+          "date": "2020-12-28",
+          "react_1d": 31.98,
+          "react_5d": 99.42,
+          "react_20d": 171.51
+        },
+        {
+          "ticker": "NBR",
+          "date": "2020-05-01",
+          "react_1d": -10.86,
+          "react_5d": -4.14,
+          "react_20d": 165.58
+        },
+        {
+          "ticker": "RRC",
+          "date": "2020-04-01",
+          "react_1d": 5.26,
+          "react_5d": 63.6,
+          "react_20d": 155.7
+        },
+        {
+          "ticker": "PCG",
+          "date": "2019-01-22",
+          "react_1d": 10.51,
+          "react_5d": 93.5,
+          "react_20d": 151.87
+        },
+        {
+          "ticker": "LVS",
+          "date": "2009-04-21",
+          "react_1d": 21.98,
+          "react_5d": 50.43,
+          "react_20d": 115.73
+        },
+        {
+          "ticker": "TE",
+          "date": "2025-09-11",
+          "react_1d": -0.53,
+          "react_5d": -0.53,
+          "react_20d": 104.81
+        }
+      ]
+    },
+    {
+      "theme": "new debt / financing",
+      "n": 430,
+      "h": {
+        "1d": {
+          "n": 430,
+          "mean": 0.18,
+          "median": 0.17,
+          "pct_up": 52.1
+        },
+        "5d": {
+          "n": 429,
+          "mean": 1.02,
+          "median": 0.6,
+          "pct_up": 58.0
+        },
+        "20d": {
+          "n": 427,
+          "mean": 3.31,
+          "median": 2.29,
+          "pct_up": 60.7
+        }
+      },
+      "persistence": {
+        "after_positive_1d": 4.84,
+        "after_negative_1d": 1.63,
+        "corr_1d_20d": 0.382
+      },
+      "examples": [
+        {
+          "ticker": "CPRI",
+          "date": "2020-04-06",
+          "react_1d": 49.94,
+          "react_5d": 68.93,
+          "react_20d": 61.9
+        },
+        {
+          "ticker": "RCL",
+          "date": "2020-04-02",
+          "react_1d": -5.36,
+          "react_5d": 56.07,
+          "react_20d": 58.21
+        },
+        {
+          "ticker": "YUM",
+          "date": "2020-03-24",
+          "react_1d": 28.93,
+          "react_5d": 21.25,
+          "react_20d": 53.56
+        },
+        {
+          "ticker": "ROST",
+          "date": "2020-03-19",
+          "react_1d": 6.55,
+          "react_5d": 42.74,
+          "react_20d": 52.94
+        },
+        {
+          "ticker": "AIV",
+          "date": "2020-03-24",
+          "react_1d": 20.64,
+          "react_5d": 38.99,
+          "react_20d": 46.07
+        },
+        {
+          "ticker": "SYY",
+          "date": "2020-03-24",
+          "react_1d": 25.86,
+          "react_5d": 25.81,
+          "react_20d": 43.12
+        },
+        {
+          "ticker": "DAL",
+          "date": "2020-03-12",
+          "react_1d": -10.1,
+          "react_5d": -49.59,
+          "react_20d": -42.84
+        },
+        {
+          "ticker": "NEM",
+          "date": "2020-03-19",
+          "react_1d": -2.43,
+          "react_5d": 16.14,
+          "react_20d": 42.48
+        }
+      ]
+    },
+    {
+      "theme": "equity issuance",
+      "n": 128,
+      "h": {
+        "1d": {
+          "n": 128,
+          "mean": -0.21,
+          "median": 0.41,
+          "pct_up": 52.3
+        },
+        "5d": {
+          "n": 127,
+          "mean": 1.4,
+          "median": 1.07,
+          "pct_up": 57.5
+        },
+        "20d": {
+          "n": 124,
+          "mean": 2.2,
+          "median": 1.69,
+          "pct_up": 56.5
+        }
+      },
+      "persistence": {
+        "after_positive_1d": 5.74,
+        "after_negative_1d": -1.59,
+        "corr_1d_20d": 0.345
+      },
+      "examples": [
+        {
+          "ticker": "BBBY",
+          "date": "2019-06-27",
+          "react_1d": 0.74,
+          "react_5d": 9.04,
+          "react_20d": 48.52
+        },
+        {
+          "ticker": "INTC",
+          "date": "2025-09-18",
+          "react_1d": 18.8,
+          "react_5d": 36.51,
+          "react_20d": 47.95
+        },
+        {
+          "ticker": "NBR",
+          "date": "2017-12-15",
+          "react_1d": 2.51,
+          "react_5d": 15.59,
+          "react_20d": 47.85
+        },
+        {
+          "ticker": "INTC",
+          "date": "2025-12-29",
+          "react_1d": 3.04,
+          "react_5d": 10.61,
+          "react_20d": 34.75
+        },
+        {
+          "ticker": "NBR",
+          "date": "2021-07-07",
+          "react_1d": -3.43,
+          "react_5d": -10.39,
+          "react_20d": -28.88
+        },
+        {
+          "ticker": "RIG",
+          "date": "2024-03-06",
+          "react_1d": 0.59,
+          "react_5d": 9.77,
+          "react_20d": 27.73
+        },
+        {
+          "ticker": "DVN",
+          "date": "2015-12-11",
+          "react_1d": -10.58,
+          "react_5d": -18.71,
+          "react_20d": -27.08
+        },
+        {
+          "ticker": "INTC",
+          "date": "2025-08-21",
+          "react_1d": 5.35,
+          "react_5d": 5.9,
+          "react_20d": 25.66
+        }
+      ]
+    },
+    {
+      "theme": "restructuring",
+      "n": 294,
+      "h": {
+        "1d": {
+          "n": 294,
+          "mean": -0.3,
+          "median": -0.19,
+          "pct_up": 45.9
+        },
+        "5d": {
+          "n": 293,
+          "mean": 0.28,
+          "median": -0.1,
+          "pct_up": 49.5
+        },
+        "20d": {
+          "n": 292,
+          "mean": 1.49,
+          "median": 0.21,
+          "pct_up": 52.1
+        }
+      },
+      "persistence": {
+        "after_positive_1d": 4.5,
+        "after_negative_1d": -1.19,
+        "corr_1d_20d": 0.413
+      },
+      "examples": [
+        {
+          "ticker": "RIG",
+          "date": "2020-05-11",
+          "react_1d": 21.58,
+          "react_5d": 6.47,
+          "react_20d": 105.76
+        },
+        {
+          "ticker": "DAL",
+          "date": "2020-05-14",
+          "react_1d": -1.13,
+          "react_5d": 19.32,
+          "react_20d": 56.77
+        },
+        {
+          "ticker": "EXPE",
+          "date": "2020-02-25",
+          "react_1d": -9.9,
+          "react_5d": -15.24,
+          "react_20d": -46.84
+        },
+        {
+          "ticker": "GM",
+          "date": "2020-02-18",
+          "react_1d": 0.46,
+          "react_5d": -8.66,
+          "react_20d": -40.83
+        },
+        {
+          "ticker": "F",
+          "date": "2021-01-11",
+          "react_1d": 8.67,
+          "react_5d": 11.33,
+          "react_20d": 32.56
+        },
+        {
+          "ticker": "RIG",
+          "date": "2023-06-28",
+          "react_1d": 3.55,
+          "react_5d": 17.74,
+          "react_20d": 32.26
+        },
+        {
+          "ticker": "CAG",
+          "date": "2018-12-07",
+          "react_1d": -3.83,
+          "react_5d": -5.47,
+          "react_20d": -32.19
+        },
+        {
+          "ticker": "GM",
+          "date": "2025-10-14",
+          "react_1d": 3.92,
+          "react_5d": 19.78,
+          "react_20d": 28.05
+        }
+      ]
+    },
+    {
+      "theme": "shareholder vote",
+      "n": 3740,
+      "h": {
+        "1d": {
+          "n": 3740,
+          "mean": 0.15,
+          "median": 0.15,
+          "pct_up": 53.2
+        },
+        "5d": {
+          "n": 3727,
+          "mean": 0.59,
+          "median": 0.43,
+          "pct_up": 54.9
+        },
+        "20d": {
+          "n": 3564,
+          "mean": 1.51,
+          "median": 1.31,
+          "pct_up": 57.6
+        }
+      },
+      "persistence": {
+        "after_positive_1d": 3.35,
+        "after_negative_1d": -0.6,
+        "corr_1d_20d": 0.32
+      },
+      "examples": [
+        {
+          "ticker": "FOSL",
+          "date": "2020-05-21",
+          "react_1d": 19.63,
+          "react_5d": 12.96,
+          "react_20d": 90.37
+        },
+        {
+          "ticker": "BTU",
+          "date": "2021-05-06",
+          "react_1d": 8.02,
+          "react_5d": 33.76,
+          "react_20d": 75.11
+        },
+        {
+          "ticker": "BBBY",
+          "date": "2020-02-19",
+          "react_1d": 3.98,
+          "react_5d": -14.89,
+          "react_20d": -63.98
+        },
+        {
+          "ticker": "MGM",
+          "date": "2020-05-08",
+          "react_1d": -1.88,
+          "react_5d": -7.23,
+          "react_20d": 59.14
+        },
+        {
+          "ticker": "FOSL",
+          "date": "2018-05-24",
+          "react_1d": 4.91,
+          "react_5d": 21.17,
+          "react_20d": 58.49
+        },
+        {
+          "ticker": "AA",
+          "date": "2020-05-11",
+          "react_1d": -9.67,
+          "react_5d": -3.35,
+          "react_20d": 56.01
+        },
+        {
+          "ticker": "TE",
+          "date": "2025-12-05",
+          "react_1d": 17.81,
+          "react_5d": 4.7,
+          "react_20d": 49.71
+        },
+        {
+          "ticker": "CPRI",
+          "date": "2023-08-04",
+          "react_1d": 1.7,
+          "react_5d": 50.33,
+          "react_20d": 49.25
+        }
+      ]
+    },
+    {
+      "theme": "other material news",
+      "n": 10090,
+      "h": {
+        "1d": {
+          "n": 10085,
+          "mean": 0.13,
+          "median": 0.15,
+          "pct_up": 52.6
+        },
+        "5d": {
+          "n": 10051,
+          "mean": 0.4,
+          "median": 0.41,
+          "pct_up": 54.8
+        },
+        "20d": {
+          "n": 9946,
+          "mean": 1.28,
+          "median": 1.24,
+          "pct_up": 57.1
+        }
+      },
+      "persistence": {
+        "after_positive_1d": 3.31,
+        "after_negative_1d": -0.98,
+        "corr_1d_20d": 0.347
+      },
+      "examples": [
+        {
+          "ticker": "BBBY",
+          "date": "2020-04-07",
+          "react_1d": 24.0,
+          "react_5d": 54.0,
+          "react_20d": 195.45
+        },
+        {
+          "ticker": "TE",
+          "date": "2024-10-24",
+          "react_1d": 0.99,
+          "react_5d": -3.96,
+          "react_20d": 150.5
+        },
+        {
+          "ticker": "BBBY",
+          "date": "2020-04-10",
+          "react_1d": 17.07,
+          "react_5d": 38.04,
+          "react_20d": 136.42
+        },
+        {
+          "ticker": "NCLH",
+          "date": "2020-05-08",
+          "react_1d": -2.25,
+          "react_5d": -9.0,
+          "react_20d": 123.83
+        },
+        {
+          "ticker": "UAL",
+          "date": "2020-05-08",
+          "react_1d": 5.36,
+          "react_5d": -12.44,
+          "react_20d": 114.02
+        },
+        {
+          "ticker": "INTC",
+          "date": "2026-04-08",
+          "react_1d": 16.65,
+          "react_5d": 22.74,
+          "react_20d": 113.59
+        },
+        {
+          "ticker": "FOSL",
+          "date": "2025-11-10",
+          "react_1d": 11.58,
+          "react_5d": -5.79,
+          "react_20d": 110.0
+        },
+        {
+          "ticker": "BBBY",
+          "date": "2020-06-29",
+          "react_1d": 1.17,
+          "react_5d": 61.57,
+          "react_20d": 107.72
+        }
+      ]
+    },
+    {
+      "theme": "auditor change",
+      "n": 35,
+      "h": {
+        "1d": {
+          "n": 35,
+          "mean": 0.53,
+          "median": 1.02,
+          "pct_up": 60.0
+        },
+        "5d": {
+          "n": 35,
+          "mean": 1.69,
+          "median": 0.22,
+          "pct_up": 57.1
+        },
+        "20d": {
+          "n": 35,
+          "mean": 3.63,
+          "median": 1.8,
+          "pct_up": 57.1
+        }
+      },
+      "persistence": {
+        "after_positive_1d": 4.54,
+        "after_negative_1d": 2.26,
+        "corr_1d_20d": 0.248
+      },
+      "examples": [
+        {
+          "ticker": "STI",
+          "date": "2024-04-19",
+          "react_1d": -8.67,
+          "react_5d": 53.33,
+          "react_20d": 42.0
+        },
+        {
+          "ticker": "STI",
+          "date": "2025-11-26",
+          "react_1d": 4.1,
+          "react_5d": -16.78,
+          "react_20d": -39.85
+        },
+        {
+          "ticker": "TE",
+          "date": "2025-09-05",
+          "react_1d": 7.03,
+          "react_5d": 0.54,
+          "react_20d": 36.76
+        },
+        {
+          "ticker": "LRCX",
+          "date": "2025-09-11",
+          "react_1d": 8.94,
+          "react_5d": 17.66,
+          "react_20d": 31.59
+        },
+        {
+          "ticker": "SLG",
+          "date": "2023-11-29",
+          "react_1d": 1.36,
+          "react_5d": 14.17,
+          "react_20d": 30.72
+        },
+        {
+          "ticker": "TRIP",
+          "date": "2014-02-11",
+          "react_1d": 7.4,
+          "react_5d": 11.55,
+          "react_20d": 26.94
+        },
+        {
+          "ticker": "STI",
+          "date": "2025-10-27",
+          "react_1d": -17.1,
+          "react_5d": -22.78,
+          "react_20d": -26.06
+        },
+        {
+          "ticker": "ROL",
+          "date": "2023-03-30",
+          "react_1d": 1.41,
+          "react_5d": 4.78,
+          "react_20d": 14.16
+        }
+      ]
+    },
+    {
+      "theme": "debt trigger",
+      "n": 30,
+      "h": {
+        "1d": {
+          "n": 30,
+          "mean": -0.49,
+          "median": -0.12,
+          "pct_up": 43.3
+        },
+        "5d": {
+          "n": 30,
+          "mean": -0.97,
+          "median": -0.12,
+          "pct_up": 46.7
+        },
+        "20d": {
+          "n": 30,
+          "mean": -0.63,
+          "median": 0.32,
+          "pct_up": 53.3
+        }
+      },
+      "persistence": {
+        "after_positive_1d": 3.35,
+        "after_negative_1d": -3.67,
+        "corr_1d_20d": 0.69
+      },
+      "examples": [
+        {
+          "ticker": "RIG",
+          "date": "2020-09-08",
+          "react_1d": -21.64,
+          "react_5d": -20.15,
+          "react_20d": -41.04
+        },
+        {
+          "ticker": "RIG",
+          "date": "2020-10-07",
+          "react_1d": 13.92,
+          "react_5d": 5.06,
+          "react_20d": 22.78
+        },
+        {
+          "ticker": "GME",
+          "date": "2020-11-10",
+          "react_1d": 2.26,
+          "react_5d": 1.22,
+          "react_20d": 18.89
+        },
+        {
+          "ticker": "GME",
+          "date": "2019-03-06",
+          "react_1d": -0.09,
+          "react_5d": -0.17,
+          "react_20d": -14.17
+        },
+        {
+          "ticker": "MUR",
+          "date": "2022-07-20",
+          "react_1d": -0.61,
+          "react_5d": 7.09,
+          "react_20d": 12.86
+        },
+        {
+          "ticker": "NBR",
+          "date": "2017-05-04",
+          "react_1d": 1.9,
+          "react_5d": -1.2,
+          "react_20d": -12.01
+        },
+        {
+          "ticker": "MUR",
+          "date": "2022-05-02",
+          "react_1d": 2.15,
+          "react_5d": -12.5,
+          "react_20d": 11.99
+        },
+        {
+          "ticker": "MUR",
+          "date": "2021-11-02",
+          "react_1d": -3.79,
+          "react_5d": 5.48,
+          "react_20d": -11.58
+        }
+      ]
+    },
+    {
+      "theme": "listing / compliance",
+      "n": 60,
+      "h": {
+        "1d": {
+          "n": 60,
+          "mean": -0.44,
+          "median": -0.11,
+          "pct_up": 45.0
+        },
+        "5d": {
+          "n": 59,
+          "mean": -1.15,
+          "median": -0.69,
+          "pct_up": 44.1
+        },
+        "20d": {
+          "n": 59,
+          "mean": -0.9,
+          "median": 1.16,
+          "pct_up": 55.9
+        }
+      },
+      "persistence": {
+        "after_positive_1d": 6.69,
+        "after_negative_1d": -6.03,
+        "corr_1d_20d": 0.765
+      },
+      "examples": [
+        {
+          "ticker": "FLR",
+          "date": "2020-03-19",
+          "react_1d": 65.59,
+          "react_5d": 114.12,
+          "react_20d": 141.76
+        },
+        {
+          "ticker": "STI",
+          "date": "2024-02-05",
+          "react_1d": -53.64,
+          "react_5d": -80.13,
+          "react_20d": -87.97
+        },
+        {
+          "ticker": "STI",
+          "date": "2025-02-03",
+          "react_1d": 20.42,
+          "react_5d": 4.19,
+          "react_20d": -57.33
+        },
+        {
+          "ticker": "FISV",
+          "date": "2025-10-29",
+          "react_1d": -48.33,
+          "react_5d": -49.27,
+          "react_20d": -51.28
+        },
+        {
+          "ticker": "RIG",
+          "date": "2020-10-19",
+          "react_1d": 3.8,
+          "react_5d": 2.53,
+          "react_20d": 49.37
+        },
+        {
+          "ticker": "STI",
+          "date": "2025-04-16",
+          "react_1d": -19.66,
+          "react_5d": -5.13,
+          "react_20d": -40.51
+        },
+        {
+          "ticker": "STI",
+          "date": "2025-04-22",
+          "react_1d": 0.0,
+          "react_5d": -0.97,
+          "react_20d": -33.79
+        },
+        {
+          "ticker": "HST",
+          "date": "2020-10-19",
+          "react_1d": -1.55,
+          "react_5d": 2.19,
+          "react_20d": 25.39
+        }
+      ]
+    },
+    {
+      "theme": "other",
+      "n": 185,
+      "h": {
+        "1d": {
+          "n": 185,
+          "mean": 0.35,
+          "median": 0.07,
+          "pct_up": 51.4
+        },
+        "5d": {
+          "n": 185,
+          "mean": 0.36,
+          "median": 0.3,
+          "pct_up": 52.4
+        },
+        "20d": {
+          "n": 185,
+          "mean": 1.23,
+          "median": 0.35,
+          "pct_up": 50.8
+        }
+      },
+      "persistence": {
+        "after_positive_1d": 4.14,
+        "after_negative_1d": -1.7,
+        "corr_1d_20d": 0.475
+      },
+      "examples": [
+        {
+          "ticker": "NBR",
+          "date": "2020-04-22",
+          "react_1d": 6.09,
+          "react_5d": 25.18,
+          "react_20d": 100.55
+        },
+        {
+          "ticker": "SNDK",
+          "date": "2025-02-14",
+          "react_1d": 30.97,
+          "react_5d": 35.0,
+          "react_20d": 54.58
+        },
+        {
+          "ticker": "FCX",
+          "date": "2022-06-08",
+          "react_1d": -6.61,
+          "react_5d": -14.96,
+          "react_20d": -35.47
+        },
+        {
+          "ticker": "SWK",
+          "date": "2020-05-15",
+          "react_1d": 15.52,
+          "react_5d": 16.31,
+          "react_20d": 30.33
+        },
+        {
+          "ticker": "FISV",
+          "date": "2020-02-14",
+          "react_1d": 0.98,
+          "react_5d": -3.69,
+          "react_20d": -28.81
+        },
+        {
+          "ticker": "NOV",
+          "date": "2008-11-21",
+          "react_1d": 40.65,
+          "react_5d": 29.62,
+          "react_20d": 27.32
+        },
+        {
+          "ticker": "JEF",
+          "date": "2025-09-19",
+          "react_1d": -0.99,
+          "react_5d": -5.19,
+          "react_20d": -26.52
+        },
+        {
+          "ticker": "BTU",
+          "date": "2021-07-26",
+          "react_1d": -6.13,
+          "react_5d": 7.04,
+          "react_20d": 25.89
+        }
+      ]
+    }
+  ],
+  "note": "8-K filings 2020+ (recent EDGAR window). Reaction measured close-to-close from the trading day before the filing; the day-of move is included in +1d."
+}
