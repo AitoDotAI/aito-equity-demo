@@ -72,6 +72,8 @@ cmd_pipeline() {
     market)       uv run python -m pipeline.fundamentals.market_factors "$@" ;;
     events)       uv run python -m pipeline.events.post_filing "$@" ;;
     news)         uv run python -m pipeline.events.news_8k "$@" ;;
+    earnings-fetch)   uv run python -m pipeline.events.earnings_fetch "$@" ;;
+    earnings-extract) uv run python -m pipeline.events.earnings_extract "$@" ;;
     load)         uv run python -m pipeline.aito.load "$@" ;;
     precompute)   uv run python -m pipeline.aito.queries "$@" ;;
     all)

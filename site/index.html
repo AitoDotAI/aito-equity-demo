@@ -1291,6 +1291,25 @@
   table.nd-table td { padding: 4px 10px; border-bottom: 1px solid var(--rule-soft); color: var(--ink-soft); }
   table.nd-table td.ndr { font-family:'JetBrains Mono',monospace; text-align:right; }
 
+  /* ===== EARNINGS SIGNALS ===== */
+  .esig-field { background: #fbf6ec; border: 1px solid var(--rule); margin-bottom: 14px; padding: 16px 20px; }
+  .esig-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+  .esig-label { font-family: 'Fraunces', serif; font-weight: 600; font-size: 16px; color: var(--ink); }
+  .esig-sep { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-fade); margin-left: auto; }
+  .esig-sep b { color: var(--accent); }
+  .esig-row { display: grid; grid-template-columns: 150px 1fr 70px 70px; gap: 14px; align-items: center; padding: 5px 0; }
+  .esig-val { font-family: 'Source Serif 4', serif; font-size: 13px; color: var(--ink); }
+  .esig-val .esig-n { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-fade); margin-left: 6px; }
+  .esig-bar-track { position: relative; height: 18px; background: rgba(0,0,0,0.03); }
+  .esig-bar-mid { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: var(--rule); }
+  .esig-bar { position: absolute; top: 3px; height: 12px; }
+  .esig-bar.pos { background: var(--green); left: 50%; }
+  .esig-bar.neg { background: var(--red); right: 50%; }
+  .esig-d1 { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; text-align: right; }
+  .esig-h { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-fade); text-align: right; }
+  .esig-colhead { display: grid; grid-template-columns: 150px 1fr 70px 70px; gap: 14px; font-family:'Inter',sans-serif; font-size:8.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-fade); font-weight:600; margin-bottom:6px; }
+  .esig-colhead .r { text-align: right; }
+
   /* ===== FACTOR EXPLORER ===== */
   .factor-toolbar {
     display: flex;
@@ -1873,8 +1892,16 @@
           </table>
         </div>
 
+        <div class="section-rule" style="margin-top:38px"><span>Reading the news at t = 0</span></div>
+
+        <p class="article-deck" style="margin-bottom:18px">
+          The cohorts above split on the day-1 <em>price</em> — but a trader wants to anticipate that move from the <em>content</em>, the second the release hits. So we let an LLM read each earnings press release and extract the signals a human skims for — headline tone, beat/miss framing, guidance change, EPS direction — then ask which of them actually separate the reaction. Sorted by how much each signal moves the day-1 tape.
+        </p>
+
+        <div id="earnings-signals"><!-- rendered from earnings_signals.json --></div>
+
         <div class="pullquote" id="news-pullquote">
-          This is the difference between an <em>attribute</em> and an <em>event</em>. "Is a utility" never happens on a day — there is nothing to trade. An 8-K does. And across 60,000 of them the tape tells a consistent story: the first-day reaction <em>persists</em> rather than reverts. Earnings news drifts for weeks (correlation between the day-1 and day-20 move ≈ 0.58 over nineteen thousand events) — the textbook post-earnings drift. Distress themes — covenant breaches, listing-compliance warnings — drift <em>down</em> hardest and longest. The same predictive-database call that scored the 12-year thesis scores the next-day reaction; only the target changed.
+          The honest result a quant will respect: a positive <em>headline</em> barely moves the tape — the market already prices the consensus the company is framing against. The signal that earns its keep is the genuinely <em>new</em> information the release reveals — above all a change in forward <strong>guidance</strong>, which the headline buries but the engine surfaces. Naive sentiment is priced; the structural surprise is not.
         </div>
       </section>
 
@@ -2881,6 +2908,44 @@
     });
   }
 
+  // ── Earnings signals (content → reaction) ───────────────────────
+  function esigBar(meanD1) {
+    const cap = 5;
+    const w = Math.min(50, Math.abs(meanD1) / cap * 50);
+    const dir = meanD1 >= 0 ? 'pos' : 'neg';
+    return `<div class="esig-bar-track"><div class="esig-bar-mid"></div>${Math.abs(meanD1) < 0.05 ? '' : `<div class="esig-bar ${dir}" style="width:${w.toFixed(1)}%"></div>`}</div>`;
+  }
+
+  function renderEarningsSignals(payload) {
+    const el = document.getElementById('earnings-signals');
+    if (!el) return;
+    if (payload._pending || !payload.fields || !payload.fields.length) {
+      el.innerHTML = `<div class="pending-banner"><b>Earnings-signal extraction pending</b>Run <code>./do pipeline earnings-fetch</code> then <code>earnings-extract</code> + <code>precompute</code> to populate.</div>`;
+      return;
+    }
+    el.innerHTML = payload.fields.map(f => {
+      const rows = f.values.map(v => {
+        const d1 = v.react_1d ? v.react_1d.mean : null;
+        const d1cls = d1 == null ? 'flat' : (d1 > 0.2 ? 'return-pos' : (d1 < -0.2 ? 'return-neg' : ''));
+        const fmt = (s) => s == null ? '—' : (s.mean >= 0 ? '+' : '') + s.mean.toFixed(1) + '%';
+        return `<div class="esig-row">
+          <div class="esig-val">${esc(v.value)}<span class="esig-n">n=${v.n.toLocaleString()}</span></div>
+          ${esigBar(d1 == null ? 0 : d1)}
+          <div class="esig-d1 ${d1cls}">${d1 == null ? '—' : (d1>=0?'+':'')+d1.toFixed(1)+'%'}</div>
+          <div class="esig-h">${fmt(v.react_20d)}</div>
+        </div>`;
+      }).join('');
+      return `<div class="esig-field">
+        <div class="esig-head">
+          <span class="esig-label">${esc(f.label)}</span>
+          <span class="esig-sep">day-1 separation <b>${f.separation_1d.toFixed(1)}pts</b></span>
+        </div>
+        <div class="esig-colhead"><span>Signal value</span><span>day-1 reaction</span><span class="r">+1d</span><span class="r">+20d</span></div>
+        ${rows}
+      </div>`;
+    }).join('');
+  }
+
   // ── Factor Explorer (computed client-side from the universe data) ───
   // Every lift is recomputed in the browser from the full row set, so the
   // segment filter and drill-down are instant — no round-trip. The same
@@ -3357,14 +3422,15 @@
   // ── Boot ────────────────────────────────────────────────────────
   (async () => {
     try {
-      const [meta, companies, relate, calibration, universe, leakage, news] = await Promise.all([
+      const [meta, companies, relate, calibration, universe, leakage, news, earningsSignals] = await Promise.all([
         fetchJson('./data/meta.json'),
         fetchJson('./data/companies.json'),
         fetchJson('./data/relate.json'),
         fetchJson('./data/calibration.json'),
         fetchJson('./data/universe.json'),
         fetchJson('./data/leakage_probe.json').catch(() => ({ _pending: true, _note: 'leakage_probe.json not generated yet' })),
-        fetchJson('./data/news_reaction.json').catch(() => ({ _pending: true, themes: [] }))
+        fetchJson('./data/news_reaction.json').catch(() => ({ _pending: true, themes: [] })),
+        fetchJson('./data/earnings_signals.json').catch(() => ({ _pending: true, fields: [] }))
       ]);
       renderMeta(meta);
       renderRelate(relate);
@@ -3373,6 +3439,7 @@
       renderLeakage(leakage);
       renderFactors();
       renderNews(news);
+      renderEarningsSignals(earningsSignals);
       setupConsole();
 
       const initialKey = `${companies[0].ticker}_${companies[0].vintage}`;

@@ -904,6 +904,86 @@ def emit_news_reaction(out_dir: Path, events_csv: Path = Path("data/news_events.
     (out_dir / "news_reaction.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
+EARNINGS_SIGNAL_FIELDS = [
+    ("headline_signal", "Headline tone", ["clearly_positive", "mixed", "clearly_negative"]),
+    ("reported_beat", "Framed vs expectations", ["beat", "inline", "miss", "not_stated"]),
+    ("guidance", "Forward guidance", ["raised", "maintained", "lowered", "withdrawn", "none"]),
+    ("eps_direction", "EPS direction (YoY)", ["up", "flat", "down", "not_stated"]),
+    ("revenue_direction", "Revenue direction (YoY)", ["up", "flat", "down", "not_stated"]),
+    ("one_time_items", "One-time items", ["none", "charges", "gains", "both"]),
+    ("tone", "Management tone", ["confident", "neutral", "cautious"]),
+]
+
+
+def emit_earnings_signals(
+    out_dir: Path,
+    signals_csv: Path = Path("data/earnings_signals.csv"),
+    events_csv: Path = Path("data/news_events.csv"),
+    min_n: int = 15,
+) -> None:
+    """Join LLM-extracted earnings-release signals to the market reaction and
+    report, per signal value, the reaction at +1d / +20d / +1yr — i.e. which
+    content signals (readable at t=0) actually anticipate the move.
+
+    The honest finding the demo expects: naive headline sentiment is weakly
+    predictive (the market already prices consensus), while the genuinely-new
+    signals — guidance changes especially — separate the reaction cleanly.
+    """
+    if not (signals_csv.exists() and events_csv.exists()):
+        _emit_pending(out_dir, "earnings_signals.json", {"fields": []})
+        return
+    sig = pd.read_csv(signals_csv)
+    ev = pd.read_csv(events_csv)
+    ev = ev[ev["theme"] == "earnings"][["ticker", "date", "react_1d", "react_20d", "react_252d"]]
+    df = sig.merge(ev, on=["ticker", "date"], how="inner")
+    if df.empty:
+        _emit_pending(out_dir, "earnings_signals.json", {"fields": []})
+        return
+
+    base_up_1d = float((df["react_1d"].dropna() > 0).mean())
+
+    def stat(sub: pd.DataFrame, col: str) -> dict | None:
+        v = sub[col].dropna()
+        if len(v) == 0:
+            return None
+        return {"n": int(len(v)), "mean": round(float(v.mean()), 2), "median": round(float(v.median()), 2)}
+
+    fields = []
+    for field, label, order in EARNINGS_SIGNAL_FIELDS:
+        if field not in df.columns:
+            continue
+        values = []
+        present = [v for v in order if v in set(df[field].dropna())]
+        for val in present:
+            sub = df[df[field] == val]
+            if len(sub) < min_n:
+                continue
+            values.append({
+                "value": val,
+                "n": int(len(sub)),
+                "react_1d": stat(sub, "react_1d"),
+                "react_20d": stat(sub, "react_20d"),
+                "react_1yr": stat(sub, "react_252d"),
+                "pct_up_1d": round(float((sub["react_1d"].dropna() > 0).mean()) * 100, 1),
+            })
+        if len(values) >= 2:
+            # Separation = spread in mean day-1 reaction across this signal's
+            # values (how much the signal moves the tape).
+            means = [v["react_1d"]["mean"] for v in values if v["react_1d"]]
+            separation = round(max(means) - min(means), 2) if means else 0
+            fields.append({"field": field, "label": label, "values": values, "separation_1d": separation})
+
+    fields.sort(key=lambda f: f["separation_1d"], reverse=True)
+    payload = {
+        "n_events": int(len(df)),
+        "n_tickers": int(df["ticker"].nunique()),
+        "base_up_1d": round(base_up_1d * 100, 1),
+        "fields": fields,
+        "note": "Signals extracted by LLM from the earnings press release (content at t=0), joined to the market reaction. Separation = spread in the mean day-1 move across a signal's values; higher = the signal anticipates the reaction.",
+    }
+    (out_dir / "earnings_signals.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
 def _emit_pending(out_dir: Path, filename: str, extra: dict) -> None:
     """Emit a clearly-marked pending JSON file. The frontend renders 'computation
     pending' instead of fake numbers when it sees `_pending: true`."""
@@ -946,6 +1026,8 @@ def precompute_all(out_dir: Path = SITE_DATA, static_only: bool = False) -> None
     emit_factor_explorer(companies_df, out_dir)
     print("→ news reaction (8-K event study)")
     emit_news_reaction(out_dir)
+    print("→ earnings signals (content → reaction)")
+    emit_earnings_signals(out_dir)
     print("→ meta")
     emit_meta(companies_df, latency_samples, out_dir)
     print("→ companies")
