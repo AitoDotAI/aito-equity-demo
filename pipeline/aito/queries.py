@@ -110,8 +110,12 @@ def emit_meta(companies_df: pd.DataFrame, latency_samples: list[float], out_dir:
     # Window for the OLDEST vintage (largest forward window); rounded to int.
     today = date.today()
     window_default = int((today - date(min(vintages), 1, 1)).days / 365.25) if vintages else 12
+    graded = int(companies_df["market_position"].notna().sum()) if "market_position" in companies_df.columns else 0
+    with_outcome = int(companies_df["outcome_bucket"].notna().sum()) if "outcome_bucket" in companies_df.columns else 0
     payload = {
         "observations": len(companies_df),
+        "graded_observations": graded,
+        "outcome_observations": with_outcome,
         "features": n_features,
         "p50_latency_ms": p50_latency,
         "training_runs": 0,

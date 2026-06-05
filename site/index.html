@@ -1697,7 +1697,7 @@
           <div class="method-card">
             <div class="method-card-num">№ ii</div>
             <h4>LLM grading discipline</h4>
-            <p>Qualitative features extracted from contemporary 10-Ks and proxies only. Prompts explicitly instruct the model not to use post-vintage knowledge. Each feature graded three times at temperature 0.3; modal answer retained. Rationales preserved as explainability columns.</p>
+            <p>Qualitative features extracted from contemporary 10-K and proxy excerpts only. Every prompt instructs the model to grade from the documents alone and not to use post-vintage knowledge. All four features are graded in a single structured-output call per company; rationale strings are preserved as explainability columns.</p>
           </div>
 
           <div class="method-card">
@@ -2044,13 +2044,15 @@
     document.querySelectorAll('[data-bind="stat-latency"]').forEach(el => el.textContent = `${meta.p50_latency_ms} ms`);
     document.querySelectorAll('[data-bind="stat-training"]').forEach(el => el.textContent = meta.training_runs);
     document.querySelectorAll('[data-bind="topbar-rows"]').forEach(el => el.textContent = meta.observations);
-    document.querySelectorAll('[data-bind="thesis-deck-n"]').forEach(el => el.textContent = meta.observations);
+    // Thesis relate runs over the LLM-graded rows, not the full universe.
+    const gradedN = meta.graded_observations ?? meta.observations;
+    document.querySelectorAll('[data-bind="thesis-deck-n"]').forEach(el => el.textContent = gradedN);
 
     const sidebar = document.querySelector('[data-bind="sidebar-footer"]');
     if (sidebar) sidebar.innerHTML = `<strong>${meta.observations} companies</strong> · ${meta.vintages_label} · point-in-time discipline · qualitative features extracted by LLM, predictions by aito.ai`;
 
     const byline = document.querySelector('[data-bind="thesis-byline"]');
-    if (byline) byline.textContent = `N = ${meta.observations} observations · ${meta.vintages.length} vintage${meta.vintages.length === 1 ? '' : 's'} · target: outcome_bucket = great`;
+    if (byline) byline.textContent = `N = ${gradedN} graded observations · ${meta.vintages.length} vintage${meta.vintages.length === 1 ? '' : 's'} · target: outcome_bucket = great`;
 
     const companyByline = document.querySelector('[data-bind="company-byline"]');
     if (companyByline) companyByline.textContent = `Demonstration · ${meta.vintages.join('/')} vintage${meta.vintages.length === 1 ? '' : 's'} · ${meta.window_years_default}-year forward window`;

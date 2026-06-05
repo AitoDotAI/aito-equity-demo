@@ -58,10 +58,51 @@ def merge_pipeline_outputs(
             suffixes=("", "_feat"),
         )
 
+    # Backfill company_name for tickers absent from today's S&P table (removed
+    # constituents have no row in the current Wikipedia table). The EDGAR
+    # ticker→title index, cached during the filings stage, covers most of them.
+    universe = _backfill_company_names(universe)
+
     out_csv.parent.mkdir(parents=True, exist_ok=True)
     universe.to_csv(out_csv, index=False)
     print(f"→ {out_csv} ({len(universe)} rows, {len(universe.columns)} cols)")
     return universe
+
+
+def _smart_title(name: str) -> str:
+    """Title-case an ALL-CAPS registrant name without mangling mixed-case ones.
+
+    'ADVANCE AUTO PARTS INC' → 'Advance Auto Parts Inc'; leaves 'AbbVie' alone.
+    """
+    if not name or not name.isupper():
+        return name
+    small = {"and", "of", "the"}
+    out = []
+    for w in name.title().split():
+        low = w.lower()
+        out.append(low if low in small else w)
+    return " ".join(out)
+
+
+def _backfill_company_names(df: pd.DataFrame) -> pd.DataFrame:
+    idx_path = Path("data/10k_excerpts/_index/company_tickers.json")
+    if not idx_path.exists():
+        return df
+    try:
+        idx = json.loads(idx_path.read_text(encoding="utf-8"))
+    except Exception:
+        return df
+    by_ticker = {v["ticker"]: _smart_title(str(v.get("title", ""))) for v in idx.values()}
+
+    missing_mask = df["company_name"].isna() | (df["company_name"].astype(str).str.strip() == "")
+    n_before = int(missing_mask.sum())
+    df.loc[missing_mask, "company_name"] = df.loc[missing_mask, "ticker"].map(by_ticker)
+    # Anything still missing falls back to the ticker itself.
+    still_missing = df["company_name"].isna() | (df["company_name"].astype(str).str.strip() == "")
+    df.loc[still_missing, "company_name"] = df.loc[still_missing, "ticker"]
+    n_filled = n_before - int(still_missing.sum())
+    print(f"  backfilled {n_filled} company names from EDGAR index ({int(still_missing.sum())} fell back to ticker)")
+    return df
 
 
 # Columns typed Int in schema.json. Pandas promotes int columns to float64
