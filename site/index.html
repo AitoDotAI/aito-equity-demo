@@ -815,6 +815,7 @@
 
   .calib-bar {
     flex: 1;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -827,12 +828,15 @@
     gap: 3px;
     align-items: flex-end;
     width: 100%;
+    height: 100%;            /* so the bars' % heights resolve against the chart */
     justify-content: center;
   }
 
   .calib-bar-actual,
   .calib-bar-predicted {
     width: 22px;
+    align-self: flex-end;
+    min-height: 1px;
   }
 
   .calib-bar-actual { background: var(--accent); }
