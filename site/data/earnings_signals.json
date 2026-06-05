@@ -1,0 +1,597 @@
+{
+  "n_events": 1677,
+  "n_tickers": 63,
+  "base_up_1d": 49.1,
+  "fields": [
+    {
+      "field": "reported_beat",
+      "label": "Framed vs expectations",
+      "values": [
+        {
+          "value": "beat",
+          "n": 201,
+          "react_1d": {
+            "n": 201,
+            "mean": 0.66,
+            "median": 0.55
+          },
+          "react_20d": {
+            "n": 199,
+            "mean": 1.36,
+            "median": 0.24
+          },
+          "react_1yr": {
+            "n": 167,
+            "mean": 16.36,
+            "median": 6.62
+          },
+          "pct_up_1d": 51.7
+        },
+        {
+          "value": "inline",
+          "n": 45,
+          "react_1d": {
+            "n": 45,
+            "mean": -1.15,
+            "median": -1.94
+          },
+          "react_20d": {
+            "n": 44,
+            "mean": 1.22,
+            "median": 0.28
+          },
+          "react_1yr": {
+            "n": 35,
+            "mean": 16.48,
+            "median": 8.59
+          },
+          "pct_up_1d": 35.6
+        },
+        {
+          "value": "miss",
+          "n": 18,
+          "react_1d": {
+            "n": 18,
+            "mean": -8.3,
+            "median": -8.69
+          },
+          "react_20d": {
+            "n": 18,
+            "mean": -9.32,
+            "median": -9.07
+          },
+          "react_1yr": {
+            "n": 16,
+            "mean": 27.53,
+            "median": 18.84
+          },
+          "pct_up_1d": 22.2
+        },
+        {
+          "value": "not_stated",
+          "n": 1413,
+          "react_1d": {
+            "n": 1413,
+            "mean": 0.1,
+            "median": -0.07
+          },
+          "react_20d": {
+            "n": 1409,
+            "mean": 1.86,
+            "median": 1.32
+          },
+          "react_1yr": {
+            "n": 1199,
+            "mean": 18.52,
+            "median": 12.58
+          },
+          "pct_up_1d": 49.5
+        }
+      ],
+      "separation_1d": 8.96
+    },
+    {
+      "field": "guidance",
+      "label": "Forward guidance",
+      "values": [
+        {
+          "value": "raised",
+          "n": 288,
+          "react_1d": {
+            "n": 288,
+            "mean": 1.72,
+            "median": 1.65
+          },
+          "react_20d": {
+            "n": 285,
+            "mean": 3.64,
+            "median": 2.98
+          },
+          "react_1yr": {
+            "n": 246,
+            "mean": 15.4,
+            "median": 11.3
+          },
+          "pct_up_1d": 61.5
+        },
+        {
+          "value": "maintained",
+          "n": 357,
+          "react_1d": {
+            "n": 357,
+            "mean": -0.44,
+            "median": -0.61
+          },
+          "react_20d": {
+            "n": 353,
+            "mean": 0.7,
+            "median": 0.41
+          },
+          "react_1yr": {
+            "n": 304,
+            "mean": 14.65,
+            "median": 10.54
+          },
+          "pct_up_1d": 43.7
+        },
+        {
+          "value": "lowered",
+          "n": 91,
+          "react_1d": {
+            "n": 91,
+            "mean": -3.08,
+            "median": -1.97
+          },
+          "react_20d": {
+            "n": 91,
+            "mean": -1.19,
+            "median": -0.42
+          },
+          "react_1yr": {
+            "n": 83,
+            "mean": 16.43,
+            "median": 6.53
+          },
+          "pct_up_1d": 27.5
+        },
+        {
+          "value": "withdrawn",
+          "n": 26,
+          "react_1d": {
+            "n": 26,
+            "mean": -1.09,
+            "median": -1.11
+          },
+          "react_20d": {
+            "n": 26,
+            "mean": 1.44,
+            "median": 3.16
+          },
+          "react_1yr": {
+            "n": 26,
+            "mean": 30.29,
+            "median": 30.06
+          },
+          "pct_up_1d": 42.3
+        },
+        {
+          "value": "none",
+          "n": 915,
+          "react_1d": {
+            "n": 915,
+            "mean": 0.05,
+            "median": -0.06
+          },
+          "react_20d": {
+            "n": 915,
+            "mean": 1.71,
+            "median": 1.16
+          },
+          "react_1yr": {
+            "n": 758,
+            "mean": 20.53,
+            "median": 12.93
+          },
+          "pct_up_1d": 49.7
+        }
+      ],
+      "separation_1d": 4.8
+    },
+    {
+      "field": "tone",
+      "label": "Management tone",
+      "values": [
+        {
+          "value": "confident",
+          "n": 1393,
+          "react_1d": {
+            "n": 1393,
+            "mean": 0.22,
+            "median": -0.06
+          },
+          "react_20d": {
+            "n": 1387,
+            "mean": 1.84,
+            "median": 1.21
+          },
+          "react_1yr": {
+            "n": 1183,
+            "mean": 17.92,
+            "median": 11.42
+          },
+          "pct_up_1d": 49.8
+        },
+        {
+          "value": "neutral",
+          "n": 140,
+          "react_1d": {
+            "n": 140,
+            "mean": 0.57,
+            "median": 0.46
+          },
+          "react_20d": {
+            "n": 140,
+            "mean": 2.68,
+            "median": 2.35
+          },
+          "react_1yr": {
+            "n": 108,
+            "mean": 19.14,
+            "median": 14.16
+          },
+          "pct_up_1d": 52.9
+        },
+        {
+          "value": "cautious",
+          "n": 144,
+          "react_1d": {
+            "n": 144,
+            "mean": -2.12,
+            "median": -1.31
+          },
+          "react_20d": {
+            "n": 143,
+            "mean": -1.07,
+            "median": -0.19
+          },
+          "react_1yr": {
+            "n": 126,
+            "mean": 21.3,
+            "median": 15.54
+          },
+          "pct_up_1d": 38.9
+        }
+      ],
+      "separation_1d": 2.69
+    },
+    {
+      "field": "headline_signal",
+      "label": "Headline tone",
+      "values": [
+        {
+          "value": "clearly_positive",
+          "n": 1022,
+          "react_1d": {
+            "n": 1022,
+            "mean": 0.53,
+            "median": 0.21
+          },
+          "react_20d": {
+            "n": 1018,
+            "mean": 1.87,
+            "median": 1.31
+          },
+          "react_1yr": {
+            "n": 859,
+            "mean": 17.24,
+            "median": 10.72
+          },
+          "pct_up_1d": 51.6
+        },
+        {
+          "value": "mixed",
+          "n": 607,
+          "react_1d": {
+            "n": 607,
+            "mean": -0.61,
+            "median": -0.56
+          },
+          "react_20d": {
+            "n": 604,
+            "mean": 1.41,
+            "median": 1.03
+          },
+          "react_1yr": {
+            "n": 515,
+            "mean": 19.8,
+            "median": 14.02
+          },
+          "pct_up_1d": 45.6
+        },
+        {
+          "value": "clearly_negative",
+          "n": 48,
+          "react_1d": {
+            "n": 48,
+            "mean": -1.99,
+            "median": -1.15
+          },
+          "react_20d": {
+            "n": 48,
+            "mean": 0.42,
+            "median": 2.92
+          },
+          "react_1yr": {
+            "n": 43,
+            "mean": 22.05,
+            "median": 18.5
+          },
+          "pct_up_1d": 41.7
+        }
+      ],
+      "separation_1d": 2.52
+    },
+    {
+      "field": "eps_direction",
+      "label": "EPS direction (YoY)",
+      "values": [
+        {
+          "value": "up",
+          "n": 964,
+          "react_1d": {
+            "n": 964,
+            "mean": 0.5,
+            "median": 0.35
+          },
+          "react_20d": {
+            "n": 960,
+            "mean": 2.05,
+            "median": 1.39
+          },
+          "react_1yr": {
+            "n": 824,
+            "mean": 16.2,
+            "median": 10.32
+          },
+          "pct_up_1d": 53.1
+        },
+        {
+          "value": "flat",
+          "n": 16,
+          "react_1d": {
+            "n": 16,
+            "mean": -0.73,
+            "median": -0.74
+          },
+          "react_20d": {
+            "n": 16,
+            "mean": 1.49,
+            "median": 1.77
+          },
+          "react_1yr": {
+            "n": 14,
+            "mean": 9.99,
+            "median": 11.94
+          },
+          "pct_up_1d": 43.8
+        },
+        {
+          "value": "down",
+          "n": 411,
+          "react_1d": {
+            "n": 411,
+            "mean": -0.77,
+            "median": -0.79
+          },
+          "react_20d": {
+            "n": 409,
+            "mean": 0.81,
+            "median": 0.45
+          },
+          "react_1yr": {
+            "n": 343,
+            "mean": 19.44,
+            "median": 12.69
+          },
+          "pct_up_1d": 43.8
+        },
+        {
+          "value": "not_stated",
+          "n": 286,
+          "react_1d": {
+            "n": 286,
+            "mean": -0.29,
+            "median": -0.57
+          },
+          "react_20d": {
+            "n": 285,
+            "mean": 1.62,
+            "median": 1.15
+          },
+          "react_1yr": {
+            "n": 236,
+            "mean": 24.56,
+            "median": 17.08
+          },
+          "pct_up_1d": 43.7
+        }
+      ],
+      "separation_1d": 1.27
+    },
+    {
+      "field": "one_time_items",
+      "label": "One-time items",
+      "values": [
+        {
+          "value": "none",
+          "n": 699,
+          "react_1d": {
+            "n": 699,
+            "mean": 0.55,
+            "median": 0.26
+          },
+          "react_20d": {
+            "n": 695,
+            "mean": 2.1,
+            "median": 1.54
+          },
+          "react_1yr": {
+            "n": 605,
+            "mean": 19.21,
+            "median": 10.73
+          },
+          "pct_up_1d": 51.9
+        },
+        {
+          "value": "charges",
+          "n": 554,
+          "react_1d": {
+            "n": 554,
+            "mean": -0.44,
+            "median": -0.42
+          },
+          "react_20d": {
+            "n": 553,
+            "mean": 1.39,
+            "median": 1.26
+          },
+          "react_1yr": {
+            "n": 458,
+            "mean": 17.83,
+            "median": 12.89
+          },
+          "pct_up_1d": 46.6
+        },
+        {
+          "value": "gains",
+          "n": 162,
+          "react_1d": {
+            "n": 162,
+            "mean": -0.53,
+            "median": -0.44
+          },
+          "react_20d": {
+            "n": 161,
+            "mean": -0.16,
+            "median": -0.72
+          },
+          "react_1yr": {
+            "n": 134,
+            "mean": 10.86,
+            "median": 8.52
+          },
+          "pct_up_1d": 47.5
+        },
+        {
+          "value": "both",
+          "n": 262,
+          "react_1d": {
+            "n": 262,
+            "mean": 0.07,
+            "median": -0.2
+          },
+          "react_20d": {
+            "n": 261,
+            "mean": 2.21,
+            "median": 1.28
+          },
+          "react_1yr": {
+            "n": 220,
+            "mean": 21.42,
+            "median": 15.35
+          },
+          "pct_up_1d": 48.1
+        }
+      ],
+      "separation_1d": 1.08
+    },
+    {
+      "field": "revenue_direction",
+      "label": "Revenue direction (YoY)",
+      "values": [
+        {
+          "value": "up",
+          "n": 1029,
+          "react_1d": {
+            "n": 1029,
+            "mean": 0.27,
+            "median": 0.13
+          },
+          "react_20d": {
+            "n": 1022,
+            "mean": 1.55,
+            "median": 1.35
+          },
+          "react_1yr": {
+            "n": 848,
+            "mean": 17.03,
+            "median": 11.19
+          },
+          "pct_up_1d": 51.1
+        },
+        {
+          "value": "flat",
+          "n": 42,
+          "react_1d": {
+            "n": 42,
+            "mean": -0.22,
+            "median": 0.28
+          },
+          "react_20d": {
+            "n": 42,
+            "mean": 1.17,
+            "median": 0.07
+          },
+          "react_1yr": {
+            "n": 38,
+            "mean": 16.45,
+            "median": 7.45
+          },
+          "pct_up_1d": 52.4
+        },
+        {
+          "value": "down",
+          "n": 290,
+          "react_1d": {
+            "n": 290,
+            "mean": -0.5,
+            "median": -0.99
+          },
+          "react_20d": {
+            "n": 290,
+            "mean": 2.32,
+            "median": 1.14
+          },
+          "react_1yr": {
+            "n": 272,
+            "mean": 22.64,
+            "median": 17.83
+          },
+          "pct_up_1d": 43.8
+        },
+        {
+          "value": "not_stated",
+          "n": 316,
+          "react_1d": {
+            "n": 316,
+            "mean": -0.15,
+            "median": -0.16
+          },
+          "react_20d": {
+            "n": 316,
+            "mean": 1.5,
+            "median": 0.74
+          },
+          "react_1yr": {
+            "n": 259,
+            "mean": 18.26,
+            "median": 11.48
+          },
+          "pct_up_1d": 47.2
+        }
+      ],
+      "separation_1d": 0.77
+    }
+  ],
+  "note": "Signals extracted by LLM from the earnings press release (content at t=0), joined to the market reaction. Separation = spread in the mean day-1 move across a signal's values; higher = the signal anticipates the reaction."
+}
