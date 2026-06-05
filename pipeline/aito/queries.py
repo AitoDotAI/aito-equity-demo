@@ -138,8 +138,17 @@ def emit_universe(companies_df: pd.DataFrame, out_dir: Path) -> None:
         "ticker", "vintage_year", "vintage_date", "company_name",
         "sector", "industry", "market_cap_bucket",
         "exchange", "currency", "reporting_standard",
+        # LLM qualitative grades
         "market_position", "moat_type", "moat_strength", "market_quality",
-        "leadership_quality", "founder_still_ceo",
+        "leadership_quality", "capital_allocation", "strategic_clarity",
+        "execution_track_record", "founder_still_ceo",
+        # fundamental + market factor buckets (drive the client-side explorer)
+        "valuation_bucket", "growth_bucket", "leverage_bucket",
+        "profitability_bucket", "momentum_bucket", "volatility_bucket",
+        # continuous factors (for drill-down detail)
+        "pe_ratio", "revenue_cagr_3y", "debt_to_equity", "return_on_equity",
+        "momentum_12m", "volatility_12m",
+        # outcomes
         "outcome_bucket", "survived_intact", "terminal_event",
         "total_return_pct_local", "total_return_pct_usd", "window_years",
         "end_date",
@@ -147,7 +156,7 @@ def emit_universe(companies_df: pd.DataFrame, out_dir: Path) -> None:
     present = [c for c in cols_to_export if c in companies_df.columns]
     sub = companies_df[present].copy()
 
-    # Replace NaN with None for clean JSON
+    # Replace NaN with None; round floats for compact JSON.
     rows = []
     for raw in sub.to_dict(orient="records"):
         clean = {}
@@ -155,7 +164,10 @@ def emit_universe(companies_df: pd.DataFrame, out_dir: Path) -> None:
             if isinstance(v, float) and (v != v):  # NaN
                 clean[k] = None
             elif hasattr(v, "item"):
-                clean[k] = v.item()
+                v = v.item()
+                clean[k] = round(v, 4) if isinstance(v, float) else v
+            elif isinstance(v, float):
+                clean[k] = round(v, 4)
             else:
                 clean[k] = v
         rows.append(clean)

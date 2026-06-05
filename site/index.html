@@ -1312,6 +1312,27 @@
     background: var(--ink-fade); opacity: 0.4; z-index: 1;
   }
 
+  /* factor row interactivity + drill-down */
+  table.factor-table tbody tr.factor-row { cursor: pointer; }
+  table.factor-table tbody tr.factor-row.open { background: rgba(168,134,44,0.08); }
+  .factor-caret { display: inline-block; width: 14px; color: var(--ink-fade); font-size: 10px; }
+  tr.factor-row.open .factor-caret { color: var(--accent); }
+
+  tr.factor-detail-row > td { padding: 0 !important; background: var(--paper-2); }
+  .factor-detail { padding: 16px 18px 18px 34px; border-bottom: 2px solid var(--rule); }
+  .dd-stats { display: flex; gap: 28px; margin-bottom: 12px; }
+  .dd-stat-val { font-family: 'Fraunces', serif; font-weight: 600; font-size: 20px; color: var(--ink); }
+  .dd-stat-lbl { font-family: 'Inter', sans-serif; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-fade); margin-top: 2px; }
+  .dd-dist { display: flex; gap: 16px; margin-bottom: 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-soft); align-items: center; }
+  .dd-dist-item { display: inline-flex; align-items: center; gap: 5px; }
+  .dd-table-wrap { max-height: 280px; overflow-y: auto; border: 1px solid var(--rule); background: var(--paper); }
+  table.dd-table { width: 100%; border-collapse: collapse; font-family: 'Source Serif 4', serif; font-size: 12px; }
+  table.dd-table thead th { position: sticky; top: 0; background: var(--paper-2); text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--rule); font-family: 'Inter', sans-serif; font-size: 8.5px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-fade); font-weight: 600; }
+  table.dd-table tbody td { padding: 5px 10px; border-bottom: 1px solid var(--rule-soft); color: var(--ink-soft); }
+  td.dd-ticker { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink); font-weight: 600; }
+  td.dd-vintage { font-style: italic; color: var(--ink-fade); }
+  td.dd-ret, th.dd-ret { font-family: 'JetBrains Mono', monospace; text-align: right; }
+
   /* ===== PENDING STATES + RELATE WHISKERS ===== */
   .pending-banner {
     background: #fbf6ec;
@@ -1770,6 +1791,8 @@
           <button class="factor-group-chip" data-group="structural">sector</button>
           <button class="factor-group-chip" data-group="valuation">fundamentals</button>
           <button class="factor-group-chip" data-group="market">market</button>
+          <label style="margin-left:8px;">Within:</label>
+          <select class="factor-sort" id="factor-segment" style="max-width:230px;"></select>
           <select class="factor-sort" id="factor-sort">
             <option value="up">sort: strongest upside</option>
             <option value="down">sort: strongest downside</option>
@@ -2638,12 +2661,80 @@
     renderUniverseRows();
   }
 
-  // ── Factor Explorer ─────────────────────────────────────────────
-  const factorState = { all: [], group: 'all', sort: 'up', maxLift: 3.5 };
+  // ── Factor Explorer (computed client-side from the universe data) ───
+  // Every lift is recomputed in the browser from the full row set, so the
+  // segment filter and drill-down are instant — no round-trip. The same
+  // numbers are one Aito _relate call away (see Live Query).
+  const FACTOR_FIELDS = [
+    { group: 'llm',        fields: ['market_position','moat_type','moat_strength','market_quality','leadership_quality','capital_allocation','strategic_clarity','execution_track_record'] },
+    { group: 'structural', fields: ['sector','industry'] },
+    { group: 'valuation',  fields: ['valuation_bucket','growth_bucket','leverage_bucket','profitability_bucket'] },
+    { group: 'market',     fields: ['momentum_bucket','volatility_bucket'] },
+  ];
+  const FIELD_GROUP = {};
+  FACTOR_FIELDS.forEach(g => g.fields.forEach(f => FIELD_GROUP[f] = g.group));
+  const FACTOR_FIELD_LABEL = {
+    market_position:'market_position', moat_type:'moat_type', moat_strength:'moat_strength',
+    market_quality:'market_quality', leadership_quality:'leadership_quality',
+    capital_allocation:'capital_allocation', strategic_clarity:'strategic_clarity',
+    execution_track_record:'execution_track_record', sector:'sector', industry:'industry',
+    valuation_bucket:'valuation', growth_bucket:'growth', leverage_bucket:'leverage',
+    profitability_bucket:'profitability (ROE)', momentum_bucket:'momentum', volatility_bucket:'volatility',
+  };
+
+  const factorState = {
+    rows: [],            // universe rows with outcomes
+    computed: [],        // computed factor rows for current segment
+    group: 'all',
+    sort: 'up',
+    minSupport: 12,
+    maxLift: 3.5,
+    segField: '',        // segment restriction field
+    segValue: '',        // segment restriction value
+    expanded: null,      // currently expanded feature key
+  };
+
+  function isDown(b) { return b === 'poor' || b === 'disaster'; }
+
+  function computeFactors() {
+    let pop = factorState.rows.filter(r => r.outcome_bucket);
+    if (factorState.segField && factorState.segValue) {
+      pop = pop.filter(r => String(r[factorState.segField]) === factorState.segValue);
+    }
+    const N = pop.length;
+    const baseGreat = N ? pop.filter(r => r.outcome_bucket === 'great').length / N : 0;
+    const baseDown  = N ? pop.filter(r => isDown(r.outcome_bucket)).length / N : 0;
+
+    const out = [];
+    for (const { group, fields } of FACTOR_FIELDS) {
+      for (const field of fields) {
+        const byVal = {};
+        for (const r of pop) {
+          const v = r[field];
+          if (v === null || v === undefined || v === '') continue;
+          (byVal[v] = byVal[v] || []).push(r);
+        }
+        for (const [val, members] of Object.entries(byVal)) {
+          const n = members.length;
+          if (n < factorState.minSupport) continue;
+          const g = members.filter(r => r.outcome_bucket === 'great').length / n;
+          const d = members.filter(r => isDown(r.outcome_bucket)).length / n;
+          out.push({
+            field, group,
+            feature: `${FACTOR_FIELD_LABEL[field] || field} = ${val}`,
+            value: val,
+            n,
+            lift_great: baseGreat ? g / baseGreat : null,
+            lift_down: baseDown ? d / baseDown : null,
+          });
+        }
+      }
+    }
+    factorState.computed = out;
+    return { N, baseGreat, baseDown };
+  }
 
   function liftBar(value, dir) {
-    // value is a lift (1.0 = base rate). Bar width scales 0..maxLift, with a
-    // tick at 1.0. dir = 'up' (green) or 'down' (red).
     if (value == null) return '<div class="lift-bar-track"><span class="lift-val muted">—</span></div>';
     const cap = factorState.maxLift;
     const pct = Math.min(100, (value / cap) * 100);
@@ -2656,36 +2747,141 @@
     </div>`;
   }
 
+  function factorMembers(field, value) {
+    let pop = factorState.rows.filter(r => r.outcome_bucket);
+    if (factorState.segField && factorState.segValue) {
+      pop = pop.filter(r => String(r[factorState.segField]) === factorState.segValue);
+    }
+    return pop.filter(r => String(r[field]) === String(value));
+  }
+
+  function median(nums) {
+    if (!nums.length) return null;
+    const s = nums.slice().sort((a, b) => a - b);
+    const m = Math.floor(s.length / 2);
+    return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+  }
+
+  function drilldownHtml(field, value) {
+    const members = factorMembers(field, value);
+    const rets = members.map(r => r.total_return_pct_local).filter(v => v != null && !Number.isNaN(v));
+    const dist = {};
+    ['great','good','market','poor','disaster'].forEach(b => dist[b] = members.filter(r => r.outcome_bucket === b).length);
+    const meanRet = rets.length ? rets.reduce((a, b) => a + b, 0) / rets.length : null;
+    const medRet = median(rets);
+    const window = members.length && members[0].window_years ? members[0].window_years : null;
+    const annualised = (meanRet != null && window) ? (Math.pow(1 + meanRet / 100, 1 / window) - 1) * 100 : null;
+
+    const sorted = members.slice().sort((a, b) => (b.total_return_pct_local ?? -1e9) - (a.total_return_pct_local ?? -1e9));
+    const rowsHtml = sorted.map(m => {
+      const ret = m.total_return_pct_local;
+      const cls = ret == null ? '' : (ret >= 0 ? 'return-pos' : 'return-neg');
+      const bucket = m.outcome_bucket || 'empty';
+      return `<tr>
+        <td class="dd-ticker">${esc(m.ticker)}</td>
+        <td class="dd-name">${esc(m.company_name || m.ticker)}</td>
+        <td class="dd-vintage">'${String(m.vintage_year).slice(2)}</td>
+        <td><span class="bucket-chip ${esc(bucket)}">${esc(m.outcome_bucket || '—')}</span></td>
+        <td class="dd-ret ${cls}">${ret == null ? '—' : (ret >= 0 ? '+' : '') + ret.toFixed(0) + '%'}</td>
+      </tr>`;
+    }).join('');
+
+    const distHtml = ['great','good','market','poor','disaster'].map(b =>
+      `<span class="dd-dist-item"><span class="bucket-chip ${b}">${b}</span> ${dist[b]}</span>`
+    ).join('');
+
+    return `<tr class="factor-detail-row"><td colspan="4"><div class="factor-detail">
+      <div class="dd-stats">
+        <div class="dd-stat"><div class="dd-stat-val">${members.length}</div><div class="dd-stat-lbl">companies</div></div>
+        <div class="dd-stat"><div class="dd-stat-val">${meanRet == null ? '—' : (meanRet >= 0 ? '+' : '') + meanRet.toFixed(0) + '%'}</div><div class="dd-stat-lbl">mean total return</div></div>
+        <div class="dd-stat"><div class="dd-stat-val">${medRet == null ? '—' : (medRet >= 0 ? '+' : '') + medRet.toFixed(0) + '%'}</div><div class="dd-stat-lbl">median return</div></div>
+        <div class="dd-stat"><div class="dd-stat-val">${annualised == null ? '—' : (annualised >= 0 ? '+' : '') + annualised.toFixed(1) + '%'}</div><div class="dd-stat-lbl">annualised</div></div>
+      </div>
+      <div class="dd-dist">${distHtml}</div>
+      <div class="dd-table-wrap"><table class="dd-table"><thead><tr>
+        <th>Ticker</th><th>Company</th><th>Vint.</th><th>Outcome</th><th class="dd-ret">Total return</th>
+      </tr></thead><tbody>${rowsHtml}</tbody></table></div>
+    </div></td></tr>`;
+  }
+
   function renderFactorRows() {
     const tbody = document.getElementById('factor-tbody');
-    let rows = factorState.all.slice();
+    let rows = factorState.computed.slice();
     if (factorState.group !== 'all') rows = rows.filter(r => r.group === factorState.group);
     const key = factorState.sort;
     rows.sort((a, b) => {
-      const av = key === 'down' ? (a.lift_down ?? 0)
-               : key === 'spread' ? ((a.lift_great ?? 0) - (a.lift_down ?? 0))
-               : (a.lift_great ?? 0);
-      const bv = key === 'down' ? (b.lift_down ?? 0)
-               : key === 'spread' ? ((b.lift_great ?? 0) - (b.lift_down ?? 0))
-               : (b.lift_great ?? 0);
-      return bv - av;
+      const f = (x) => key === 'down' ? (x.lift_down ?? 0)
+                     : key === 'spread' ? ((x.lift_great ?? 0) - (x.lift_down ?? 0))
+                     : (x.lift_great ?? 0);
+      return f(b) - f(a);
     });
-    tbody.innerHTML = rows.map(r => `
-      <tr>
-        <td class="factor-name">${esc(r.feature)}<span class="factor-group-tag ${r.group}">${esc(r.group)}</span></td>
+    tbody.innerHTML = rows.map(r => {
+      const fkey = `${r.field}=${r.value}`;
+      const isOpen = factorState.expanded === fkey;
+      const main = `<tr class="factor-row${isOpen ? ' open' : ''}" data-fkey="${esc(fkey)}" data-field="${esc(r.field)}" data-value="${esc(String(r.value))}">
+        <td class="factor-name"><span class="factor-caret">${isOpen ? '▾' : '▸'}</span>${esc(r.feature)}<span class="factor-group-tag ${r.group}">${esc(r.group)}</span></td>
         <td class="factor-n">${r.n}</td>
         <td class="lift-cell">${liftBar(r.lift_great, 'up')}</td>
         <td class="lift-cell">${liftBar(r.lift_down, 'down')}</td>
-      </tr>
-    `).join('');
+      </tr>`;
+      return main + (isOpen ? drilldownHtml(r.field, r.value) : '');
+    }).join('');
+
+    tbody.querySelectorAll('.factor-row').forEach(tr => {
+      tr.addEventListener('click', () => {
+        const fkey = tr.dataset.fkey;
+        factorState.expanded = factorState.expanded === fkey ? null : fkey;
+        renderFactorRows();
+      });
+    });
   }
 
-  function renderFactors(payload) {
-    factorState.all = payload.rows || [];
+  function updateFactorByline() {
+    const { N, baseGreat, baseDown } = factorState._stats || {};
     const byline = document.querySelector('[data-bind="factor-byline"]');
-    if (byline && payload.n_observations) {
-      byline.textContent = `N = ${payload.n_observations.toLocaleString()} · base rate: great ${(payload.base_rate_great*100).toFixed(0)}%, poor∪disaster ${(payload.base_rate_down*100).toFixed(0)}% · lift = P(outcome | feature) / P(outcome)`;
+    if (!byline) return;
+    const seg = (factorState.segField && factorState.segValue)
+      ? ` · within ${FACTOR_FIELD_LABEL[factorState.segField] || factorState.segField} = ${factorState.segValue}`
+      : '';
+    byline.textContent = `N = ${(N||0).toLocaleString()}${seg} · base rate: great ${((baseGreat||0)*100).toFixed(0)}%, poor∪disaster ${((baseDown||0)*100).toFixed(0)}% · lift = P(outcome | feature) / P(outcome)`;
+  }
+
+  function recomputeAndRender() {
+    factorState.expanded = null;
+    factorState._stats = computeFactors();
+    updateFactorByline();
+    renderFactorRows();
+  }
+
+  function setupSegmentControl() {
+    const sel = document.getElementById('factor-segment');
+    if (!sel) return;
+    // Populate with common segmentation values: each sector, and each
+    // market_quality regime (the user's "utilities vs tech", "growth vs
+    // declining market" comparisons).
+    const opts = ['<option value="">all companies</option>'];
+    const sectors = [...new Set(factorState.rows.map(r => r.sector).filter(Boolean))].sort();
+    opts.push('<optgroup label="by sector">');
+    sectors.forEach(s => opts.push(`<option value="sector::${esc(s)}">sector: ${esc(s)}</option>`));
+    opts.push('</optgroup>');
+    const mq = [...new Set(factorState.rows.map(r => r.market_quality).filter(Boolean))].sort();
+    if (mq.length) {
+      opts.push('<optgroup label="by market quality">');
+      mq.forEach(m => opts.push(`<option value="market_quality::${esc(m)}">market: ${esc(m)}</option>`));
+      opts.push('</optgroup>');
     }
+    sel.innerHTML = opts.join('');
+    sel.addEventListener('change', e => {
+      const [f, v] = e.target.value.split('::');
+      factorState.segField = v ? f : '';
+      factorState.segValue = v || '';
+      recomputeAndRender();
+    });
+  }
+
+  function renderFactors() {
+    factorState.rows = universeState.all || [];
+    setupSegmentControl();
     document.querySelectorAll('.factor-group-chip').forEach(c => {
       c.addEventListener('click', () => {
         factorState.group = c.dataset.group;
@@ -2697,7 +2893,7 @@
       factorState.sort = e.target.value;
       renderFactorRows();
     });
-    renderFactorRows();
+    recomputeAndRender();
   }
 
   // ── Live Query console ──────────────────────────────────────────
@@ -2866,21 +3062,20 @@
   // ── Boot ────────────────────────────────────────────────────────
   (async () => {
     try {
-      const [meta, companies, relate, calibration, universe, leakage, factors] = await Promise.all([
+      const [meta, companies, relate, calibration, universe, leakage] = await Promise.all([
         fetchJson('./data/meta.json'),
         fetchJson('./data/companies.json'),
         fetchJson('./data/relate.json'),
         fetchJson('./data/calibration.json'),
         fetchJson('./data/universe.json'),
-        fetchJson('./data/leakage_probe.json').catch(() => ({ _pending: true, _note: 'leakage_probe.json not generated yet' })),
-        fetchJson('./data/factor_explorer.json').catch(() => ({ rows: [] }))
+        fetchJson('./data/leakage_probe.json').catch(() => ({ _pending: true, _note: 'leakage_probe.json not generated yet' }))
       ]);
       renderMeta(meta);
       renderRelate(relate);
       renderCalibration(calibration);
-      renderUniverse(universe);
+      renderUniverse(universe);   // must precede renderFactors (shares the data)
       renderLeakage(leakage);
-      renderFactors(factors);
+      renderFactors();
       setupConsole();
 
       const initialKey = `${companies[0].ticker}_${companies[0].vintage}`;
