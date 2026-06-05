@@ -50,6 +50,12 @@
         "growth_bucket":                { "type": "String", "nullable": true },
         "leverage_bucket":              { "type": "String", "nullable": true },
         "profitability_bucket":         { "type": "String", "nullable": true },
+        "pre_filing_mom_bucket":        { "type": "String", "nullable": true },
+
+        "filing_date":                  { "type": "String", "nullable": true },
+        "fwd_20d_return":               { "type": "Decimal", "nullable": true },
+        "fwd_20d_bucket":               { "type": "String", "nullable": true },
+        "pre_filing_mom_60d":           { "type": "Decimal", "nullable": true },
 
         "market_position":              { "type": "String", "nullable": true },
         "moat_type":                    { "type": "String", "nullable": true },

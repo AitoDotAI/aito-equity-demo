@@ -58,10 +58,11 @@ def merge_pipeline_outputs(
             suffixes=("", "_feat"),
         )
 
-    # Fundamentals (SEC XBRL) + market factors (yfinance), if present.
+    # Fundamentals (SEC XBRL) + market factors (yfinance) + filing events.
     for extra_csv, label in [
         (Path("data/fundamentals.csv"), "fundamentals"),
         (Path("data/market_factors.csv"), "market_factors"),
+        (Path("data/filing_events.csv"), "filing_events"),
     ]:
         if extra_csv.exists():
             extra = pd.read_csv(extra_csv)
@@ -110,6 +111,7 @@ def _derive_valuation_and_buckets(df: pd.DataFrame) -> pd.DataFrame:
         "growth_bucket": ("revenue_cagr_3y", bucket_growth),
         "leverage_bucket": ("debt_to_equity", bucket_leverage),
         "profitability_bucket": ("return_on_equity", bucket_roe),
+        "pre_filing_mom_bucket": ("pre_filing_mom_60d", bucket_momentum),
     }
     for new_col, (src, fn) in bucketers.items():
         if src in df.columns:

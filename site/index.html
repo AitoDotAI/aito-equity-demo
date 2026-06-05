@@ -1207,6 +1207,18 @@
   td .bucket-chip.poor     { background: rgba(139, 58, 42, 0.14); color: var(--red); }
   td .bucket-chip.disaster { background: rgba(139, 26, 26, 0.18); color: var(--accent); }
   td .bucket-chip.empty    { background: var(--rule-soft); color: var(--ink-fade); font-style: italic; }
+  /* unscoped (drill-down dist chips live in spans, not table cells) */
+  .bucket-chip.great    { background: rgba(168, 134, 44, 0.18); color: #6e5818; }
+  .bucket-chip.good     { background: rgba(74, 107, 58, 0.16); color: #3c5630; }
+  .bucket-chip.market   { background: rgba(29, 58, 95, 0.12); color: #1d3a5f; }
+  .bucket-chip.poor     { background: rgba(139, 58, 42, 0.14); color: var(--red); }
+  .bucket-chip.disaster { background: rgba(139, 26, 26, 0.18); color: var(--accent); }
+  /* short-horizon drift buckets */
+  .bucket-chip.sharp_up    { background: rgba(74, 107, 58, 0.20); color: #3c5630; }
+  .bucket-chip.up          { background: rgba(74, 107, 58, 0.12); color: #3c5630; }
+  .bucket-chip.flat        { background: var(--rule-soft); color: var(--ink-fade); }
+  .bucket-chip.down        { background: rgba(139, 58, 42, 0.13); color: var(--red); }
+  .bucket-chip.sharp_down  { background: rgba(139, 26, 26, 0.18); color: var(--accent); }
 
   td .grade-cell {
     font-family: 'Source Serif 4', serif;
@@ -1257,6 +1269,13 @@
   }
   .factor-group-chip:hover { background: rgba(168,134,44,0.08); }
   .factor-group-chip.active { background: var(--ink); color: var(--gold); border-color: var(--ink); }
+  .factor-horizon-chip {
+    font-family: 'Fraunces', serif; font-size: 13px; font-weight: 500;
+    padding: 6px 16px; border: 1px solid var(--rule); background: transparent;
+    color: var(--ink-soft); cursor: pointer; border-radius: 2px; transition: all 0.15s;
+  }
+  .factor-horizon-chip:hover { background: rgba(168,134,44,0.08); }
+  .factor-horizon-chip.active { background: var(--accent); color: var(--paper); border-color: var(--accent); }
   .factor-sort {
     margin-left: auto;
     font-family: 'JetBrains Mono', monospace;
@@ -1784,6 +1803,11 @@
           <div class="article-byline" data-bind="factor-byline">exact lift = P(outcome | feature) / P(outcome), computed per feature</div>
         </div>
 
+        <div class="factor-toolbar" style="margin-bottom:0;border-bottom:none;">
+          <label>Predict:</label>
+          <button class="factor-horizon-chip active" data-target="longterm">12-year outcome</button>
+          <button class="factor-horizon-chip" data-target="drift">20-day post-filing drift</button>
+        </div>
         <div class="factor-toolbar">
           <label>Show:</label>
           <button class="factor-group-chip active" data-group="all">all</button>
@@ -1792,7 +1816,7 @@
           <button class="factor-group-chip" data-group="valuation">fundamentals</button>
           <button class="factor-group-chip" data-group="market">market</button>
           <label style="margin-left:8px;">Within:</label>
-          <select class="factor-sort" id="factor-segment" style="max-width:230px;"></select>
+          <select class="factor-sort" id="factor-segment" style="max-width:210px;"></select>
           <select class="factor-sort" id="factor-sort">
             <option value="up">sort: strongest upside</option>
             <option value="down">sort: strongest downside</option>
@@ -2669,8 +2693,25 @@
     { group: 'llm',        fields: ['market_position','moat_type','moat_strength','market_quality','leadership_quality','capital_allocation','strategic_clarity','execution_track_record'] },
     { group: 'structural', fields: ['sector','industry'] },
     { group: 'valuation',  fields: ['valuation_bucket','growth_bucket','leverage_bucket','profitability_bucket'] },
-    { group: 'market',     fields: ['momentum_bucket','volatility_bucket'] },
+    { group: 'market',     fields: ['momentum_bucket','volatility_bucket','pre_filing_mom_bucket'] },
   ];
+
+  // Two horizons, two targets. The lift computation is identical; only the
+  // outcome column and which buckets count as up/down change.
+  const FACTOR_TARGETS = {
+    longterm: {
+      col: 'outcome_bucket', retCol: 'total_return_pct_local',
+      up: ['great'], down: ['poor','disaster'],
+      upLabel: 'great', downLabel: 'poor/disaster',
+      deck: "Every feature ranked by lift toward the <em>great</em> 12-year outcome (upside) and toward <em>poor / disaster</em> (downside).",
+    },
+    drift: {
+      col: 'fwd_20d_bucket', retCol: 'fwd_20d_return',
+      up: ['up','sharp_up'], down: ['down','sharp_down'],
+      upLabel: 'up (drift)', downLabel: 'down (drift)',
+      deck: "Same engine, a trading horizon: lift toward a positive vs negative <em>20-day return after the 10-K filing</em>. Watch how the signal changes — quality fades, momentum carries.",
+    },
+  };
   const FIELD_GROUP = {};
   FACTOR_FIELDS.forEach(g => g.fields.forEach(f => FIELD_GROUP[f] = g.group));
   const FACTOR_FIELD_LABEL = {
@@ -2692,18 +2733,19 @@
     segField: '',        // segment restriction field
     segValue: '',        // segment restriction value
     expanded: null,      // currently expanded feature key
+    target: 'longterm',  // 'longterm' | 'drift'
   };
 
-  function isDown(b) { return b === 'poor' || b === 'disaster'; }
-
   function computeFactors() {
-    let pop = factorState.rows.filter(r => r.outcome_bucket);
+    const T = FACTOR_TARGETS[factorState.target];
+    const upSet = new Set(T.up), downSet = new Set(T.down);
+    let pop = factorState.rows.filter(r => r[T.col] != null && r[T.col] !== '');
     if (factorState.segField && factorState.segValue) {
       pop = pop.filter(r => String(r[factorState.segField]) === factorState.segValue);
     }
     const N = pop.length;
-    const baseGreat = N ? pop.filter(r => r.outcome_bucket === 'great').length / N : 0;
-    const baseDown  = N ? pop.filter(r => isDown(r.outcome_bucket)).length / N : 0;
+    const baseGreat = N ? pop.filter(r => upSet.has(r[T.col])).length / N : 0;
+    const baseDown  = N ? pop.filter(r => downSet.has(r[T.col])).length / N : 0;
 
     const out = [];
     for (const { group, fields } of FACTOR_FIELDS) {
@@ -2717,8 +2759,8 @@
         for (const [val, members] of Object.entries(byVal)) {
           const n = members.length;
           if (n < factorState.minSupport) continue;
-          const g = members.filter(r => r.outcome_bucket === 'great').length / n;
-          const d = members.filter(r => isDown(r.outcome_bucket)).length / n;
+          const g = members.filter(r => upSet.has(r[T.col])).length / n;
+          const d = members.filter(r => downSet.has(r[T.col])).length / n;
           out.push({
             field, group,
             feature: `${FACTOR_FIELD_LABEL[field] || field} = ${val}`,
@@ -2763,43 +2805,51 @@
   }
 
   function drilldownHtml(field, value) {
+    const T = FACTOR_TARGETS[factorState.target];
+    const isLong = factorState.target === 'longterm';
     const members = factorMembers(field, value);
-    const rets = members.map(r => r.total_return_pct_local).filter(v => v != null && !Number.isNaN(v));
+    const rets = members.map(r => r[T.retCol]).filter(v => v != null && !Number.isNaN(v));
+    const buckets = isLong ? ['great','good','market','poor','disaster'] : ['sharp_up','up','flat','down','sharp_down'];
     const dist = {};
-    ['great','good','market','poor','disaster'].forEach(b => dist[b] = members.filter(r => r.outcome_bucket === b).length);
+    buckets.forEach(b => dist[b] = members.filter(r => r[T.col] === b).length);
     const meanRet = rets.length ? rets.reduce((a, b) => a + b, 0) / rets.length : null;
     const medRet = median(rets);
-    const window = members.length && members[0].window_years ? members[0].window_years : null;
+    const window = (isLong && members.length && members[0].window_years) ? members[0].window_years : null;
     const annualised = (meanRet != null && window) ? (Math.pow(1 + meanRet / 100, 1 / window) - 1) * 100 : null;
+    const retLabel = isLong ? 'total return' : '20-day return';
 
-    const sorted = members.slice().sort((a, b) => (b.total_return_pct_local ?? -1e9) - (a.total_return_pct_local ?? -1e9));
+    const sorted = members.slice().sort((a, b) => (b[T.retCol] ?? -1e9) - (a[T.retCol] ?? -1e9));
     const rowsHtml = sorted.map(m => {
-      const ret = m.total_return_pct_local;
+      const ret = m[T.retCol];
       const cls = ret == null ? '' : (ret >= 0 ? 'return-pos' : 'return-neg');
-      const bucket = m.outcome_bucket || 'empty';
+      const bucket = m[T.col] || 'empty';
       return `<tr>
         <td class="dd-ticker">${esc(m.ticker)}</td>
         <td class="dd-name">${esc(m.company_name || m.ticker)}</td>
         <td class="dd-vintage">'${String(m.vintage_year).slice(2)}</td>
-        <td><span class="bucket-chip ${esc(bucket)}">${esc(m.outcome_bucket || '—')}</span></td>
-        <td class="dd-ret ${cls}">${ret == null ? '—' : (ret >= 0 ? '+' : '') + ret.toFixed(0) + '%'}</td>
+        <td><span class="bucket-chip ${esc(bucket)}">${esc(m[T.col] || '—')}</span></td>
+        <td class="dd-ret ${cls}">${ret == null ? '—' : (ret >= 0 ? '+' : '') + ret.toFixed(isLong ? 0 : 1) + '%'}</td>
       </tr>`;
     }).join('');
 
-    const distHtml = ['great','good','market','poor','disaster'].map(b =>
-      `<span class="dd-dist-item"><span class="bucket-chip ${b}">${b}</span> ${dist[b]}</span>`
+    const distHtml = buckets.map(b =>
+      `<span class="dd-dist-item"><span class="bucket-chip ${b}">${b.replace('_',' ')}</span> ${dist[b]}</span>`
     ).join('');
+
+    const annStat = isLong
+      ? `<div class="dd-stat"><div class="dd-stat-val">${annualised == null ? '—' : (annualised >= 0 ? '+' : '') + annualised.toFixed(1) + '%'}</div><div class="dd-stat-lbl">annualised</div></div>`
+      : '';
 
     return `<tr class="factor-detail-row"><td colspan="4"><div class="factor-detail">
       <div class="dd-stats">
         <div class="dd-stat"><div class="dd-stat-val">${members.length}</div><div class="dd-stat-lbl">companies</div></div>
-        <div class="dd-stat"><div class="dd-stat-val">${meanRet == null ? '—' : (meanRet >= 0 ? '+' : '') + meanRet.toFixed(0) + '%'}</div><div class="dd-stat-lbl">mean total return</div></div>
-        <div class="dd-stat"><div class="dd-stat-val">${medRet == null ? '—' : (medRet >= 0 ? '+' : '') + medRet.toFixed(0) + '%'}</div><div class="dd-stat-lbl">median return</div></div>
-        <div class="dd-stat"><div class="dd-stat-val">${annualised == null ? '—' : (annualised >= 0 ? '+' : '') + annualised.toFixed(1) + '%'}</div><div class="dd-stat-lbl">annualised</div></div>
+        <div class="dd-stat"><div class="dd-stat-val">${meanRet == null ? '—' : (meanRet >= 0 ? '+' : '') + meanRet.toFixed(isLong ? 0 : 1) + '%'}</div><div class="dd-stat-lbl">mean ${retLabel}</div></div>
+        <div class="dd-stat"><div class="dd-stat-val">${medRet == null ? '—' : (medRet >= 0 ? '+' : '') + medRet.toFixed(isLong ? 0 : 1) + '%'}</div><div class="dd-stat-lbl">median</div></div>
+        ${annStat}
       </div>
       <div class="dd-dist">${distHtml}</div>
       <div class="dd-table-wrap"><table class="dd-table"><thead><tr>
-        <th>Ticker</th><th>Company</th><th>Vint.</th><th>Outcome</th><th class="dd-ret">Total return</th>
+        <th>Ticker</th><th>Company</th><th>Vint.</th><th>Outcome</th><th class="dd-ret">${retLabel}</th>
       </tr></thead><tbody>${rowsHtml}</tbody></table></div>
     </div></td></tr>`;
   }
@@ -2838,12 +2888,20 @@
 
   function updateFactorByline() {
     const { N, baseGreat, baseDown } = factorState._stats || {};
+    const T = FACTOR_TARGETS[factorState.target];
     const byline = document.querySelector('[data-bind="factor-byline"]');
-    if (!byline) return;
     const seg = (factorState.segField && factorState.segValue)
       ? ` · within ${FACTOR_FIELD_LABEL[factorState.segField] || factorState.segField} = ${factorState.segValue}`
       : '';
-    byline.textContent = `N = ${(N||0).toLocaleString()}${seg} · base rate: great ${((baseGreat||0)*100).toFixed(0)}%, poor∪disaster ${((baseDown||0)*100).toFixed(0)}% · lift = P(outcome | feature) / P(outcome)`;
+    if (byline) byline.textContent = `N = ${(N||0).toLocaleString()}${seg} · base rate: ${T.upLabel} ${((baseGreat||0)*100).toFixed(0)}%, ${T.downLabel} ${((baseDown||0)*100).toFixed(0)}% · lift = P(outcome | feature) / P(outcome)`;
+    // Deck + table headers follow the target.
+    const deck = document.querySelector('#view-factors .article-deck');
+    if (deck) deck.innerHTML = T.deck + " A factor strong on one side and quiet on the other is a clean signal; one that lifts both is just volatility.";
+    const ths = document.querySelectorAll('#view-factors table.factor-table thead th');
+    if (ths.length >= 4) {
+      ths[2].innerHTML = `Lift → ${T.upLabel} <span style="color:var(--green)">(upside)</span>`;
+      ths[3].innerHTML = `Lift → ${T.downLabel} <span style="color:var(--red)">(downside)</span>`;
+    }
   }
 
   function recomputeAndRender() {
@@ -2882,6 +2940,13 @@
   function renderFactors() {
     factorState.rows = universeState.all || [];
     setupSegmentControl();
+    document.querySelectorAll('.factor-horizon-chip').forEach(c => {
+      c.addEventListener('click', () => {
+        factorState.target = c.dataset.target;
+        document.querySelectorAll('.factor-horizon-chip').forEach(x => x.classList.toggle('active', x === c));
+        recomputeAndRender();
+      });
+    });
     document.querySelectorAll('.factor-group-chip').forEach(c => {
       c.addEventListener('click', () => {
         factorState.group = c.dataset.group;
