@@ -1223,6 +1223,91 @@
     color: var(--ink-fade);
   }
 
+  /* ===== FACTOR EXPLORER ===== */
+  .factor-toolbar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    background: #fbf6ec;
+    border: 1px solid var(--rule);
+    font-family: 'Source Serif 4', serif;
+    font-size: 12px;
+  }
+  .factor-toolbar label { font-style: italic; color: var(--ink-fade); }
+  .factor-group-chip {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 11px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    border-radius: 2px;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .factor-group-chip:hover { background: rgba(168,134,44,0.08); }
+  .factor-group-chip.active { background: var(--ink); color: var(--gold); border-color: var(--ink); }
+  .factor-sort {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 8px;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .factor-table-wrap { background: #fbf6ec; border: 1px solid var(--rule); }
+  table.factor-table { width: 100%; border-collapse: collapse; font-family: 'Source Serif 4', serif; font-size: 12.5px; }
+  table.factor-table thead th {
+    position: sticky; top: 0; background: var(--paper-2);
+    border-bottom: 2px solid var(--rule); text-align: left; padding: 9px 12px;
+    font-family: 'Inter', sans-serif; font-size: 9px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--ink-fade); font-weight: 600;
+  }
+  table.factor-table thead th.center { text-align: center; }
+  table.factor-table tbody tr { border-bottom: 1px solid var(--rule-soft); }
+  table.factor-table tbody tr:hover { background: rgba(168,134,44,0.05); }
+  table.factor-table tbody td { padding: 8px 12px; color: var(--ink-soft); vertical-align: middle; }
+  td.factor-name { font-family: 'Fraunces', serif; font-size: 13.5px; color: var(--ink); }
+  td.factor-n { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-fade); text-align: right; }
+  .factor-group-tag {
+    display: inline-block; padding: 1px 7px; margin-left: 8px; border-radius: 2px;
+    font-family: 'Inter', sans-serif; font-size: 8px; letter-spacing: 0.12em;
+    text-transform: uppercase; font-weight: 600; vertical-align: middle;
+  }
+  .factor-group-tag.llm        { background: rgba(139,26,26,0.14);  color: var(--accent); }
+  .factor-group-tag.structural { background: rgba(29,58,95,0.12);   color: var(--accent-2); }
+  .factor-group-tag.valuation  { background: rgba(168,134,44,0.18); color: #6e5818; }
+  .factor-group-tag.market     { background: rgba(74,107,58,0.16);  color: var(--green); }
+
+  /* two-directional lift cell: bar grows from a center baseline */
+  .lift-cell { width: 200px; }
+  .lift-bar-track {
+    position: relative; height: 16px; background: rgba(0,0,0,0.03);
+    display: flex; align-items: center;
+  }
+  .lift-bar {
+    height: 16px; position: absolute; top: 0;
+  }
+  .lift-bar.up   { background: var(--green);  left: 0; }
+  .lift-bar.down { background: var(--red);    left: 0; }
+  .lift-val {
+    position: relative; z-index: 2; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; padding-left: 6px; color: var(--ink);
+  }
+  .lift-val.muted { color: var(--ink-fade); }
+  .lift-1x-mark {
+    position: absolute; top: -2px; bottom: -2px; width: 1px;
+    background: var(--ink-fade); opacity: 0.4; z-index: 1;
+  }
+
   /* ===== PENDING STATES + RELATE WHISKERS ===== */
   .pending-banner {
     background: #fbf6ec;
@@ -1577,17 +1662,20 @@
       <div class="nav-item" data-view="thesis">
         <span class="nav-num">ii.</span><span>Does the Thesis Hold?</span>
       </div>
+      <div class="nav-item" data-view="factors">
+        <span class="nav-num">iii.</span><span>Factor Explorer</span>
+      </div>
       <div class="nav-item" data-view="similar">
-        <span class="nav-num">iii.</span><span>Historical Analogues</span>
+        <span class="nav-num">iv.</span><span>Historical Analogues</span>
       </div>
       <div class="nav-item" data-view="universe">
-        <span class="nav-num">iv.</span><span>The Universe</span>
+        <span class="nav-num">v.</span><span>The Universe</span>
       </div>
       <div class="nav-item" data-view="console">
-        <span class="nav-num">v.</span><span>Live Query</span>
+        <span class="nav-num">vi.</span><span>Live Query</span>
       </div>
       <div class="nav-item" data-view="method">
-        <span class="nav-num">vi.</span><span>On Methodology</span>
+        <span class="nav-num">vii.</span><span>On Methodology</span>
       </div>
     </div>
 
@@ -1660,6 +1748,48 @@
           </div>
         </div>
 
+      </section>
+
+      <!-- ============ VIEW: FACTOR EXPLORER ============ -->
+      <section class="view" id="view-factors">
+        <div class="article-header">
+          <div class="article-eyebrow">WHAT PREDICTS WINNERS · AND WHAT PREDICTS LOSERS</div>
+          <h1 class="article-title">Factor <em>Explorer</em></h1>
+          <p class="article-deck">Every feature — LLM judgments, sector, valuation, growth, leverage, momentum — ranked by its lift toward the <em>great</em> bucket (upside) and toward <em>poor / disaster</em> (downside). A factor strong on one side and quiet on the other is a clean signal; one that lifts both is just volatility.</p>
+          <div class="article-byline" data-bind="factor-byline">exact lift = P(outcome | feature) / P(outcome), computed per feature</div>
+        </div>
+
+        <div class="factor-toolbar">
+          <label>Show:</label>
+          <button class="factor-group-chip active" data-group="all">all</button>
+          <button class="factor-group-chip" data-group="llm">LLM judgment</button>
+          <button class="factor-group-chip" data-group="structural">sector</button>
+          <button class="factor-group-chip" data-group="valuation">fundamentals</button>
+          <button class="factor-group-chip" data-group="market">market</button>
+          <select class="factor-sort" id="factor-sort">
+            <option value="up">sort: strongest upside</option>
+            <option value="down">sort: strongest downside</option>
+            <option value="spread">sort: cleanest signal (up − down)</option>
+          </select>
+        </div>
+
+        <div class="factor-table-wrap">
+          <table class="factor-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th class="center">N</th>
+                <th>Lift → great <span style="color:var(--green)">(upside)</span></th>
+                <th>Lift → poor/disaster <span style="color:var(--red)">(downside)</span></th>
+              </tr>
+            </thead>
+            <tbody id="factor-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="pullquote" id="factor-pullquote">
+          The two-directional read is where the interesting questions live. Airlines never reach <em>great</em> and tilt toward disaster. Utilities do neither — pure ballast. A wide moat lifts the upside without touching the downside. The features that move one side and not the other are the ones the market tends to misprice.
+        </div>
       </section>
 
       <!-- ============ VIEW 3: HISTORICAL ANALOGUES ============ -->
@@ -1937,6 +2067,27 @@
       <div class="aito-section" data-view="similar">
         <div class="aito-section-label">Architectural Note</div>
         <p>Similarity, prediction, and relate are <strong>the same engine, the same index, the same endpoint family</strong>. No separate vector store, no embedding pipeline, no synchronisation problem.</p>
+      </div>
+
+      <div class="aito-section" data-view="factors">
+        <div class="aito-section-label">Two-directional lift</div>
+        <p>For every feature value, two numbers: lift toward <strong>great</strong> (upside) and lift toward <strong>poor / disaster</strong> (downside). Both are exact: <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">P(outcome | feature) / P(outcome)</code> over the companies that had that feature.</p>
+        <p>A lift of 1.0 is the base rate — no signal. Above 1 the feature concentrates that outcome; below 1 it avoids it.</p>
+      </div>
+
+      <div class="aito-section" data-view="factors">
+        <div class="aito-section-label">Reading the table</div>
+        <ul class="aito-bullets">
+          <li><strong>High up, low down</strong> — a clean quality signal (wide moat, dominant position)</li>
+          <li><strong>Low up, high down</strong> — a risk flag (airlines, high leverage)</li>
+          <li><strong>Low up, low down</strong> — ballast (utilities — never great, never disaster)</li>
+          <li><strong>High up, high down</strong> — just volatility, not edge</li>
+        </ul>
+      </div>
+
+      <div class="aito-section" data-view="factors">
+        <div class="aito-section-label">The mispricing lens</div>
+        <p>Features that were <strong>knowable at vintage</strong> yet still lift the upside — a wide moat, secular-growth market — are ones the market systematically under-weights. That gap is the Buffett thesis, quantified in both directions.</p>
       </div>
 
       <div class="aito-section" data-view="console">
@@ -2290,6 +2441,7 @@
   const viewTitles = {
     company: 'The Company File',
     thesis: 'Does the Thesis Hold?',
+    factors: 'Factor Explorer',
     similar: 'Historical Analogues',
     universe: 'The Universe',
     console: 'Live Query',
@@ -2482,6 +2634,68 @@
     renderUniverseRows();
   }
 
+  // ── Factor Explorer ─────────────────────────────────────────────
+  const factorState = { all: [], group: 'all', sort: 'up', maxLift: 3.5 };
+
+  function liftBar(value, dir) {
+    // value is a lift (1.0 = base rate). Bar width scales 0..maxLift, with a
+    // tick at 1.0. dir = 'up' (green) or 'down' (red).
+    if (value == null) return '<div class="lift-bar-track"><span class="lift-val muted">—</span></div>';
+    const cap = factorState.maxLift;
+    const pct = Math.min(100, (value / cap) * 100);
+    const onePct = Math.min(100, (1 / cap) * 100);
+    const muted = value < 1.05 ? ' muted' : '';
+    return `<div class="lift-bar-track">
+      <div class="lift-bar ${dir}" style="width:${pct.toFixed(1)}%"></div>
+      <div class="lift-1x-mark" style="left:${onePct.toFixed(1)}%"></div>
+      <span class="lift-val${muted}">×${value.toFixed(2)}</span>
+    </div>`;
+  }
+
+  function renderFactorRows() {
+    const tbody = document.getElementById('factor-tbody');
+    let rows = factorState.all.slice();
+    if (factorState.group !== 'all') rows = rows.filter(r => r.group === factorState.group);
+    const key = factorState.sort;
+    rows.sort((a, b) => {
+      const av = key === 'down' ? (a.lift_down ?? 0)
+               : key === 'spread' ? ((a.lift_great ?? 0) - (a.lift_down ?? 0))
+               : (a.lift_great ?? 0);
+      const bv = key === 'down' ? (b.lift_down ?? 0)
+               : key === 'spread' ? ((b.lift_great ?? 0) - (b.lift_down ?? 0))
+               : (b.lift_great ?? 0);
+      return bv - av;
+    });
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td class="factor-name">${esc(r.feature)}<span class="factor-group-tag ${r.group}">${esc(r.group)}</span></td>
+        <td class="factor-n">${r.n}</td>
+        <td class="lift-cell">${liftBar(r.lift_great, 'up')}</td>
+        <td class="lift-cell">${liftBar(r.lift_down, 'down')}</td>
+      </tr>
+    `).join('');
+  }
+
+  function renderFactors(payload) {
+    factorState.all = payload.rows || [];
+    const byline = document.querySelector('[data-bind="factor-byline"]');
+    if (byline && payload.n_observations) {
+      byline.textContent = `N = ${payload.n_observations.toLocaleString()} · base rate: great ${(payload.base_rate_great*100).toFixed(0)}%, poor∪disaster ${(payload.base_rate_down*100).toFixed(0)}% · lift = P(outcome | feature) / P(outcome)`;
+    }
+    document.querySelectorAll('.factor-group-chip').forEach(c => {
+      c.addEventListener('click', () => {
+        factorState.group = c.dataset.group;
+        document.querySelectorAll('.factor-group-chip').forEach(x => x.classList.toggle('active', x === c));
+        renderFactorRows();
+      });
+    });
+    document.getElementById('factor-sort').addEventListener('change', e => {
+      factorState.sort = e.target.value;
+      renderFactorRows();
+    });
+    renderFactorRows();
+  }
+
   // ── Live Query console ──────────────────────────────────────────
   const CONSOLE_SAMPLES = {
     predict: {
@@ -2648,19 +2862,21 @@
   // ── Boot ────────────────────────────────────────────────────────
   (async () => {
     try {
-      const [meta, companies, relate, calibration, universe, leakage] = await Promise.all([
+      const [meta, companies, relate, calibration, universe, leakage, factors] = await Promise.all([
         fetchJson('./data/meta.json'),
         fetchJson('./data/companies.json'),
         fetchJson('./data/relate.json'),
         fetchJson('./data/calibration.json'),
         fetchJson('./data/universe.json'),
-        fetchJson('./data/leakage_probe.json').catch(() => ({ _pending: true, _note: 'leakage_probe.json not generated yet' }))
+        fetchJson('./data/leakage_probe.json').catch(() => ({ _pending: true, _note: 'leakage_probe.json not generated yet' })),
+        fetchJson('./data/factor_explorer.json').catch(() => ({ rows: [] }))
       ]);
       renderMeta(meta);
       renderRelate(relate);
       renderCalibration(calibration);
       renderUniverse(universe);
       renderLeakage(leakage);
+      renderFactors(factors);
       setupConsole();
 
       const initialKey = `${companies[0].ticker}_${companies[0].vintage}`;

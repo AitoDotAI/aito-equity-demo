@@ -58,6 +58,23 @@ def merge_pipeline_outputs(
             suffixes=("", "_feat"),
         )
 
+    # Fundamentals (SEC XBRL) + market factors (yfinance), if present.
+    for extra_csv, label in [
+        (Path("data/fundamentals.csv"), "fundamentals"),
+        (Path("data/market_factors.csv"), "market_factors"),
+    ]:
+        if extra_csv.exists():
+            extra = pd.read_csv(extra_csv)
+            print(f"  {label}: {len(extra)} rows")
+            # Drop overlapping non-key cols so we don't get _x/_y suffixes.
+            keys = ["ticker", "vintage_year", "vintage_date"]
+            dup = [c for c in extra.columns if c in universe.columns and c not in keys]
+            extra = extra.drop(columns=dup)
+            universe = universe.merge(extra, on=keys, how="left")
+
+    # Derived valuation factors (need market cap = price × shares) + buckets.
+    universe = _derive_valuation_and_buckets(universe)
+
     # Backfill company_name for tickers absent from today's S&P table (removed
     # constituents have no row in the current Wikipedia table). The EDGAR
     # ticker→title index, cached during the filings stage, covers most of them.
@@ -67,6 +84,37 @@ def merge_pipeline_outputs(
     universe.to_csv(out_csv, index=False)
     print(f"→ {out_csv} ({len(universe)} rows, {len(universe.columns)} cols)")
     return universe
+
+
+def _derive_valuation_and_buckets(df: pd.DataFrame) -> pd.DataFrame:
+    """Compute valuation ratios from market cap + fundamentals, then bucketize
+    all continuous factors into interpretable bands for the factor explorer."""
+    from pipeline.fundamentals.market_factors import (
+        bucket_growth, bucket_leverage, bucket_momentum, bucket_pe, bucket_roe, bucket_volatility,
+    )
+
+    have = set(df.columns)
+    if {"vintage_price", "shares_outstanding"} <= have:
+        df["market_cap"] = df["vintage_price"] * df["shares_outstanding"]
+        if "net_income" in have:
+            df["pe_ratio"] = (df["market_cap"] / df["net_income"]).where(df["net_income"] != 0)
+            df["earnings_yield"] = (df["net_income"] / df["market_cap"]).where(df["market_cap"] != 0)
+        if "stockholders_equity" in have:
+            df["pb_ratio"] = (df["market_cap"] / df["stockholders_equity"]).where(df["stockholders_equity"] > 0)
+
+    # Bucketed (categorical) versions — what the factor explorer & relate use.
+    bucketers = {
+        "momentum_bucket": ("momentum_12m", bucket_momentum),
+        "volatility_bucket": ("volatility_12m", bucket_volatility),
+        "valuation_bucket": ("pe_ratio", bucket_pe),
+        "growth_bucket": ("revenue_cagr_3y", bucket_growth),
+        "leverage_bucket": ("debt_to_equity", bucket_leverage),
+        "profitability_bucket": ("return_on_equity", bucket_roe),
+    }
+    for new_col, (src, fn) in bucketers.items():
+        if src in df.columns:
+            df[new_col] = df[src].map(fn)
+    return df
 
 
 def _smart_title(name: str) -> str:

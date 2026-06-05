@@ -133,18 +133,18 @@
       }
     },
     {
-      "feature": "moat_strength = wide",
-      "field": "moat_strength",
-      "type": "qual",
-      "lift": 1.27,
-      "n": 222,
-      "lift_min": 1.15,
-      "lift_max": 1.39,
+      "feature": "volatility_bucket = high",
+      "field": "volatility_bucket",
+      "type": "quant",
+      "lift": 1.29,
+      "n": 73,
+      "lift_min": 1.02,
+      "lift_max": 1.67,
       "bar_pct": 25,
       "per_vintage": {
-        "2014": 1.39,
-        "2017": 1.29,
-        "2020": 1.15
+        "2014": 1.67,
+        "2017": 1.43,
+        "2020": 1.02
       }
     }
   ],

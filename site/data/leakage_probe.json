@@ -59,19 +59,8 @@
       },
       "drift": 0.13,
       "lift_mean": 1.28
-    },
-    {
-      "feature": "moat_strength = wide",
-      "type": "qual",
-      "per_vintage": {
-        "2014": 1.39,
-        "2017": 1.29,
-        "2020": 1.15
-      },
-      "drift": 0.19,
-      "lift_mean": 1.28
     }
   ],
-  "drift_score": 0.18,
+  "drift_score": 0.17,
   "interpretation": "Each lift is computed within a single vintage (exact group-by, not an engine estimate): P(great | feature) / P(great) among that vintage's companies. Drift = (max \u2212 min) / mean across vintages. Low drift (< 0.5) means a feature's predictive value is stable across time \u2014 evidence the LLM is grading from contemporaneous filings, not leaking hindsight. High drift flags a feature to investigate."
 }

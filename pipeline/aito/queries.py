@@ -337,8 +337,74 @@ def emit_relate(
 RELATE_FEATURE_COLUMNS = [
     "market_position", "moat_type", "moat_strength", "market_quality",
     "leadership_quality", "capital_allocation", "strategic_clarity",
-    "execution_track_record", "sector", "survived_intact",
+    "execution_track_record", "sector",
+    "valuation_bucket", "growth_bucket", "leverage_bucket",
+    "profitability_bucket", "momentum_bucket", "volatility_bucket",
 ]
+
+# Factor explorer: which columns to scan, grouped by provenance (drives the
+# colour/category in the UI and tells the "what kind of signal is this" story).
+FACTOR_GROUPS: dict[str, list[str]] = {
+    "llm": [
+        "market_position", "moat_type", "moat_strength", "market_quality",
+        "leadership_quality", "capital_allocation", "strategic_clarity",
+        "execution_track_record",
+    ],
+    "structural": ["sector", "industry"],
+    "valuation": ["valuation_bucket", "growth_bucket", "leverage_bucket", "profitability_bucket"],
+    "market": ["momentum_bucket", "volatility_bucket"],
+}
+
+
+def emit_factor_explorer(companies_df: pd.DataFrame, out_dir: Path, min_support: int = 12) -> None:
+    """Two-directional factor table: for every (feature, value) with enough
+    support, exact lift toward 'great' (upside) AND toward 'poor∪disaster'
+    (downside), computed in pandas over rows with a recorded outcome.
+
+    This is the browsable answer to 'what predicts winners, what predicts
+    losers, and what looks mispriced' — no query syntax required.
+    """
+    df = companies_df[companies_df["outcome_bucket"].notna()].copy()
+    n_total = len(df)
+    base_great = (df["outcome_bucket"] == "great").mean()
+    base_down = df["outcome_bucket"].isin(["poor", "disaster"]).mean()
+
+    def disp(value) -> str:
+        if isinstance(value, float) and value.is_integer():
+            return str(int(value))
+        return str(value)
+
+    rows: list[dict] = []
+    for group, cols in FACTOR_GROUPS.items():
+        for col in cols:
+            if col not in df.columns:
+                continue
+            for value in df[col].dropna().unique():
+                sub = df[df[col] == value]
+                n = len(sub)
+                if n < min_support:
+                    continue
+                lift_great = (sub["outcome_bucket"] == "great").mean() / base_great if base_great else None
+                lift_down = sub["outcome_bucket"].isin(["poor", "disaster"]).mean() / base_down if base_down else None
+                rows.append(
+                    {
+                        "feature": f"{col} = {disp(value)}",
+                        "field": col,
+                        "group": group,
+                        "n": n,
+                        "lift_great": round(lift_great, 2) if lift_great is not None else None,
+                        "lift_down": round(lift_down, 2) if lift_down is not None else None,
+                    }
+                )
+    rows.sort(key=lambda r: (r["lift_great"] if r["lift_great"] is not None else 0), reverse=True)
+    payload = {
+        "n_observations": n_total,
+        "base_rate_great": round(float(base_great), 3),
+        "base_rate_down": round(float(base_down), 3),
+        "rows": rows,
+        "groups": list(FACTOR_GROUPS.keys()),
+    }
+    (out_dir / "factor_explorer.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
 def _parse_relate_hit(hit: dict) -> tuple[str, str] | None:
@@ -759,6 +825,8 @@ def precompute_all(out_dir: Path = SITE_DATA, static_only: bool = False) -> None
         _emit_pending(out_dir, "calibration.json", {"deciles": []})
         _emit_pending(out_dir, "leakage_probe.json", {"vintages": [], "features": [], "drift_score": None})
 
+    print("→ factor explorer (two-directional lift)")
+    emit_factor_explorer(companies_df, out_dir)
     print("→ meta")
     emit_meta(companies_df, latency_samples, out_dir)
     print("→ companies")

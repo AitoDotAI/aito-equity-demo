@@ -2,8 +2,8 @@
   "observations": 1520,
   "graded_observations": 1192,
   "outcome_observations": 1283,
-  "features": 15,
-  "p50_latency_ms": 79,
+  "features": 39,
+  "p50_latency_ms": 80,
   "training_runs": 0,
   "vintages": [
     2014,
