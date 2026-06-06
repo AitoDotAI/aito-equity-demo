@@ -1239,6 +1239,51 @@
     color: var(--ink-fade);
   }
 
+  /* ===== COMPANY LAB ===== */
+  .lab-grid { display: grid; grid-template-columns: 300px 1fr; gap: 28px; align-items: start; }
+  .lab-form { background: #fbf6ec; border: 1px solid var(--rule); padding: 18px 20px; position: sticky; top: 16px; }
+  .lab-form-group { margin-bottom: 16px; }
+  .lab-form-group-label { font-family: 'Inter', sans-serif; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--rule-soft); }
+  .lab-field { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+  .lab-field label { font-family: 'Source Serif 4', serif; font-size: 12.5px; color: var(--ink-soft); }
+  .lab-field select { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 6px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); max-width: 130px; }
+  .lab-field select.set { border-color: var(--gold); background: rgba(168,134,44,0.06); }
+  .lab-reset { font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 12px; border: 1px solid var(--rule); background: transparent; color: var(--ink-soft); cursor: pointer; margin-top: 6px; width: 100%; }
+  .lab-reset:hover { background: var(--ink); color: var(--paper); }
+
+  .lab-pred-card { background: var(--ink); color: var(--paper); padding: 26px 30px; margin-bottom: 22px; }
+  .lab-pred-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .lab-pred-ev { font-family: 'Fraunces', serif; }
+  .lab-pred-ev .val { font-size: 38px; font-weight: 700; color: var(--gold); line-height: 1; }
+  .lab-pred-ev .lbl { font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(244,237,225,0.6); margin-top: 4px; }
+  .lab-pred-n { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(244,237,225,0.6); }
+  .lab-pred-n b { color: var(--paper); }
+  .lab-bars { margin-top: 18px; display: flex; flex-direction: column; gap: 8px; }
+  .lab-bar { display: grid; grid-template-columns: 92px 1fr 50px; gap: 12px; align-items: center; }
+  .lab-bar-lbl { font-family: 'Source Serif 4', serif; font-size: 12.5px; color: rgba(244,237,225,0.85); }
+  .lab-bar-lbl em { font-style: italic; color: rgba(244,237,225,0.5); font-size: 10.5px; }
+  .lab-bar-track { height: 13px; background: rgba(244,237,225,0.08); }
+  .lab-bar-fill { height: 100%; background: var(--gold); transition: width 0.35s ease; }
+  .lab-bar-fill.peak { background: linear-gradient(90deg, var(--gold), #d4a743); box-shadow: 0 0 12px rgba(168,134,44,0.4); }
+  .lab-bar-val { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--paper); text-align: right; }
+  .lab-pred-hint { margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(244,237,225,0.15); font-family: 'Source Serif 4', serif; font-style: italic; font-size: 12px; color: rgba(244,237,225,0.65); }
+  .lab-pred-src { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: rgba(244,237,225,0.5); margin-top: 8px; }
+  .lab-pred-src .pill { padding: 1px 6px; border-radius: 2px; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; }
+  .lab-pred-src .pill.aito { background: rgba(18,181,173,0.25); color: #0a766f; }
+  .lab-pred-src .pill.mock { background: rgba(168,134,44,0.25); color: #6e5818; }
+
+  .lab-similar-label { font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-fade); font-weight: 600; margin-bottom: 12px; }
+  .lab-sim-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .lab-sim { background: #fbf6ec; border: 1px solid var(--rule); padding: 14px 16px; }
+  .lab-sim h4 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 14px; color: var(--ink); margin-bottom: 2px; }
+  .lab-sim-meta { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--ink-fade); margin-bottom: 8px; }
+  .lab-sim-outcome { font-family: 'Source Serif 4', serif; font-size: 12px; color: var(--ink-soft); padding-top: 8px; border-top: 1px solid var(--rule-soft); }
+  .lab-sim-outcome b { font-family: 'Fraunces', serif; font-style: normal; }
+  .lab-sim-avg { margin-top: 14px; font-family: 'Source Serif 4', serif; font-style: italic; font-size: 13px; color: var(--ink-soft); }
+  .lab-sim-avg b { font-family: 'JetBrains Mono', monospace; font-style: normal; color: var(--ink); }
+
+  @media (max-width: 1100px) { .lab-grid { grid-template-columns: 1fr; } .lab-form { position: static; } }
+
   /* ===== PREDICT A REACTION (live box) ===== */
   .predict-box { background: var(--ink); color: var(--paper); padding: 24px 28px; margin-bottom: 8px; }
   .predict-box-head { margin-bottom: 14px; }
@@ -1808,26 +1853,29 @@
       <div class="nav-item active" data-view="company">
         <span class="nav-num">i.</span><span>The Company File</span>
       </div>
+      <div class="nav-item" data-view="lab">
+        <span class="nav-num">ii.</span><span>Company Lab</span>
+      </div>
       <div class="nav-item" data-view="thesis">
-        <span class="nav-num">ii.</span><span>Does the Thesis Hold?</span>
+        <span class="nav-num">iii.</span><span>Does the Thesis Hold?</span>
       </div>
       <div class="nav-item" data-view="factors">
-        <span class="nav-num">iii.</span><span>Factor Explorer</span>
+        <span class="nav-num">iv.</span><span>Factor Explorer</span>
       </div>
       <div class="nav-item" data-view="news">
-        <span class="nav-num">iv.</span><span>News Reaction</span>
+        <span class="nav-num">v.</span><span>News Reaction</span>
       </div>
       <div class="nav-item" data-view="similar">
-        <span class="nav-num">v.</span><span>Historical Analogues</span>
+        <span class="nav-num">vi.</span><span>Historical Analogues</span>
       </div>
       <div class="nav-item" data-view="universe">
-        <span class="nav-num">vi.</span><span>The Universe</span>
+        <span class="nav-num">vii.</span><span>The Universe</span>
       </div>
       <div class="nav-item" data-view="console">
-        <span class="nav-num">vii.</span><span>Live Query</span>
+        <span class="nav-num">viii.</span><span>Live Query</span>
       </div>
       <div class="nav-item" data-view="method">
-        <span class="nav-num">viii.</span><span>On Methodology</span>
+        <span class="nav-num">ix.</span><span>On Methodology</span>
       </div>
     </div>
 
@@ -1870,6 +1918,24 @@
 
         <div class="pullquote" id="company-pullquote"><!-- rendered from data/predict/{focal}.json --></div>
 
+      </section>
+
+      <!-- ============ VIEW: COMPANY LAB (interactive what-if) ============ -->
+      <section class="view" id="view-lab">
+        <div class="article-header">
+          <div class="article-eyebrow">BUILD A COMPANY · WHAT WOULD THE ENGINE EXPECT?</div>
+          <h1 class="article-title">Company <em>Lab</em></h1>
+          <p class="article-deck">Set any properties you like — leave the rest blank. The engine predicts from <em>whatever you give it</em>: no required fields, no retraining. Each constraint you add sharpens the forecast and pulls up the historical companies that matched.</p>
+          <div class="article-byline">live Aito <code style="font-family:'JetBrains Mono';font-size:12px;background:var(--paper-2);padding:1px 6px;">predict</code> + <code style="font-family:'JetBrains Mono';font-size:12px;background:var(--paper-2);padding:1px 6px;">similarity</code> on the companies table · partial profiles welcome</div>
+        </div>
+
+        <div class="lab-grid">
+          <div class="lab-form" id="lab-form"><!-- controls rendered by JS --></div>
+          <div class="lab-result">
+            <div class="lab-pred-card" id="lab-pred"><!-- prediction --></div>
+            <div class="lab-similar" id="lab-similar"><!-- historical analogues --></div>
+          </div>
+        </div>
       </section>
 
       <!-- ============ VIEW 2: DOES THE THESIS HOLD? ============ -->
@@ -2680,6 +2746,7 @@
 
   const viewTitles = {
     company: 'The Company File',
+    lab: 'Company Lab',
     thesis: 'Does the Thesis Hold?',
     factors: 'Factor Explorer',
     news: 'News Reaction',
@@ -2963,6 +3030,176 @@
         renderNews(payload);
       });
     });
+  }
+
+  // ── Company Lab (interactive what-if) ───────────────────────────
+  const LAB_GROUPS = [
+    { label: 'LLM judgment', fields: [
+      ['market_position','Market position'], ['moat_type','Moat type'], ['moat_strength','Moat strength'],
+      ['market_quality','Market quality'], ['leadership_quality','Leadership 1–5'],
+      ['capital_allocation','Capital alloc. 1–5'], ['strategic_clarity','Strategy 1–5'], ['execution_track_record','Execution 1–5'],
+    ]},
+    { label: 'Sector', fields: [['sector','Sector']] },
+    { label: 'Fundamentals', fields: [
+      ['valuation_bucket','Valuation'], ['growth_bucket','Growth'], ['leverage_bucket','Leverage'], ['profitability_bucket','Profitability'],
+    ]},
+    { label: 'Market', fields: [['momentum_bucket','Momentum'], ['volatility_bucket','Volatility']] },
+  ];
+  const LAB_BUCKETS = [
+    { key: 'disaster', label: 'Disaster', range: '−50%+' },
+    { key: 'poor', label: 'Poor', range: '−50–0%' },
+    { key: 'market', label: 'Market', range: '0–100%' },
+    { key: 'good', label: 'Good', range: '100–300%' },
+    { key: 'great', label: 'Great', range: '300%+' },
+  ];
+  const labState = { selected: {}, options: {}, bucketMeans: {}, timer: null };
+
+  function labComputeOptionsAndMeans() {
+    const rows = (universeState.all || []).filter(r => r.outcome_bucket);
+    // distinct options per field
+    LAB_GROUPS.forEach(g => g.fields.forEach(([f]) => {
+      const vals = [...new Set((universeState.all || []).map(r => r[f]).filter(v => v !== null && v !== undefined && v !== ''))];
+      const numeric = vals.every(v => typeof v === 'number' || /^\d+$/.test(String(v)));
+      vals.sort((a, b) => numeric ? (a - b) : String(a).localeCompare(String(b)));
+      labState.options[f] = vals;
+    }));
+    // mean total return per outcome bucket (for the expected-return estimate)
+    LAB_BUCKETS.forEach(b => {
+      const rs = rows.filter(r => r.outcome_bucket === b.key).map(r => r.total_return_pct_local).filter(v => v != null);
+      labState.bucketMeans[b.key] = rs.length ? rs.reduce((a, c) => a + c, 0) / rs.length : 0;
+    });
+  }
+
+  function renderLabForm() {
+    const el = document.getElementById('lab-form');
+    el.innerHTML = LAB_GROUPS.map(g => `
+      <div class="lab-form-group">
+        <div class="lab-form-group-label">${esc(g.label)}</div>
+        ${g.fields.map(([f, lbl]) => {
+          const opts = labState.options[f] || [];
+          const set = labState.selected[f] != null;
+          return `<div class="lab-field">
+            <label>${esc(lbl)}</label>
+            <select data-field="${esc(f)}" class="${set ? 'set' : ''}">
+              <option value="">— any —</option>
+              ${opts.map(o => `<option value="${esc(String(o))}"${labState.selected[f]==String(o)?' selected':''}>${esc(String(o).replace(/_/g,' '))}</option>`).join('')}
+            </select>
+          </div>`;
+        }).join('')}
+      </div>`).join('') + `<button class="lab-reset" id="lab-reset">Clear all</button>`;
+
+    el.querySelectorAll('select').forEach(s => s.addEventListener('change', () => {
+      const f = s.dataset.field;
+      if (s.value === '') delete labState.selected[f];
+      else labState.selected[f] = s.value;
+      s.classList.toggle('set', s.value !== '');
+      labPredictDebounced();
+    }));
+    document.getElementById('lab-reset').addEventListener('click', () => {
+      labState.selected = {};
+      renderLabForm(); labPredict();
+    });
+  }
+
+  function labWhere() {
+    const w = {};
+    const numericFields = new Set(['leadership_quality','capital_allocation','strategic_clarity','execution_track_record']);
+    Object.entries(labState.selected).forEach(([f, v]) => {
+      w[f] = numericFields.has(f) ? parseInt(v, 10) : v;
+    });
+    return w;
+  }
+
+  function labPredictDebounced() {
+    clearTimeout(labState.timer);
+    labState.timer = setTimeout(labPredict, 250);
+  }
+
+  async function labPredict() {
+    const where = labWhere();
+    const predEl = document.getElementById('lab-pred');
+    const nSet = Object.keys(where).length;
+    predEl.innerHTML = `<div class="lab-pred-src">querying Aito…</div>`;
+
+    let probs = {}, predSource = 'mock';
+    try {
+      const r = await fetch('./api/query', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kind: 'predict', body: { from: 'companies', where, predict: 'outcome_bucket' } }),
+      });
+      const p = await r.json();
+      predSource = p.source || 'aito';
+      (p.result?.hits || []).forEach(h => { probs[h.feature] = h['$p']; });
+    } catch (e) { /* fall through to empty */ }
+    if (!Object.keys(probs).length) {
+      // fallback: base rate from the universe data
+      const rows = (universeState.all || []).filter(x => x.outcome_bucket);
+      LAB_BUCKETS.forEach(b => probs[b.key] = rows.filter(x => x.outcome_bucket === b.key).length / (rows.length || 1));
+      predSource = 'mock';
+    }
+
+    const ev = LAB_BUCKETS.reduce((s, b) => s + (probs[b.key] || 0) * (labState.bucketMeans[b.key] || 0), 0);
+    const peak = LAB_BUCKETS.reduce((a, b) => (probs[b.key] || 0) > (probs[a.key] || 0) ? b : a, LAB_BUCKETS[0]);
+    const maxP = Math.max(...LAB_BUCKETS.map(b => probs[b.key] || 0), 0.01);
+
+    predEl.innerHTML = `
+      <div class="lab-pred-top">
+        <div class="lab-pred-ev"><div class="val">${ev >= 0 ? '+' : ''}${ev.toFixed(0)}%</div><div class="lbl">expected 12-yr total return</div></div>
+        <div class="lab-pred-n">${nSet === 0 ? 'base rate<br><b>(nothing set)</b>' : `from <b>${nSet}</b> propert${nSet===1?'y':'ies'}`}</div>
+      </div>
+      <div class="lab-bars">
+        ${LAB_BUCKETS.map(b => {
+          const pv = probs[b.key] || 0;
+          const w = (pv / maxP) * 100;
+          return `<div class="lab-bar">
+            <div class="lab-bar-lbl">${b.label} <em>${b.range}</em></div>
+            <div class="lab-bar-track"><div class="lab-bar-fill${b.key===peak.key?' peak':''}" style="width:${w.toFixed(1)}%"></div></div>
+            <div class="lab-bar-val">${(pv*100).toFixed(1)}%</div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="lab-pred-hint">${nSet === 0 ? 'Set a property on the left — the engine predicts from whatever you give it, no field required.' : 'Expected return = Σ P(bucket) × the historical mean return of that bucket.'}</div>
+      <div class="lab-pred-src">outcome <span class="pill ${predSource}">${predSource}</span> via Aito <code style="font-family:'JetBrains Mono'">_predict</code></div>`;
+
+    labSimilar(where, nSet);
+  }
+
+  async function labSimilar(where, nSet) {
+    const el = document.getElementById('lab-similar');
+    if (nSet === 0) { el.innerHTML = `<div class="lab-similar-label">Historical analogues</div><div class="lab-sim-avg">Set a property to pull up the companies that matched.</div>`; return; }
+    let hits = [];
+    try {
+      const r = await fetch('./api/query', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kind: 'similarity', body: { from: 'companies', similarity: where, limit: 12 } }),
+      });
+      const p = await r.json();
+      hits = (p.result?.hits || []).filter(h => h.outcome_bucket && h.total_return_pct_local != null);
+    } catch (e) { /* */ }
+    if (!hits.length) { el.innerHTML = `<div class="lab-similar-label">Historical analogues</div><div class="lab-sim-avg">No close historical matches for this profile.</div>`; return; }
+    const top = hits.slice(0, 6);
+    const rets = top.map(h => h.total_return_pct_local);
+    const avg = rets.reduce((a, c) => a + c, 0) / rets.length;
+    el.innerHTML = `
+      <div class="lab-similar-label">Closest historical analogues</div>
+      <div class="lab-sim-grid">
+        ${top.map(h => {
+          const ret = h.total_return_pct_local;
+          const cls = ret >= 0 ? '' : 'red';
+          return `<div class="lab-sim">
+            <h4>${esc(h.company_name || h.ticker)}</h4>
+            <div class="lab-sim-meta">${esc(h.ticker)} · '${String(h.vintage_year).slice(2)} · sim ${(h['$score']||0).toFixed(2)}</div>
+            <div class="lab-sim-outcome"><span class="bucket-chip ${esc(h.outcome_bucket)}">${esc(h.outcome_bucket)}</span> <b style="color:${ret>=0?'var(--green)':'var(--red)'}">${ret>=0?'+':''}${ret.toFixed(0)}%</b></div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="lab-sim-avg">These ${top.length} closest matches averaged <b>${avg>=0?'+':''}${avg.toFixed(0)}%</b> over the window.</div>`;
+  }
+
+  function renderLab() {
+    labComputeOptionsAndMeans();
+    renderLabForm();
+    labPredict();
   }
 
   // ── Predict a reaction (live: paste → LLM → Aito) ───────────────
@@ -3587,6 +3824,7 @@ However, citing a more cautious consumer environment and rising input costs, the
       renderNews(news);
       renderEarningsSignals(earningsSignals);
       setupPredictBox();
+      renderLab();   // after renderUniverse (uses universe data for options + bucket means)
       setupConsole();
 
       const initialKey = `${companies[0].ticker}_${companies[0].vintage}`;

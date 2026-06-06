@@ -40,7 +40,7 @@ app = FastAPI(
 )
 
 ALLOWED_FROM = "companies"  # this demo only exposes one table
-ALLOWED_KIND = {"predict", "relate", "match"}
+ALLOWED_KIND = {"predict", "relate", "match", "similarity"}
 
 
 # ── Health ─────────────────────────────────────────────────────
@@ -65,7 +65,7 @@ def readiness() -> dict[str, str | bool]:
 
 
 class QueryRequest(BaseModel):
-    kind: Literal["predict", "relate", "match"]
+    kind: Literal["predict", "relate", "match", "similarity"]
     body: dict = Field(..., description="The Aito query body. `from` must be 'companies'.")
 
 
@@ -248,12 +248,12 @@ def _mock_response(kind: str, body: dict) -> dict:
                 {"feature": {"field": "moat_type", "value": "network_effects"}, "lift": 2.74, "$p": 0.10},
             ],
         }
-    if kind == "match":
+    if kind in ("match", "similarity"):
         return {
             "hits": [
-                {"ticker": "MSFT", "vintage_year": 1995, "$score": 0.87, "company_name": "Microsoft"},
-                {"ticker": "CSCO", "vintage_year": 1995, "$score": 0.81, "company_name": "Cisco Systems"},
-                {"ticker": "ADBE", "vintage_year": 2010, "$score": 0.78, "company_name": "Adobe Systems"},
+                {"ticker": "MSFT", "vintage_year": 2017, "$score": 4.1, "company_name": "Microsoft", "outcome_bucket": "great", "total_return_pct_local": 820.0},
+                {"ticker": "AVGO", "vintage_year": 2017, "$score": 3.6, "company_name": "Broadcom", "outcome_bucket": "great", "total_return_pct_local": 740.0},
+                {"ticker": "AAPL", "vintage_year": 2017, "$score": 3.2, "company_name": "Apple", "outcome_bucket": "great", "total_return_pct_local": 1045.0},
             ],
         }
     return {"hits": []}
