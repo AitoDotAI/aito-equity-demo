@@ -125,6 +125,103 @@ def query(req: QueryRequest) -> dict:
         return {"ok": False, "source": "aito", "error": f"{type(e).__name__}: {e}"}
 
 
+class ClassifyRequest(BaseModel):
+    text: str = Field(..., description="An earnings press release (or its headline + lead).")
+
+
+@app.post("/api/classify-earnings")
+def classify_earnings(req: ClassifyRequest) -> dict:
+    """Live demo: read a pasted earnings release the way the pipeline does —
+    LLM-extract the signals, then Aito-predict the day-1 reaction bucket given
+    those signals. Both keys stay server-side. Mocks if either isn't set."""
+    text = (req.text or "").strip()
+    if len(text) < 40:
+        raise HTTPException(status_code=400, detail="Paste a longer snippet (headline + a few lines).")
+
+    openai_ok = bool(os.environ.get("OPENAI_MODEL_API_KEY") and os.environ.get("OPENAI_MODEL_URL"))
+    aito_url = os.environ.get("AITO_API_URL")
+    aito_key = os.environ.get("AITO_API_KEY")
+
+    # 1. Extract signals.
+    t0 = time.perf_counter()
+    if openai_ok:
+        try:
+            from pipeline.events.earnings_extract import grade_release, make_client
+            sig = grade_release(make_client(), text)
+            signals = sig.model_dump() if sig else None
+        except Exception as e:
+            signals = None
+            print(f"classify-earnings extract error: {e}")
+    else:
+        signals = None
+    extract_ms = (time.perf_counter() - t0) * 1000
+
+    if signals is None:
+        signals = _mock_signals(text)
+        signal_source = "mock"
+    else:
+        signal_source = "llm"
+
+    # 2. Predict the reaction bucket from the signals.
+    where = {k: v for k, v in signals.items() if v not in (None, "not_stated", "none")}
+    t1 = time.perf_counter()
+    prediction, pred_source = None, "mock"
+    if aito_url and aito_key:
+        try:
+            with httpx.Client(timeout=15.0) as client:
+                r = client.post(
+                    f"{aito_url.rstrip('/')}/api/v1/_predict",
+                    json={"from": "earnings_events", "where": where, "predict": "react_1d_bucket"},
+                    headers={"x-api-key": aito_key, "Content-Type": "application/json"},
+                )
+            if r.status_code < 400:
+                hits = r.json().get("hits", [])
+                prediction = [{"bucket": h.get("feature"), "p": round(float(h.get("$p", 0)), 3)} for h in hits]
+                pred_source = "aito"
+        except Exception as e:
+            print(f"classify-earnings predict error: {e}")
+    predict_ms = (time.perf_counter() - t1) * 1000
+    if prediction is None:
+        prediction = _mock_prediction(signals)
+
+    return {
+        "ok": True,
+        "signals": signals,
+        "signal_source": signal_source,
+        "prediction": prediction,
+        "prediction_source": pred_source,
+        "where": where,
+        "extract_ms": round(extract_ms, 1),
+        "predict_ms": round(predict_ms, 1),
+    }
+
+
+def _mock_signals(text: str) -> dict:
+    """Keyword heuristic when no OpenAI key — clearly a fallback."""
+    t = text.lower()
+    neg = any(k in t for k in ("miss", "below expectations", "decline", "lower", "cut guidance", "disappoint"))
+    pos = any(k in t for k in ("record", "beat", "raise", "exceeded", "strong", "growth"))
+    return {
+        "headline_signal": "clearly_negative" if neg and not pos else ("clearly_positive" if pos and not neg else "mixed"),
+        "reported_beat": "miss" if "miss" in t else ("beat" if "beat" in t else "not_stated"),
+        "guidance": "lowered" if "lower" in t or "cut" in t else ("raised" if "raise" in t else "none"),
+        "eps_direction": "down" if neg and not pos else "up",
+        "revenue_direction": "up" if "record revenue" in t or "revenue grew" in t else "not_stated",
+        "one_time_items": "charges" if "charge" in t or "impairment" in t else "none",
+        "tone": "cautious" if neg else "confident",
+    }
+
+
+def _mock_prediction(signals: dict) -> list[dict]:
+    g = signals.get("guidance")
+    hs = signals.get("headline_signal")
+    if g == "lowered" or signals.get("reported_beat") == "miss" or hs == "clearly_negative":
+        return [{"bucket": "down", "p": 0.55}, {"bucket": "flat", "p": 0.28}, {"bucket": "up", "p": 0.17}]
+    if g == "raised" or hs == "clearly_positive":
+        return [{"bucket": "up", "p": 0.5}, {"bucket": "flat", "p": 0.28}, {"bucket": "down", "p": 0.22}]
+    return [{"bucket": "flat", "p": 0.4}, {"bucket": "up", "p": 0.32}, {"bucket": "down", "p": 0.28}]
+
+
 def _mock_response(kind: str, body: dict) -> dict:
     """Deterministic stand-in for the Live Query view when Aito isn't wired.
 

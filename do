@@ -74,6 +74,7 @@ cmd_pipeline() {
     news)         uv run python -m pipeline.events.news_8k "$@" ;;
     earnings-fetch)   uv run python -m pipeline.events.earnings_fetch "$@" ;;
     earnings-extract) uv run python -m pipeline.events.earnings_extract "$@" ;;
+    earnings-load)    uv run python -m pipeline.events.earnings_load "$@" ;;
     load)         uv run python -m pipeline.aito.load "$@" ;;
     precompute)   uv run python -m pipeline.aito.queries "$@" ;;
     all)

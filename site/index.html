@@ -1239,6 +1239,41 @@
     color: var(--ink-fade);
   }
 
+  /* ===== PREDICT A REACTION (live box) ===== */
+  .predict-box { background: var(--ink); color: var(--paper); padding: 24px 28px; margin-bottom: 8px; }
+  .predict-box-head { margin-bottom: 14px; }
+  .predict-box-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; color: var(--paper); }
+  .predict-box-title em { font-style: italic; color: var(--gold); }
+  .predict-box-sub { display: block; font-family: 'Source Serif 4', serif; font-style: italic; font-size: 13px; color: rgba(244,237,225,0.7); margin-top: 4px; }
+  .predict-samples { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  .predict-samples > span { font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(244,237,225,0.5); }
+  .predict-sample { font-family: 'Source Serif 4', serif; font-style: italic; font-size: 12px; padding: 4px 11px; background: rgba(244,237,225,0.06); border: 1px solid rgba(244,237,225,0.18); color: rgba(244,237,225,0.85); border-radius: 2px; cursor: pointer; transition: all 0.15s; }
+  .predict-sample:hover { background: rgba(168,134,44,0.2); border-color: var(--gold); color: var(--paper); }
+  .predict-input { width: 100%; min-height: 110px; padding: 12px 14px; background: rgba(0,0,0,0.25); border: 1px solid rgba(244,237,225,0.18); color: var(--paper); font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.5; resize: vertical; outline: none; box-sizing: border-box; }
+  .predict-input:focus { border-color: var(--gold); }
+  .predict-actions { display: flex; align-items: center; gap: 16px; margin-top: 12px; }
+  .predict-status { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(244,237,225,0.6); }
+  .predict-result { margin-top: 18px; padding-top: 18px; border-top: 1px solid rgba(244,237,225,0.15); }
+  .predict-pred { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 18px; }
+  .pred-bucket { flex: 1; text-align: center; }
+  .pred-bucket-bar-wrap { height: 90px; display: flex; align-items: flex-end; justify-content: center; }
+  .pred-bucket-bar { width: 56px; transition: height 0.4s ease; min-height: 2px; }
+  .pred-bucket-bar.up   { background: var(--green); }
+  .pred-bucket-bar.flat { background: rgba(244,237,225,0.3); }
+  .pred-bucket-bar.down { background: var(--red); }
+  .pred-bucket-bar.win { box-shadow: 0 0 16px rgba(168,134,44,0.4); }
+  .pred-bucket-p { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 600; color: var(--paper); margin-top: 8px; }
+  .pred-bucket-lbl { font-family: 'Inter', sans-serif; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(244,237,225,0.6); margin-top: 3px; }
+  .pred-signals-lbl { font-family: 'Inter', sans-serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(244,237,225,0.5); margin-bottom: 8px; }
+  .pred-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .pred-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 9px; background: rgba(244,237,225,0.08); border: 1px solid rgba(244,237,225,0.18); border-radius: 2px; color: rgba(244,237,225,0.9); }
+  .pred-chip b { color: var(--gold); font-weight: 600; }
+  .pred-source { margin-top: 14px; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: rgba(244,237,225,0.55); }
+  .pred-source .pill { display:inline-block; padding:1px 7px; border-radius:2px; font-size:9px; letter-spacing:0.12em; text-transform:uppercase; font-weight:600; }
+  .pred-source .pill.aito { background: rgba(18,181,173,0.25); color:#7fe6df; }
+  .pred-source .pill.llm  { background: rgba(155,105,255,0.25); color:#c8a8ff; }
+  .pred-source .pill.mock { background: rgba(168,134,44,0.25); color: var(--gold); }
+
   /* ===== NEWS REACTION ===== */
   .news-table-wrap { background: #fbf6ec; border: 1px solid var(--rule); }
   table.news-table { width: 100%; border-collapse: collapse; font-family: 'Source Serif 4', serif; font-size: 13px; }
@@ -1875,6 +1910,28 @@
           <p class="article-deck">A real event feed: every 8-K a company files is material news, timestamped, tagged by the SEC with an item code that <em>is</em> the theme. We measure how the stock reacts at +1 day, +1 week, and +20 days — and whether the first move continues or reverts.</p>
           <div class="article-byline" data-bind="news-byline">8-K filings · SEC EDGAR · reaction close-to-close from the day before the filing</div>
         </div>
+
+        <!-- Live: paste a release → LLM reads it → Aito predicts the reaction -->
+        <div class="predict-box">
+          <div class="predict-box-head">
+            <span class="predict-box-title">Read a release at <em>t = 0</em></span>
+            <span class="predict-box-sub">Paste an earnings press release. A model reads it; Aito predicts the day-1 reaction from the signals.</span>
+          </div>
+          <div class="predict-samples">
+            <span>Try:</span>
+            <button class="predict-sample" data-sample="beat">a beat + raised guidance</button>
+            <button class="predict-sample" data-sample="miss">a miss</button>
+            <button class="predict-sample" data-sample="cut">in-line but guidance cut</button>
+          </div>
+          <textarea class="predict-input" id="predict-input" spellcheck="false" placeholder="Paste an earnings press release (headline + first paragraphs is enough)…"></textarea>
+          <div class="predict-actions">
+            <button class="console-btn" id="predict-run">Predict reaction →</button>
+            <div class="predict-status" id="predict-status"></div>
+          </div>
+          <div class="predict-result" id="predict-result" style="display:none;"></div>
+        </div>
+
+        <div class="section-rule"><span>And across 60,000 events</span></div>
 
         <div class="news-table-wrap">
           <table class="news-table">
@@ -2908,6 +2965,95 @@
     });
   }
 
+  // ── Predict a reaction (live: paste → LLM → Aito) ───────────────
+  const PREDICT_SAMPLES = {
+    beat: `TechCorp Announces Record Fourth Quarter and Full Year Results
+
+Record quarterly revenue of $8.4 billion, up 27% from a year ago. Data-center revenue of $5.1 billion, up 41%. GAAP earnings per diluted share of $2.15, up from $1.48 a year ago.
+
+"We delivered our strongest quarter ever and demand continues to accelerate. We are raising our full-year revenue outlook," said the Chief Executive Officer. The company now expects next-quarter revenue of approximately $9.0 billion, above its prior guidance.`,
+    miss: `Northgate Industries Reports Fourth Quarter Results
+
+Revenue of $3.1 billion, down 6% year over year and below the company's prior outlook. GAAP loss per share of $0.42 compared with earnings of $0.31 a year ago, driven by weaker volumes and pricing pressure.
+
+"Results came in below our expectations as demand softened across our key end markets," said the CEO. Results missed the company's own guidance for the quarter.`,
+    cut: `Meridian Foods Reports Third Quarter Results
+
+Revenue of $2.4 billion, roughly in line with a year ago. GAAP EPS of $0.88, in line with the prior year. Margins were stable in the quarter.
+
+However, citing a more cautious consumer environment and rising input costs, the company lowered its full-year guidance, now expecting full-year EPS below its previous range. "We are taking a more conservative view of the second half," management said.`,
+  };
+  const PRED_LABELS = { up: 'stock up', flat: 'flat', down: 'stock down' };
+
+  function setupPredictBox() {
+    const input = document.getElementById('predict-input');
+    if (!input) return;
+    document.querySelectorAll('.predict-sample').forEach(b => {
+      b.addEventListener('click', () => { input.value = PREDICT_SAMPLES[b.dataset.sample] || ''; });
+    });
+    document.getElementById('predict-run').addEventListener('click', runPredict);
+    input.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runPredict(); }
+    });
+  }
+
+  async function runPredict() {
+    const input = document.getElementById('predict-input');
+    const status = document.getElementById('predict-status');
+    const result = document.getElementById('predict-result');
+    const text = (input.value || '').trim();
+    if (text.length < 40) { status.textContent = 'paste a longer snippet (headline + a few lines)'; return; }
+    status.textContent = 'reading the release…';
+    result.style.display = 'none';
+    try {
+      const r = await fetch('./api/classify-earnings', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      const p = await r.json();
+      if (!p.ok) { status.textContent = p.detail || 'failed'; return; }
+      status.textContent = '';
+      renderPrediction(p);
+    } catch (e) {
+      status.textContent = 'network error: ' + e.message;
+    }
+  }
+
+  function renderPrediction(p) {
+    const result = document.getElementById('predict-result');
+    const order = ['down', 'flat', 'up'];
+    const byBucket = {}; (p.prediction || []).forEach(x => byBucket[x.bucket] = x.p);
+    const maxP = Math.max(...order.map(b => byBucket[b] || 0), 0.01);
+    const winner = order.reduce((a, b) => (byBucket[b] || 0) > (byBucket[a] || 0) ? b : a, 'flat');
+    const bars = order.map(b => {
+      const pv = byBucket[b] || 0;
+      const h = Math.round((pv / maxP) * 88);
+      return `<div class="pred-bucket">
+        <div class="pred-bucket-bar-wrap"><div class="pred-bucket-bar ${b}${b===winner?' win':''}" style="height:${h}px"></div></div>
+        <div class="pred-bucket-p">${(pv*100).toFixed(0)}%</div>
+        <div class="pred-bucket-lbl">${PRED_LABELS[b]}</div>
+      </div>`;
+    }).join('');
+
+    const sig = p.signals || {};
+    const sigOrder = ['headline_signal','reported_beat','guidance','eps_direction','revenue_direction','tone','one_time_items'];
+    const chips = sigOrder.filter(k => sig[k] && sig[k] !== 'not_stated').map(k =>
+      `<span class="pred-chip">${esc(k.replace(/_/g,' ').replace(' signal',''))}: <b>${esc(String(sig[k]).replace(/_/g,' '))}</b></span>`
+    ).join('');
+
+    const srcPill = s => `<span class="pill ${s}">${s}</span>`;
+    result.innerHTML = `
+      <div class="predict-pred">${bars}</div>
+      <div class="pred-signals-lbl">signals the model read from the text</div>
+      <div class="pred-chips">${chips}</div>
+      <div class="pred-source">
+        signals ${srcPill(p.signal_source)} extracted in ${(p.extract_ms/1000).toFixed(1)}s ·
+        reaction ${srcPill(p.prediction_source)} predicted in ${p.predict_ms.toFixed(0)} ms
+        ${p.prediction_source==='mock'||p.signal_source==='mock' ? ' · <span style="font-style:italic">configure OPENAI + AITO keys for the live path</span>' : ''}
+      </div>`;
+    result.style.display = 'block';
+  }
+
   // ── Earnings signals (content → reaction) ───────────────────────
   function esigBar(meanD1) {
     const cap = 5;
@@ -3440,6 +3586,7 @@
       renderFactors();
       renderNews(news);
       renderEarningsSignals(earningsSignals);
+      setupPredictBox();
       setupConsole();
 
       const initialKey = `${companies[0].ticker}_${companies[0].vintage}`;
