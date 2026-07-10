@@ -1,0 +1,666 @@
+{
+  "artifact": "wide-feature-calibration-spec",
+  "version": "1.0",
+  "summary": "Naive-Bayes-family _predict over wide, correlated categorical feature spaces is overconfident: correlated features are multiplied as independent evidence, pushing probabilities to extremes. Fix = compression-cluster the features into themes and vote ONCE per theme. Validated held-out on the aito-equity-demo data; see results.",
+  "source": {
+    "aito_db": "https://shared.aito.ai/db/aito-equity-demo",
+    "table": "companies",
+    "target": "outcome_bucket",
+    "classes": [
+      "disaster",
+      "poor",
+      "market",
+      "good",
+      "great"
+    ],
+    "class_is_ordinal": true,
+    "ordinal_rank": {
+      "disaster": 0,
+      "poor": 1,
+      "market": 2,
+      "good": 3,
+      "great": 4
+    },
+    "n_rows_graded": 1294,
+    "note": "graded = rows with both LLM features and a realised outcome_bucket"
+  },
+  "feature_schema": {
+    "market_position": {
+      "aito_type": "String",
+      "nullable": true,
+      "cardinality": 4,
+      "values": [
+        "(missing)",
+        "competitive",
+        "dominant",
+        "strong"
+      ]
+    },
+    "moat_type": {
+      "aito_type": "String",
+      "nullable": true,
+      "cardinality": 8,
+      "values": [
+        "(missing)",
+        "brand",
+        "cost_advantage",
+        "network_effects",
+        "none",
+        "regulatory",
+        "scale_economies",
+        "switching_costs"
+      ]
+    },
+    "moat_strength": {
+      "aito_type": "String",
+      "nullable": true,
+      "cardinality": 4,
+      "values": [
+        "(missing)",
+        "narrow",
+        "none",
+        "wide"
+      ]
+    },
+    "market_quality": {
+      "aito_type": "String",
+      "nullable": true,
+      "cardinality": 6,
+      "values": [
+        "(missing)",
+        "cyclical",
+        "declining",
+        "disrupted",
+        "secular_growth",
+        "stable"
+      ]
+    },
+    "leadership_quality": {
+      "aito_type": "Int",
+      "nullable": true,
+      "cardinality": 5,
+      "values": [
+        "(missing)",
+        "2.0",
+        "3.0",
+        "4.0",
+        "5.0"
+      ]
+    },
+    "capital_allocation": {
+      "aito_type": "Int",
+      "nullable": true,
+      "cardinality": 5,
+      "values": [
+        "(missing)",
+        "2.0",
+        "3.0",
+        "4.0",
+        "5.0"
+      ]
+    },
+    "strategic_clarity": {
+      "aito_type": "Int",
+      "nullable": true,
+      "cardinality": 5,
+      "values": [
+        "(missing)",
+        "2.0",
+        "3.0",
+        "4.0",
+        "5.0"
+      ]
+    },
+    "execution_track_record": {
+      "aito_type": "Int",
+      "nullable": true,
+      "cardinality": 5,
+      "values": [
+        "(missing)",
+        "2.0",
+        "3.0",
+        "4.0",
+        "5.0"
+      ]
+    },
+    "founder_still_ceo": {
+      "aito_type": "Boolean",
+      "nullable": true,
+      "cardinality": 1,
+      "values": [
+        "(missing)"
+      ]
+    },
+    "sector": {
+      "aito_type": "String",
+      "nullable": true,
+      "cardinality": 12,
+      "values": [
+        "(missing)",
+        "Communication Services",
+        "Consumer Discretionary",
+        "Consumer Staples",
+        "Energy",
+        "Financials",
+        "Health Care",
+        "Industrials",
+        "Information Technology",
+        "Materials",
+        "Real Estate",
+        "Utilities"
+      ]
+    },
+    "valuation_bucket": {
+      "aito_type": "String",
+      "nullable": true,
+      "cardinality": 5,
+      "values": [
+        "(missing)",
+        "cheap",
+        "expensive",
+        "fair",
+        "negative_earnings"
+      ]
+    },
+    "growth_bucket": {
+      "aito_type": "String",
+      "nullable": true,
+      "cardinality": 4,
+      "values": [
+        "(missing)",
+        "high",
+        "moderate",
+        "shrinking"
+      ]
+    },
+    "leverage_bucket": {
+      "aito_type": "String",
+      "nullable": true,
+      "cardinality": 5,
+      "values": [
+        "(missing)",
+        "high",
+        "low",
+        "moderate",
+        "negative_equity"
+      ]
+    },
+    "profitability_bucket": {
+      "aito_type": "String",
+      "nullable": true,
+      "cardinality": 5,
+      "values": [
+        "(missing)",
+        "high",
+        "low",
+        "negative",
+        "solid"
+      ]
+    },
+    "momentum_bucket": {
+      "aito_type": "String",
+      "nullable": true,
+      "cardinality": 4,
+      "values": [
+        "(missing)",
+        "neutral",
+        "strong",
+        "weak"
+      ]
+    },
+    "volatility_bucket": {
+      "aito_type": "String",
+      "nullable": true,
+      "cardinality": 4,
+      "values": [
+        "(missing)",
+        "high",
+        "low",
+        "medium"
+      ]
+    }
+  },
+  "evaluation_protocol": {
+    "scheme": "stratified 5-fold, deterministic",
+    "fold_rule": "within each class, rows sorted by f'{ticker}_{vintage_year}', assigned fold = position % 5 (no RNG)",
+    "metrics": {
+      "logloss": "multiclass negative log-likelihood of the true class (lower better)",
+      "ece": "expected calibration error on top-class confidence, 10 equal-width bins (lower better)",
+      "accuracy": "argmax == true",
+      "overconfidence": "mean top-class confidence \u2212 accuracy (0 = calibrated, + = overconfident)",
+      "optimism_upside": "mean predicted P(good)+P(great) \u2212 realised frequency"
+    }
+  },
+  "redundancy_nmi": {
+    "definition": "NMI(X,Y) = I(X;Y) / sqrt(H(X)*H(Y)), natural-log entropies",
+    "top_pairs": [
+      {
+        "a": "leadership_quality",
+        "b": "execution_track_record",
+        "nmi": 0.6811
+      },
+      {
+        "a": "leadership_quality",
+        "b": "capital_allocation",
+        "nmi": 0.6217
+      },
+      {
+        "a": "market_position",
+        "b": "moat_strength",
+        "nmi": 0.5642
+      },
+      {
+        "a": "leadership_quality",
+        "b": "strategic_clarity",
+        "nmi": 0.4841
+      },
+      {
+        "a": "strategic_clarity",
+        "b": "execution_track_record",
+        "nmi": 0.4224
+      },
+      {
+        "a": "capital_allocation",
+        "b": "strategic_clarity",
+        "nmi": 0.4098
+      },
+      {
+        "a": "capital_allocation",
+        "b": "execution_track_record",
+        "nmi": 0.3962
+      },
+      {
+        "a": "moat_strength",
+        "b": "strategic_clarity",
+        "nmi": 0.363
+      },
+      {
+        "a": "moat_strength",
+        "b": "leadership_quality",
+        "nmi": 0.3426
+      },
+      {
+        "a": "moat_strength",
+        "b": "capital_allocation",
+        "nmi": 0.3421
+      },
+      {
+        "a": "market_position",
+        "b": "strategic_clarity",
+        "nmi": 0.3246
+      },
+      {
+        "a": "moat_strength",
+        "b": "execution_track_record",
+        "nmi": 0.3218
+      }
+    ]
+  },
+  "clustering_algorithm": {
+    "type": "agglomerative, complete-linkage, MDL + NMI-floor stop",
+    "merge_rule": "merge the cluster pair with the highest min-cross-pair NMI, provided (a) min-cross-pair MDL gain > 0 AND (b) min-cross-pair NMI >= min_nmi; stop when no pair qualifies",
+    "mdl_gain": "N*I(X;Y)/ln(2) - 0.5*(|X|-1)*(|Y|-1)*log2(N)   # bits saved \u2212 BIC table cost",
+    "min_nmi_is_resolution_knob": true,
+    "note_bic_too_weak": "At N~1300 pure BIC-MDL under-penalises (tiny MI pervades all features) and cascades into one mega-cluster; the NMI floor controls resolution. aito-core may prefer a predictor-aware description length instead.",
+    "clusters": {
+      "0.30_tight": [
+        [
+          "leadership_quality",
+          "execution_track_record",
+          "strategic_clarity",
+          "capital_allocation"
+        ],
+        [
+          "market_position",
+          "moat_strength"
+        ],
+        [
+          "founder_still_ceo"
+        ],
+        [
+          "growth_bucket"
+        ],
+        [
+          "leverage_bucket"
+        ],
+        [
+          "market_quality"
+        ],
+        [
+          "moat_type"
+        ],
+        [
+          "momentum_bucket"
+        ],
+        [
+          "profitability_bucket"
+        ],
+        [
+          "sector"
+        ],
+        [
+          "valuation_bucket"
+        ],
+        [
+          "volatility_bucket"
+        ]
+      ],
+      "0.08_aggressive": [
+        [
+          "market_position",
+          "moat_strength",
+          "leadership_quality",
+          "execution_track_record",
+          "strategic_clarity",
+          "capital_allocation",
+          "moat_type",
+          "market_quality",
+          "valuation_bucket",
+          "profitability_bucket"
+        ],
+        [
+          "sector",
+          "volatility_bucket"
+        ],
+        [
+          "founder_still_ceo"
+        ],
+        [
+          "growth_bucket"
+        ],
+        [
+          "leverage_bucket"
+        ],
+        [
+          "momentum_bucket"
+        ]
+      ]
+    }
+  },
+  "model": {
+    "flat_nb": {
+      "alpha_laplace": 1.0,
+      "structure": "P(y) * prod_f P(f|y)"
+    },
+    "clustered_nb": {
+      "alpha_laplace": 1.0,
+      "theme_encoder": "per multi-feature cluster: score each value by mean outcome-rank on the TRAIN fold (target encoding), average member scores per row, quantise into n_levels bins by train quantiles \u2192 one ordinal theme variable. Singletons pass through unchanged.",
+      "n_levels": 4,
+      "predict_beta0": "P(y) * prod_themes P(theme|y)   # one decorrelated vote per cluster",
+      "predict_beta_residual": "+ beta * sum_{f in multi-cluster} log[P(f|theme,y)/P(f|theme)]   # WARNING: this formulation re-injects an outcome vote and WORSENS calibration. The intended nuance must refine the THEME assignment, not add a parallel outcome vote. Open design question (see open_questions)."
+    }
+  },
+  "results_heldout": {
+    "flat_nb": {
+      "logloss": 1.8234,
+      "ece": 0.194,
+      "acc": 0.3988,
+      "mean_conf": 0.5927,
+      "overconf": 0.194,
+      "optimism_upside": -0.0158
+    },
+    "clustered_tight_b0": {
+      "logloss": 1.5431,
+      "ece": 0.1493,
+      "acc": 0.415,
+      "mean_conf": 0.5643,
+      "overconf": 0.1493,
+      "optimism_upside": -0.0064
+    },
+    "clustered_tight_b0.5": {
+      "logloss": 1.5673,
+      "ece": 0.1781,
+      "acc": 0.3988,
+      "mean_conf": 0.5769,
+      "overconf": 0.1781,
+      "optimism_upside": 0.0068
+    },
+    "clustered_aggressive_b0": {
+      "logloss": 1.3578,
+      "ece": 0.0714,
+      "acc": 0.3748,
+      "mean_conf": 0.4415,
+      "overconf": 0.0667,
+      "optimism_upside": -0.0029
+    }
+  },
+  "headline": {
+    "flat_overconfidence_pt": 19.4,
+    "clustered_overconfidence_pt": 6.7,
+    "flat_ece": 0.194,
+    "clustered_ece": 0.0714,
+    "flat_logloss": 1.8234,
+    "clustered_logloss": 1.3578
+  },
+  "reference_predictions_oof": [
+    {
+      "ticker": "NVDA",
+      "vintage_year": 2017,
+      "true_outcome": "great",
+      "features": {
+        "market_position": "dominant",
+        "moat_type": "network_effects",
+        "moat_strength": "narrow",
+        "market_quality": "secular_growth",
+        "leadership_quality": "4.0",
+        "capital_allocation": "4.0",
+        "strategic_clarity": "5.0",
+        "execution_track_record": "4.0",
+        "founder_still_ceo": "(missing)",
+        "sector": "Information Technology",
+        "valuation_bucket": "cheap",
+        "growth_bucket": "moderate",
+        "leverage_bucket": "low",
+        "profitability_bucket": "solid",
+        "momentum_bucket": "strong",
+        "volatility_bucket": "high"
+      },
+      "flat_nb_proba": {
+        "disaster": 0.0002,
+        "poor": 0.0047,
+        "market": 0.0068,
+        "good": 0.0678,
+        "great": 0.9205
+      },
+      "clustered_aggressive_proba": {
+        "disaster": 0.0011,
+        "poor": 0.0268,
+        "market": 0.1147,
+        "good": 0.3714,
+        "great": 0.486
+      }
+    },
+    {
+      "ticker": "COST",
+      "vintage_year": 2017,
+      "true_outcome": "great",
+      "features": {
+        "market_position": "strong",
+        "moat_type": "scale_economies",
+        "moat_strength": "wide",
+        "market_quality": "stable",
+        "leadership_quality": "4.0",
+        "capital_allocation": "4.0",
+        "strategic_clarity": "4.0",
+        "execution_track_record": "4.0",
+        "founder_still_ceo": "(missing)",
+        "sector": "Consumer Staples",
+        "valuation_bucket": "fair",
+        "growth_bucket": "moderate",
+        "leverage_bucket": "low",
+        "profitability_bucket": "solid",
+        "momentum_bucket": "neutral",
+        "volatility_bucket": "low"
+      },
+      "flat_nb_proba": {
+        "disaster": 0.0,
+        "poor": 0.0468,
+        "market": 0.2828,
+        "good": 0.5962,
+        "great": 0.0742
+      },
+      "clustered_aggressive_proba": {
+        "disaster": 0.027,
+        "poor": 0.2098,
+        "market": 0.1995,
+        "good": 0.3172,
+        "great": 0.2465
+      }
+    },
+    {
+      "ticker": "AAL",
+      "vintage_year": 2017,
+      "true_outcome": "disaster",
+      "features": {
+        "market_position": "strong",
+        "moat_type": "scale_economies",
+        "moat_strength": "narrow",
+        "market_quality": "cyclical",
+        "leadership_quality": "3.0",
+        "capital_allocation": "3.0",
+        "strategic_clarity": "4.0",
+        "execution_track_record": "3.0",
+        "founder_still_ceo": "(missing)",
+        "sector": "(missing)",
+        "valuation_bucket": "cheap",
+        "growth_bucket": "(missing)",
+        "leverage_bucket": "moderate",
+        "profitability_bucket": "high",
+        "momentum_bucket": "neutral",
+        "volatility_bucket": "medium"
+      },
+      "flat_nb_proba": {
+        "disaster": 0.0362,
+        "poor": 0.6307,
+        "market": 0.2371,
+        "good": 0.0639,
+        "great": 0.032
+      },
+      "clustered_aggressive_proba": {
+        "disaster": 0.175,
+        "poor": 0.3149,
+        "market": 0.3008,
+        "good": 0.1612,
+        "great": 0.0481
+      }
+    },
+    {
+      "ticker": "MMM",
+      "vintage_year": 2017,
+      "true_outcome": "market",
+      "features": {
+        "market_position": "strong",
+        "moat_type": "scale_economies",
+        "moat_strength": "wide",
+        "market_quality": "stable",
+        "leadership_quality": "4.0",
+        "capital_allocation": "4.0",
+        "strategic_clarity": "4.0",
+        "execution_track_record": "4.0",
+        "founder_still_ceo": "(missing)",
+        "sector": "Industrials",
+        "valuation_bucket": "cheap",
+        "growth_bucket": "moderate",
+        "leverage_bucket": "moderate",
+        "profitability_bucket": "high",
+        "momentum_bucket": "neutral",
+        "volatility_bucket": "low"
+      },
+      "flat_nb_proba": {
+        "disaster": 0.0,
+        "poor": 0.0051,
+        "market": 0.1943,
+        "good": 0.679,
+        "great": 0.1217
+      },
+      "clustered_aggressive_proba": {
+        "disaster": 0.0003,
+        "poor": 0.0145,
+        "market": 0.1249,
+        "good": 0.419,
+        "great": 0.4412
+      }
+    },
+    {
+      "ticker": "CHK",
+      "vintage_year": 2014,
+      "true_outcome": "disaster",
+      "features": {
+        "market_position": "strong",
+        "moat_type": "scale_economies",
+        "moat_strength": "narrow",
+        "market_quality": "cyclical",
+        "leadership_quality": "3.0",
+        "capital_allocation": "3.0",
+        "strategic_clarity": "4.0",
+        "execution_track_record": "3.0",
+        "founder_still_ceo": "(missing)",
+        "sector": "Energy",
+        "valuation_bucket": "(missing)",
+        "growth_bucket": "high",
+        "leverage_bucket": "moderate",
+        "profitability_bucket": "negative",
+        "momentum_bucket": "(missing)",
+        "volatility_bucket": "(missing)"
+      },
+      "flat_nb_proba": {
+        "disaster": 0.9995,
+        "poor": 0.0004,
+        "market": 0.0001,
+        "good": 0.0,
+        "great": 0.0
+      },
+      "clustered_aggressive_proba": {
+        "disaster": 0.9672,
+        "poor": 0.0183,
+        "market": 0.0066,
+        "good": 0.0046,
+        "great": 0.0033
+      }
+    },
+    {
+      "ticker": "WIN",
+      "vintage_year": 2014,
+      "true_outcome": "disaster",
+      "features": {
+        "market_position": "strong",
+        "moat_type": "scale_economies",
+        "moat_strength": "narrow",
+        "market_quality": "secular_growth",
+        "leadership_quality": "3.0",
+        "capital_allocation": "3.0",
+        "strategic_clarity": "4.0",
+        "execution_track_record": "3.0",
+        "founder_still_ceo": "(missing)",
+        "sector": "Communication Services",
+        "valuation_bucket": "(missing)",
+        "growth_bucket": "high",
+        "leverage_bucket": "high",
+        "profitability_bucket": "solid",
+        "momentum_bucket": "(missing)",
+        "volatility_bucket": "(missing)"
+      },
+      "flat_nb_proba": {
+        "disaster": 0.9956,
+        "poor": 0.0023,
+        "market": 0.0014,
+        "good": 0.0002,
+        "great": 0.0005
+      },
+      "clustered_aggressive_proba": {
+        "disaster": 0.9009,
+        "poor": 0.0736,
+        "market": 0.0142,
+        "good": 0.0052,
+        "great": 0.0062
+      }
+    }
+  ],
+  "open_questions": [
+    "Nuance reformulation: encode within-cluster members so they refine the theme VALUE / disambiguate it, without adding a parallel outcome vote (the naive residual backfires).",
+    "Interpretability vs calibration: tight themes maximise accuracy, aggressive merging maximises calibration. Capture residual cross-singleton correlation (e.g. a Chow-Liu forest over leftovers, or multi-resolution themes) for the Pareto sweet spot.",
+    "Clustering criterion: NMI-floor is a pragmatic knob; consider a predictor-aware MDL (penalise the joint table's contribution to the PREDICTOR, not just the feature codebook) so the resolution is chosen, not tuned.",
+    "Semantic disambiguation: a value's meaning is cluster-context-dependent (`C` in {car,license,driver} vs {Java,C++,programming}); conditioning likelihoods on the cluster gives context-sensitive encoding \u2014 verify on a feature with polysemous values."
+  ],
+  "recommendation_for_aito_core": "Implement compression-based feature grouping in the predict path so correlated columns vote once per group. The clean theme-vote (beta=0) already cuts ECE 0.194\u21920.071 and overconfidence +19\u2192+7pt held-out. Prioritise getting the grouping + single-vote right; treat conditional nuance as a v2 once the refine-not-revote formulation is settled."
+}

@@ -46,3 +46,8 @@ dev = [
 
 [tool.uv]
 package = false
+
+[tool.pytest.ini_options]
+# Booktests in book/ are run by the `booktest` CLI (they take a TestCaseRun
+# arg pytest can't provide), so keep plain pytest scoped to tests/.
+testpaths = ["tests"]

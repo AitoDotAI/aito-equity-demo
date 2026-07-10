@@ -20,8 +20,8 @@
 #   ./do pipeline all         run every stage in order
 #
 #   ── Tests ────────────────────────────────────────────────────────────────
-#   ./do test                 run pytest (tests/ + book/)
-#   ./do test-book            run booktest snapshot tests only (book/)
+#   ./do test                 run pytest unit tests (tests/)
+#   ./do test-book            run booktest snapshot tests (book/); -a to accept
 #
 #   ── Visuals ──────────────────────────────────────────────────────────────
 #   ./do screenshot-teaser    render assets/teaser.html → assets/teaser.png (1200×630)
@@ -77,6 +77,9 @@ cmd_pipeline() {
     earnings-load)    uv run python -m pipeline.events.earnings_load "$@" ;;
     load)         uv run python -m pipeline.aito.load "$@" ;;
     precompute)   uv run python -m pipeline.aito.queries "$@" ;;
+    model-spec)   uv run python -m pipeline.model.export_spec "$@" ;;
+    model-eval)   uv run python -m pipeline.model.eval_aito "$@" ;;       # honest, masked (_evaluate)
+    model-eval-insample) uv run python -m pipeline.model.eval_live "$@" ;; # in-sample only (flatters)
     all)
       # Free, deterministic stages always run.
       say "universe"     && cmd_pipeline universe "$@"
@@ -110,7 +113,10 @@ cmd_pipeline() {
 }
 
 cmd_test()      { exec uv run pytest "$@"; }
-cmd_test_book() { exec uv run pytest book/ "$@"; }
+# Booktests run via the booktest CLI (pytest can't inject their TestCaseRun
+# arg). Flags: -v verbose · -a accept new/changed snapshots · -u update on
+# success · -i interactive review. e.g. `./do test-book -a` to accept.
+cmd_test_book() { exec uv run booktest "$@"; }
 
 cmd_screenshot_teaser() { uv run python -m scripts.screenshot_teaser "$@"; }
 cmd_screenshot_pages()  { uv run python -m scripts.screenshot_pages "$@"; }

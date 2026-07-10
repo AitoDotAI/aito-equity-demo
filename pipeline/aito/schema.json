@@ -18,6 +18,7 @@
         "sector":                       { "type": "String", "nullable": true },
         "industry":                     { "type": "String", "nullable": true },
         "market_cap_bucket":            { "type": "String", "nullable": true },
+        "eval_fold":                    { "type": "String", "nullable": true },
 
         "pe_ratio":                     { "type": "Decimal", "nullable": true },
         "pb_ratio":                     { "type": "Decimal", "nullable": true },

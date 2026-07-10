@@ -13,24 +13,28 @@ Run normally with:
     ./do test-book
 """
 
+import os
+
 import booktest as bt
 import httpx
-
-from src.config import load_config
+from dotenv import load_dotenv
 
 
 @bt.snapshot_httpx()
 def test_aito_schema(t: bt.TestCaseRun):
     """Fetch the schema and book the table list."""
-    config = load_config()
+    load_dotenv(override=True)
+    # The backend stub was purged; read the env contract directly (no src.config).
+    aito_url = os.environ.get("AITO_API_URL", "https://shared.aito.ai/db/aito-equity-demo")
+    aito_key = os.environ.get("AITO_API_KEY", "")
 
     t.h1("Aito schema")
-    t.tln(f"DB: `{config.aito_url}`")
+    t.tln(f"DB: `{aito_url}`")
     t.tln("")
 
     with httpx.Client(
-        base_url=config.aito_url,
-        headers={"x-api-key": config.aito_key, "content-type": "application/json"},
+        base_url=aito_url,
+        headers={"x-api-key": aito_key, "content-type": "application/json"},
         timeout=10.0,
     ) as client:
         r = client.get("/api/v1/schema")
