@@ -4,27 +4,263 @@
     "vintage": 2017,
     "name": "NVIDIA Corporation",
     "chip_label": "NVDA \u00b7 '17",
-    "short_name": "graphics, semiconductors"
+    "short_name": "graphics, semiconductors",
+    "forecast": false
   },
   {
     "ticker": "COST",
     "vintage": 2017,
     "name": "Costco Wholesale",
     "chip_label": "COST \u00b7 '17",
-    "short_name": "warehouse retail"
+    "short_name": "warehouse retail",
+    "forecast": false
   },
   {
     "ticker": "MMM",
     "vintage": 2017,
     "name": "3M Company",
     "chip_label": "MMM \u00b7 '17",
-    "short_name": "industrial conglomerate"
+    "short_name": "industrial conglomerate",
+    "forecast": false
   },
   {
     "ticker": "AAL",
     "vintage": 2017,
     "name": "American Airlines",
     "chip_label": "AAL \u00b7 '17",
-    "short_name": "airlines, cyclical"
+    "short_name": "airlines, cyclical",
+    "forecast": false
+  },
+  {
+    "ticker": "AAPL",
+    "vintage": 2026,
+    "name": "Apple Inc.",
+    "chip_label": "AAPL \u00b7 now",
+    "short_name": "consumer hardware",
+    "forecast": true
+  },
+  {
+    "ticker": "AMD",
+    "vintage": 2026,
+    "name": "Advanced Micro Devices",
+    "chip_label": "AMD \u00b7 now",
+    "short_name": "semiconductors",
+    "forecast": true
+  },
+  {
+    "ticker": "AMZN",
+    "vintage": 2026,
+    "name": "Amazon",
+    "chip_label": "AMZN \u00b7 now",
+    "short_name": "e-commerce, cloud",
+    "forecast": true
+  },
+  {
+    "ticker": "AVGO",
+    "vintage": 2026,
+    "name": "Broadcom",
+    "chip_label": "AVGO \u00b7 now",
+    "short_name": "semiconductors",
+    "forecast": true
+  },
+  {
+    "ticker": "BA",
+    "vintage": 2026,
+    "name": "Boeing",
+    "chip_label": "BA \u00b7 now",
+    "short_name": "aerospace, high debt",
+    "forecast": true
+  },
+  {
+    "ticker": "CCL",
+    "vintage": 2026,
+    "name": "Carnival Corporation",
+    "chip_label": "CCL \u00b7 now",
+    "short_name": "cruise line, high leverage",
+    "forecast": true
+  },
+  {
+    "ticker": "COST",
+    "vintage": 2026,
+    "name": "Costco",
+    "chip_label": "COST \u00b7 now",
+    "short_name": "warehouse retail",
+    "forecast": true
+  },
+  {
+    "ticker": "CRM",
+    "vintage": 2026,
+    "name": "Salesforce",
+    "chip_label": "CRM \u00b7 now",
+    "short_name": "enterprise SaaS",
+    "forecast": true
+  },
+  {
+    "ticker": "CVX",
+    "vintage": 2026,
+    "name": "Chevron Corporation",
+    "chip_label": "CVX \u00b7 now",
+    "short_name": "integrated oil",
+    "forecast": true
+  },
+  {
+    "ticker": "DAL",
+    "vintage": 2026,
+    "name": "Delta Air Lines",
+    "chip_label": "DAL \u00b7 now",
+    "short_name": "airline, cyclical",
+    "forecast": true
+  },
+  {
+    "ticker": "DUK",
+    "vintage": 2026,
+    "name": "Duke Energy",
+    "chip_label": "DUK \u00b7 now",
+    "short_name": "regulated utility",
+    "forecast": true
+  },
+  {
+    "ticker": "F",
+    "vintage": 2026,
+    "name": "Ford Motor Company",
+    "chip_label": "F \u00b7 now",
+    "short_name": "legacy autos, cyclical",
+    "forecast": true
+  },
+  {
+    "ticker": "FCX",
+    "vintage": 2026,
+    "name": "Freeport-McMoRan",
+    "chip_label": "FCX \u00b7 now",
+    "short_name": "copper mining, cyclical",
+    "forecast": true
+  },
+  {
+    "ticker": "GOOGL",
+    "vintage": 2026,
+    "name": "Alphabet Inc. (Class A)",
+    "chip_label": "GOOGL \u00b7 now",
+    "short_name": "search, ads, cloud",
+    "forecast": true
+  },
+  {
+    "ticker": "GS",
+    "vintage": 2026,
+    "name": "Goldman Sachs",
+    "chip_label": "GS \u00b7 now",
+    "short_name": "investment bank",
+    "forecast": true
+  },
+  {
+    "ticker": "JPM",
+    "vintage": 2026,
+    "name": "JPMorgan Chase",
+    "chip_label": "JPM \u00b7 now",
+    "short_name": "money-center bank",
+    "forecast": true
+  },
+  {
+    "ticker": "LLY",
+    "vintage": 2026,
+    "name": "Lilly (Eli)",
+    "chip_label": "LLY \u00b7 now",
+    "short_name": "pharma \u2014 GLP-1",
+    "forecast": true
+  },
+  {
+    "ticker": "META",
+    "vintage": 2026,
+    "name": "Meta Platforms",
+    "chip_label": "META \u00b7 now",
+    "short_name": "social, ads",
+    "forecast": true
+  },
+  {
+    "ticker": "MSFT",
+    "vintage": 2026,
+    "name": "Microsoft",
+    "chip_label": "MSFT \u00b7 now",
+    "short_name": "software, cloud",
+    "forecast": true
+  },
+  {
+    "ticker": "NEE",
+    "vintage": 2026,
+    "name": "NextEra Energy",
+    "chip_label": "NEE \u00b7 now",
+    "short_name": "utility \u2014 renewables",
+    "forecast": true
+  },
+  {
+    "ticker": "NFLX",
+    "vintage": 2026,
+    "name": "Netflix",
+    "chip_label": "NFLX \u00b7 now",
+    "short_name": "streaming",
+    "forecast": true
+  },
+  {
+    "ticker": "NVDA",
+    "vintage": 2026,
+    "name": "Nvidia",
+    "chip_label": "NVDA \u00b7 now",
+    "short_name": "AI accelerators",
+    "forecast": true
+  },
+  {
+    "ticker": "PLTR",
+    "vintage": 2026,
+    "name": "Palantir Technologies",
+    "chip_label": "PLTR \u00b7 now",
+    "short_name": "data analytics, expensive",
+    "forecast": true
+  },
+  {
+    "ticker": "SO",
+    "vintage": 2026,
+    "name": "Southern Company",
+    "chip_label": "SO \u00b7 now",
+    "short_name": "regulated utility",
+    "forecast": true
+  },
+  {
+    "ticker": "TSLA",
+    "vintage": 2026,
+    "name": "Tesla, Inc.",
+    "chip_label": "TSLA \u00b7 now",
+    "short_name": "EVs, expensive",
+    "forecast": true
+  },
+  {
+    "ticker": "UAL",
+    "vintage": 2026,
+    "name": "United Airlines Holdings",
+    "chip_label": "UAL \u00b7 now",
+    "short_name": "airline, cyclical",
+    "forecast": true
+  },
+  {
+    "ticker": "UNH",
+    "vintage": 2026,
+    "name": "UnitedHealth Group",
+    "chip_label": "UNH \u00b7 now",
+    "short_name": "managed care",
+    "forecast": true
+  },
+  {
+    "ticker": "V",
+    "vintage": 2026,
+    "name": "Visa Inc.",
+    "chip_label": "V \u00b7 now",
+    "short_name": "payments network",
+    "forecast": true
+  },
+  {
+    "ticker": "XOM",
+    "vintage": 2026,
+    "name": "ExxonMobil",
+    "chip_label": "XOM \u00b7 now",
+    "short_name": "integrated oil",
+    "forecast": true
   }
 ]

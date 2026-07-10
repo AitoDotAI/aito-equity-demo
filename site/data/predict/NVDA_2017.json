@@ -7,6 +7,7 @@
   "market_cap": "",
   "vintage_label": "January 2017",
   "window_label": "9-year",
+  "forecast": false,
   "grades": [
     {
       "label": "Market Position",
@@ -44,27 +45,112 @@
       {
         "label": "Disaster",
         "range": "< -63%",
-        "prob": 0.0932
+        "prob": 0.0831,
+        "why": {
+          "base_rate": 0.0616,
+          "factors": [
+            {
+              "label": "moat type: network effects + market position: dominant + market quality: secular growth",
+              "lift": 1.43
+            },
+            {
+              "label": "leadership quality: 4",
+              "lift": 0.73
+            },
+            {
+              "label": "moat strength: narrow",
+              "lift": 1.15
+            }
+          ]
+        }
       },
       {
         "label": "Poor",
         "range": "-63% to +0%",
-        "prob": 0.0639
+        "prob": 0.0603,
+        "why": {
+          "base_rate": 0.1186,
+          "factors": [
+            {
+              "label": "moat type: network effects + market position: dominant + market quality: secular growth",
+              "lift": 0.45
+            },
+            {
+              "label": "moat strength: narrow",
+              "lift": 1.12
+            },
+            {
+              "label": "leadership quality: 4",
+              "lift": 0.9
+            }
+          ]
+        }
       },
       {
         "label": "Market",
         "range": "+0% to +89%",
-        "prob": 0.0361
+        "prob": 0.0346,
+        "why": {
+          "base_rate": 0.2063,
+          "factors": [
+            {
+              "label": "moat type: network effects + market position: dominant + market quality: secular growth",
+              "lift": 0.14
+            },
+            {
+              "label": "moat strength: narrow",
+              "lift": 1.04
+            },
+            {
+              "label": "leadership quality: 4",
+              "lift": 1.03
+            }
+          ]
+        }
       },
       {
         "label": "Good",
         "range": "+89% to +215%",
-        "prob": 0.3542
+        "prob": 0.348,
+        "why": {
+          "base_rate": 0.3187,
+          "factors": [
+            {
+              "label": "moat type: network effects + market position: dominant + market quality: secular growth",
+              "lift": 0.97
+            },
+            {
+              "label": "moat strength: narrow",
+              "lift": 0.97
+            },
+            {
+              "label": "leadership quality: 4",
+              "lift": 1.03
+            }
+          ]
+        }
       },
       {
         "label": "Great",
         "range": ">= +215%",
-        "prob": 0.4526
+        "prob": 0.474,
+        "why": {
+          "base_rate": 0.2948,
+          "factors": [
+            {
+              "label": "moat type: network effects + market position: dominant + market quality: secular growth",
+              "lift": 1.47
+            },
+            {
+              "label": "moat strength: narrow",
+              "lift": 0.94
+            },
+            {
+              "label": "leadership quality: 4",
+              "lift": 1.03
+            }
+          ]
+        }
       }
     ]
   },

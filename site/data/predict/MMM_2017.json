@@ -7,6 +7,7 @@
   "market_cap": "",
   "vintage_label": "January 2017",
   "window_label": "9-year",
+  "forecast": false,
   "grades": [
     {
       "label": "Market Position",
@@ -44,27 +45,152 @@
       {
         "label": "Disaster",
         "range": "< -63%",
-        "prob": 0.0045
+        "prob": 0.0045,
+        "why": {
+          "base_rate": 0.0616,
+          "factors": [
+            {
+              "label": "moat strength: wide",
+              "lift": 0.16
+            },
+            {
+              "label": "market quality: stable",
+              "lift": 0.34
+            },
+            {
+              "label": "leadership quality: 4",
+              "lift": 0.73
+            },
+            {
+              "label": "moat type: scale economies",
+              "lift": 0.88
+            },
+            {
+              "label": "market position: strong",
+              "lift": 0.96
+            }
+          ]
+        }
       },
       {
         "label": "Poor",
         "range": "-63% to +0%",
-        "prob": 0.0485
+        "prob": 0.0487,
+        "why": {
+          "base_rate": 0.1186,
+          "factors": [
+            {
+              "label": "moat strength: wide",
+              "lift": 0.47
+            },
+            {
+              "label": "market quality: stable",
+              "lift": 0.86
+            },
+            {
+              "label": "leadership quality: 4",
+              "lift": 0.9
+            },
+            {
+              "label": "market position: strong",
+              "lift": 1.11
+            },
+            {
+              "label": "moat type: scale economies",
+              "lift": 1.03
+            }
+          ]
+        }
       },
       {
         "label": "Market",
         "range": "+0% to +89%",
-        "prob": 0.2448
+        "prob": 0.2467,
+        "why": {
+          "base_rate": 0.2063,
+          "factors": [
+            {
+              "label": "market quality: stable",
+              "lift": 1.28
+            },
+            {
+              "label": "moat strength: wide",
+              "lift": 0.81
+            },
+            {
+              "label": "market position: strong",
+              "lift": 1.07
+            },
+            {
+              "label": "leadership quality: 4",
+              "lift": 1.03
+            },
+            {
+              "label": "moat type: scale economies",
+              "lift": 1.03
+            }
+          ]
+        }
       },
       {
         "label": "Good",
         "range": "+89% to +215%",
-        "prob": 0.46
+        "prob": 0.4586,
+        "why": {
+          "base_rate": 0.3187,
+          "factors": [
+            {
+              "label": "market quality: stable",
+              "lift": 1.37
+            },
+            {
+              "label": "moat strength: wide",
+              "lift": 1.12
+            },
+            {
+              "label": "market position: strong",
+              "lift": 0.96
+            },
+            {
+              "label": "moat type: scale economies",
+              "lift": 0.96
+            },
+            {
+              "label": "leadership quality: 4",
+              "lift": 1.03
+            }
+          ]
+        }
       },
       {
         "label": "Great",
         "range": ">= +215%",
-        "prob": 0.2422
+        "prob": 0.2414,
+        "why": {
+          "base_rate": 0.2948,
+          "factors": [
+            {
+              "label": "market quality: stable",
+              "lift": 0.62
+            },
+            {
+              "label": "moat strength: wide",
+              "lift": 1.24
+            },
+            {
+              "label": "market position: strong",
+              "lift": 0.96
+            },
+            {
+              "label": "leadership quality: 4",
+              "lift": 1.03
+            },
+            {
+              "label": "moat type: scale economies",
+              "lift": 1.03
+            }
+          ]
+        }
       }
     ]
   },

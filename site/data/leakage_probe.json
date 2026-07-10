@@ -2,63 +2,64 @@
   "vintages": [
     2014,
     2017,
-    2020
+    2020,
+    2026
   ],
   "features": [
     {
       "feature": "leadership_quality = 5",
       "type": "qual",
       "per_vintage": {
-        "2014": 1.96,
-        "2017": 2.13,
-        "2020": 1.88
+        "2014": 2.01,
+        "2017": 2.14,
+        "2020": 1.87
       },
       "drift": 0.13,
-      "lift_mean": 1.99
+      "lift_mean": 2.01
     },
     {
       "feature": "execution_track_record = 5",
       "type": "qual",
       "per_vintage": {
-        "2014": 1.59,
-        "2017": 1.82,
-        "2020": 1.71
+        "2014": 1.63,
+        "2017": 1.83,
+        "2020": 1.7
       },
-      "drift": 0.13,
-      "lift_mean": 1.71
+      "drift": 0.12,
+      "lift_mean": 1.72
     },
     {
       "feature": "moat_type = network_effects",
       "type": "qual",
       "per_vintage": {
-        "2014": 1.67,
-        "2017": 1.74,
-        "2020": 1.39
+        "2014": 1.71,
+        "2017": 1.75,
+        "2020": 1.38
       },
-      "drift": 0.22,
-      "lift_mean": 1.6
+      "drift": 0.23,
+      "lift_mean": 1.61
     },
     {
       "feature": "moat_type = switching_costs",
       "type": "qual",
       "per_vintage": {
-        "2014": 1.3,
-        "2017": 1.53,
-        "2020": 1.69
+        "2014": 1.33,
+        "2017": 1.54,
+        "2020": 1.68
       },
-      "drift": 0.26,
-      "lift_mean": 1.51
+      "drift": 0.23,
+      "lift_mean": 1.52
     },
     {
       "feature": "strategic_clarity = 5",
       "type": "qual",
       "per_vintage": {
-        "2014": 1.3,
-        "2017": 1.19,
-        "2020": 1.36
+        "2014": 1.31,
+        "2017": 1.2,
+        "2020": 1.38
       },
-      "drift": 0.13,
-      "lift_mean": 1.28
+      "drift": 0.14,
+      "lift_mean": 1.3
     }
   ],
   "drift_score": 0.17,

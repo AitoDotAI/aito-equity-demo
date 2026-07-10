@@ -9,7 +9,7 @@
       "ticker": "AMAT",
       "vintage": 2014,
       "name": "Applied Materials",
-      "similarity": 2.166,
+      "similarity": 2.17,
       "description": "The filing emphasizes large, proven platforms (\"most of Applied\u2019s existing products resulted from internal development\") and a broad installed-equipment and services footprint that benefit from scale and R&D depth, but also notes the need to \"continue to make substantial investments in RD&E\" and tha",
       "outcome": {
         "text": "+2804%",
@@ -21,7 +21,7 @@
       "ticker": "APTV",
       "vintage": 2014,
       "name": "Aptiv",
-      "similarity": 2.166,
+      "similarity": 2.17,
       "description": "The company repeatedly emphasizes its \"worldwide design and manufacturing footprint,\" \"126 major manufacturing facilities and 15 major technical centers,\" and a \"regional service model\" that enables it to serve global OEMs from low cost countries \u2014 i.e., scale and footprint advantages \u2014 but the fili",
       "outcome": {
         "text": "+23%",
@@ -33,7 +33,7 @@
       "ticker": "AVY",
       "vintage": 2014,
       "name": "Avery Dennison",
-      "similarity": 2.166,
+      "similarity": 2.17,
       "description": "The filing emphasizes \"technical knowledge and capital requirements\" that limit entry and highlights the company's \"relative size and scale of operations\" and distribution network as advantages, but it also lists strong competitors (e.g., 3M) indicating the advantage is real but contested.",
       "outcome": {
         "text": "+301%",
@@ -42,10 +42,22 @@
       }
     },
     {
+      "ticker": "CHK",
+      "vintage": 2014,
+      "name": "Chesapeake Energy",
+      "similarity": 2.17,
+      "description": "Competitive advantage is driven by scale: ~15 million net acres, ownership of ~45,400 wells and vertical integration into marketing, gathering, compression and oilfield services. However, the moat is contested \u2014 the company recorded large impairments and is sensitive to commodity prices (\"required t",
+      "outcome": {
+        "text": "bankrupt",
+        "window": "'14\u2192'26",
+        "sentiment": "negative"
+      }
+    },
+    {
       "ticker": "CLF",
       "vintage": 2014,
       "name": "Cleveland-Cliffs Inc.",
-      "similarity": 2.166,
+      "similarity": 2.17,
       "description": "Management emphasizes a strategy \"designed to achieve scale in the mining industry\" and to \"expand our seaborne iron ore production capabilities\" (Bloom Lake Phase II to \"reduce unit operating costs\"), which suggests a scale/cost advantage; however heavy price volatility, large goodwill and asset im",
       "outcome": {
         "text": "-51%",
@@ -57,22 +69,10 @@
       "ticker": "COF",
       "vintage": 2014,
       "name": "Capital One",
-      "similarity": 2.166,
+      "similarity": 2.17,
       "description": "Primary advantages appear to be scale (\"total loans held for investment of $205.9 billion, deposits of $212.5 billion\" and large acquisitions such as ING Direct which added $84.4 billion of deposits), providing distribution and funding benefits; however heavy regulatory scrutiny, recent consent orde",
       "outcome": {
         "text": "+209%",
-        "window": "'14\u2192'26",
-        "sentiment": "positive"
-      }
-    },
-    {
-      "ticker": "EMR",
-      "vintage": 2014,
-      "name": "Emerson Electric",
-      "similarity": 2.166,
-      "description": "Primary advantage is scale: roughly 230 manufacturing locations (about 155 outside the U.S.), broad global distribution channels and many well-known brands and integrated offerings (e.g., PlantWeb digital plant architecture). However the filing also warns markets are highly competitive and that \"som",
-      "outcome": {
-        "text": "+171%",
         "window": "'14\u2192'26",
         "sentiment": "positive"
       }

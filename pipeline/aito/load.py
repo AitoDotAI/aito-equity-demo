@@ -16,6 +16,7 @@ Needs AITO_API_URL + AITO_API_KEY in env (or .env).
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -80,6 +81,15 @@ def merge_pipeline_outputs(
     # constituents have no row in the current Wikipedia table). The EDGAR
     # ticker→title index, cached during the filings stage, covers most of them.
     universe = _backfill_company_names(universe)
+    universe = _backfill_delisted_metadata(universe)
+
+    # Deterministic company-grouped fold id (hashlib, NOT Python hash() which is
+    # salted per-process) for random cross-year evaluation: each company lands in
+    # one fold, so folds mix vintages without same-company train/test leakage.
+    # Used by `./do pipeline model-eval --random`; harmless to the demo.
+    universe["eval_fold"] = universe["ticker"].astype(str).map(
+        lambda t: str(int(hashlib.md5(t.encode()).hexdigest(), 16) % 5)
+    )
 
     out_csv.parent.mkdir(parents=True, exist_ok=True)
     universe.to_csv(out_csv, index=False)
@@ -132,6 +142,39 @@ def _smart_title(name: str) -> str:
         low = w.lower()
         out.append(low if low in small else w)
     return " ".join(out)
+
+
+# Point-in-time GICS sector + name for curated delisted names absent from
+# today's S&P table (they have no row in the current Wikipedia constituents,
+# so universe.csv leaves sector null). These are the wipeout cohort we grade
+# from their pre-bankruptcy 10-K; without sector they can't match sector-keyed
+# similarity queries. Sectors are the company's GICS classification at vintage.
+_DELISTED_META: dict[str, tuple[str, str]] = {
+    "FTR": ("Communication Services", "Frontier Communications"),
+    "WIN": ("Communication Services", "Windstream Holdings"),
+    "CHK": ("Energy", "Chesapeake Energy"),
+    "DNR": ("Energy", "Denbury Resources"),
+    "DO": ("Energy", "Diamond Offshore Drilling"),
+    "NE": ("Energy", "Noble Corporation"),
+    "ESV": ("Energy", "Ensco"),
+    "RDC": ("Energy", "Rowan Companies"),
+    "BTU": ("Energy", "Peabody Energy"),
+}
+
+
+def _backfill_delisted_metadata(df: pd.DataFrame) -> pd.DataFrame:
+    """Fill sector (and name) for curated delisted names the live S&P table drops."""
+    filled = 0
+    for tk, (sector, name) in _DELISTED_META.items():
+        mask = (df["ticker"] == tk) & (df["sector"].isna() | (df["sector"].astype(str).str.strip() == ""))
+        if mask.any():
+            df.loc[mask, "sector"] = sector
+            nm = df["company_name"].isna() | (df["company_name"].astype(str).str.strip().isin(["", tk]))
+            df.loc[(df["ticker"] == tk) & nm, "company_name"] = name
+            filled += int(mask.sum())
+    if filled:
+        print(f"  backfilled sector for {filled} curated delisted rows")
+    return df
 
 
 def _backfill_company_names(df: pd.DataFrame) -> pd.DataFrame:

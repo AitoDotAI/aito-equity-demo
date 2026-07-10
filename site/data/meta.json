@@ -1,14 +1,17 @@
 {
-  "observations": 1520,
-  "graded_observations": 1192,
-  "outcome_observations": 1283,
+  "observations": 1549,
+  "graded_observations": 1231,
+  "outcome_observations": 1294,
   "features": 44,
-  "p50_latency_ms": 84,
+  "p50_latency_ms": 72,
   "training_runs": 0,
   "vintages": [
     2014,
     2017,
     2020
+  ],
+  "forecast_vintages": [
+    2026
   ],
   "vintages_label": "3 vintage years",
   "window_years_default": 12,

@@ -138,6 +138,51 @@ class YFinancePriceSource:
 # ── CLI ─────────────────────────────────────────────────────────
 
 
+def apply_delisting_overrides(
+    df: pd.DataFrame,
+    overrides_csv: Path = Path(__file__).resolve().parent / "delistings.csv",
+) -> pd.DataFrame:
+    """Re-inject common-equity wipeouts that yfinance can't see (survivorship fix).
+
+    A Chapter 11 that cancels common stock leaves no post-delisting price, so
+    yfinance returns a NULL outcome and the row drops from every statistic —
+    biasing the study toward survivors. This overlays a curated table of
+    documented equity-zeroing events (see delistings.csv header), recomputing
+    window_years from vintage→delisting and re-bucketing at the true terminal
+    return (typically -100%). Returns the df with those rows corrected.
+    """
+    from pipeline.outcomes import bucket_for_return
+
+    if not overrides_csv.exists():
+        return df
+    ov = pd.read_csv(overrides_csv, comment="#")
+    if ov.empty:
+        return df
+
+    df = df.set_index(["ticker", "vintage_year"])
+    applied = 0
+    for o in ov.itertuples(index=False):
+        key = (o.ticker, int(o.vintage_year))
+        if key not in df.index:
+            continue
+        row = df.loc[key]
+        vintage = date.fromisoformat(str(row["vintage_date"]))
+        delist = date.fromisoformat(str(o.delisting_date))
+        window = max((delist - vintage).days / 365.25, 0.01)
+        ret = float(o.total_return_pct_local)
+        df.loc[key, "end_date"] = o.delisting_date
+        df.loc[key, "window_years"] = round(window, 2)
+        df.loc[key, "total_return_pct_local"] = ret
+        df.loc[key, "total_return_pct_usd"] = ret
+        df.loc[key, "survived_intact"] = False
+        df.loc[key, "terminal_event"] = o.terminal_event
+        df.loc[key, "outcome_bucket"] = bucket_for_return(ret, window)
+        applied += 1
+    df = df.reset_index()
+    print(f"  delisting overrides: applied {applied}/{len(ov)} curated wipeouts")
+    return df
+
+
 def main() -> None:
     """Read data/universe.csv → fetch outcomes → write data/outcomes.csv."""
     import argparse
@@ -185,7 +230,14 @@ def main() -> None:
 
     rows: list[dict] = []
     failed = 0
+    skipped_recent = 0
     for i, row in enumerate(universe_df.itertuples(index=False), 1):
+        # "Today" vintages have no realised long-horizon outcome yet — they're
+        # predict-only rows. Skip them so we never bucket a few-month window as
+        # if it were a 12-year outcome; they stay null after the merge.
+        if (as_of - date.fromisoformat(row.vintage_date)).days < 365:
+            skipped_recent += 1
+            continue
         if args.throttle > 0:
             time.sleep(args.throttle)
         try:
@@ -220,9 +272,11 @@ def main() -> None:
         if i % 25 == 0:
             print(f"  {i}/{len(universe_df)}")
 
+    out_df = apply_delisting_overrides(pd.DataFrame(rows))
+
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame(rows).to_csv(args.out, index=False)
-    print(f"→ {args.out} ({len(rows)} rows, {failed} failed)")
+    out_df.to_csv(args.out, index=False)
+    print(f"→ {args.out} ({len(out_df)} rows, {failed} failed, {skipped_recent} recent/predict-only skipped)")
 
 
 if __name__ == "__main__":

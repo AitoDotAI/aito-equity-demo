@@ -5,22 +5,22 @@
       "feature": "sector = Information Technology",
       "field": "sector",
       "type": "quant",
-      "lift": 2.32,
+      "lift": 2.34,
       "n": 116,
-      "lift_min": 2.17,
-      "lift_max": 2.47,
+      "lift_min": 2.16,
+      "lift_max": 2.54,
       "bar_pct": 46,
       "per_vintage": {
-        "2014": 2.47,
-        "2017": 2.35,
-        "2020": 2.17
+        "2014": 2.54,
+        "2017": 2.36,
+        "2020": 2.16
       }
     },
     {
       "feature": "capital_allocation = 5",
       "field": "capital_allocation",
       "type": "qual",
-      "lift": 2.1,
+      "lift": 2.12,
       "n": 8,
       "lift_min": null,
       "lift_max": null,
@@ -31,89 +31,89 @@
       "feature": "leadership_quality = 5",
       "field": "leadership_quality",
       "type": "qual",
-      "lift": 1.98,
+      "lift": 2.0,
       "n": 56,
-      "lift_min": 1.88,
-      "lift_max": 2.13,
+      "lift_min": 1.87,
+      "lift_max": 2.14,
       "bar_pct": 39,
       "per_vintage": {
-        "2014": 1.96,
-        "2017": 2.13,
-        "2020": 1.88
+        "2014": 2.01,
+        "2017": 2.14,
+        "2020": 1.87
       }
     },
     {
       "feature": "execution_track_record = 5",
       "field": "execution_track_record",
       "type": "qual",
-      "lift": 1.71,
+      "lift": 1.72,
       "n": 67,
-      "lift_min": 1.59,
-      "lift_max": 1.82,
+      "lift_min": 1.63,
+      "lift_max": 1.83,
       "bar_pct": 34,
       "per_vintage": {
-        "2014": 1.59,
-        "2017": 1.82,
-        "2020": 1.71
+        "2014": 1.63,
+        "2017": 1.83,
+        "2020": 1.7
       }
     },
     {
       "feature": "moat_type = network_effects",
       "field": "moat_type",
       "type": "qual",
-      "lift": 1.57,
+      "lift": 1.58,
       "n": 60,
-      "lift_min": 1.39,
-      "lift_max": 1.74,
+      "lift_min": 1.38,
+      "lift_max": 1.75,
       "bar_pct": 31,
       "per_vintage": {
-        "2014": 1.67,
-        "2017": 1.74,
-        "2020": 1.39
+        "2014": 1.71,
+        "2017": 1.75,
+        "2020": 1.38
       }
     },
     {
       "feature": "moat_type = switching_costs",
       "field": "moat_type",
       "type": "qual",
-      "lift": 1.56,
+      "lift": 1.57,
       "n": 80,
-      "lift_min": 1.3,
-      "lift_max": 1.69,
+      "lift_min": 1.33,
+      "lift_max": 1.68,
       "bar_pct": 31,
       "per_vintage": {
-        "2014": 1.3,
-        "2017": 1.53,
-        "2020": 1.69
+        "2014": 1.33,
+        "2017": 1.54,
+        "2020": 1.68
       }
     },
     {
       "feature": "sector = Industrials",
       "field": "sector",
       "type": "quant",
-      "lift": 1.48,
+      "lift": 1.49,
       "n": 157,
-      "lift_min": 1.45,
-      "lift_max": 1.51,
+      "lift_min": 1.44,
+      "lift_max": 1.52,
       "bar_pct": 29,
       "per_vintage": {
-        "2014": 1.48,
-        "2017": 1.51,
-        "2020": 1.45
+        "2014": 1.52,
+        "2017": 1.52,
+        "2020": 1.44
       }
     },
     {
       "feature": "sector = Consumer Discretionary",
       "field": "sector",
       "type": "quant",
-      "lift": 1.41,
+      "lift": 1.42,
       "n": 100,
       "lift_min": 1.24,
-      "lift_max": 1.64,
+      "lift_max": 1.65,
       "bar_pct": 28,
       "per_vintage": {
-        "2014": 1.38,
-        "2017": 1.64,
+        "2014": 1.41,
+        "2017": 1.65,
         "2020": 1.24
       }
     },
@@ -121,38 +121,39 @@
       "feature": "strategic_clarity = 5",
       "field": "strategic_clarity",
       "type": "qual",
-      "lift": 1.29,
-      "n": 201,
-      "lift_min": 1.19,
-      "lift_max": 1.36,
-      "bar_pct": 25,
+      "lift": 1.3,
+      "n": 203,
+      "lift_min": 1.2,
+      "lift_max": 1.38,
+      "bar_pct": 26,
       "per_vintage": {
-        "2014": 1.3,
-        "2017": 1.19,
-        "2020": 1.36
+        "2014": 1.31,
+        "2017": 1.2,
+        "2020": 1.38
       }
     },
     {
       "feature": "volatility_bucket = high",
       "field": "volatility_bucket",
       "type": "quant",
-      "lift": 1.29,
+      "lift": 1.3,
       "n": 73,
       "lift_min": 1.02,
-      "lift_max": 1.67,
+      "lift_max": 1.71,
       "bar_pct": 25,
       "per_vintage": {
-        "2014": 1.67,
-        "2017": 1.43,
+        "2014": 1.71,
+        "2017": 1.44,
         "2020": 1.02
       }
     }
   ],
-  "n_vintages": 3,
+  "n_vintages": 4,
   "vintages": [
     2014,
     2017,
-    2020
+    2020,
+    2026
   ],
   "pullquote_html": "Headline lifts from a single Aito <code style=\"font-family:'JetBrains Mono'\">_relate</code> query over the full corpus; whiskers show the exact per-vintage min-max range. Lifts that hold across vintages indicate the LLM grader is not leaking post-vintage knowledge into its features."
 }

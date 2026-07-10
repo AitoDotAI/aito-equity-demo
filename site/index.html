@@ -353,39 +353,65 @@
 
   /* ===== COMPANY PROFILE CARD ===== */
   .company-selector {
-    display: flex;
-    gap: 0;
-    border: 1px solid var(--rule);
-    border-radius: 2px;
-    background: var(--paper-2);
     margin-bottom: 28px;
-    overflow: hidden;
+  }
+
+  .chip-group-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+    font-weight: 600;
+    margin: 0 0 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .chip-group-label .hint {
+    font-family: 'Source Serif 4', serif;
+    font-size: 11px;
+    font-style: italic;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink-fade);
+    font-weight: 400;
+  }
+  .chip-group + .chip-group { margin-top: 18px; }
+
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
   }
 
   .company-chip {
-    flex: 1;
-    padding: 11px 14px;
-    border-right: 1px solid var(--rule);
+    padding: 7px 12px;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
     cursor: pointer;
     text-align: left;
-    background: transparent;
+    background: var(--paper-2);
     transition: all 0.15s;
   }
 
-  .company-chip:last-child { border-right: none; }
-
   .company-chip:hover {
     background: rgba(168, 134, 44, 0.08);
+    border-color: rgba(168, 134, 44, 0.4);
   }
 
   .company-chip.active {
     background: var(--ink);
+    border-color: var(--ink);
     color: var(--paper);
   }
 
+  .company-chip.forecast { border-style: dashed; }
+  .company-chip.forecast.active { border-style: solid; }
+
   .company-chip-ticker {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
     letter-spacing: 0.04em;
     color: var(--ink);
@@ -395,7 +421,7 @@
 
   .company-chip-name {
     font-family: 'Source Serif 4', serif;
-    font-size: 11px;
+    font-size: 10.5px;
     font-style: italic;
     color: var(--ink-fade);
     margin-top: 1px;
@@ -404,6 +430,24 @@
   .company-chip.active .company-chip-name {
     color: rgba(244, 237, 225, 0.65);
   }
+
+  /* "live forecast — outcome pending" banner on the prediction card */
+  .forecast-banner {
+    display: flex; align-items: center; gap: 10px;
+    border: 1px dashed rgba(168,134,44,0.5);
+    background: rgba(168,134,44,0.06);
+    padding: 9px 14px; margin-bottom: 18px;
+  }
+  .forecast-banner .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--gold); flex: none;
+    box-shadow: 0 0 0 3px rgba(168,134,44,0.18);
+  }
+  .forecast-banner .txt {
+    font-family: 'Source Serif 4', serif; font-size: 12.5px;
+    color: var(--ink); line-height: 1.4;
+  }
+  .forecast-banner .txt b { color: var(--gold); font-weight: 600; }
 
   /* ===== MAIN COMPANY CARD ===== */
   .profile-card {
@@ -577,7 +621,7 @@
 
   .outcome-bar {
     display: grid;
-    grid-template-columns: 90px 1fr 56px;
+    grid-template-columns: 90px 1fr 80px;
     gap: 14px;
     align-items: center;
   }
@@ -616,8 +660,71 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
     color: var(--paper);
-    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    white-space: nowrap;
   }
+
+  /* ===== $why explain affordance + popup ===== */
+  .why-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 15px; height: 15px; flex: none; padding: 0;
+    border: 1px solid rgba(168,134,44,0.5); border-radius: 50%;
+    background: transparent; color: var(--gold);
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; line-height: 1;
+    cursor: pointer; vertical-align: middle; transition: background 0.15s, color 0.15s;
+  }
+  .why-btn:hover { background: var(--gold); color: #1a1814; }
+  .why-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(12,10,8,0.72); backdrop-filter: blur(2px);
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+  }
+  .why-overlay[hidden] { display: none; }
+  .why-modal {
+    position: relative;
+    background: #1a1814; border: 1px solid rgba(168,134,44,0.35);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+    max-width: 460px; width: 100%; max-height: 84vh; overflow-y: auto;
+    padding: 26px 28px 22px;
+  }
+  .why-modal h4 {
+    font-family: 'Fraunces','Source Serif 4',serif; font-weight: 500;
+    font-size: 19px; color: var(--paper); margin: 0 0 2px;
+  }
+  .why-modal h4 .why-pct { color: var(--gold); font-style: italic; }
+  .why-base {
+    font-family: 'Source Serif 4',serif; font-size: 13px;
+    color: rgba(244,237,225,0.6); margin: 0 0 16px; padding-bottom: 14px;
+    border-bottom: 1px solid rgba(244,237,225,0.12);
+  }
+  .why-base b { color: rgba(244,237,225,0.85); font-weight: 600; }
+  .why-row {
+    display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center;
+    padding: 7px 0; border-bottom: 1px dotted rgba(244,237,225,0.09);
+  }
+  .why-row-label { font-family: 'Source Serif 4',serif; font-size: 13px; color: rgba(244,237,225,0.85); }
+  .why-lift {
+    font-family: 'JetBrains Mono',monospace; font-size: 12px; font-weight: 600;
+    padding: 2px 8px; border-radius: 2px; white-space: nowrap;
+  }
+  .why-lift.up   { color: #6fae6f; background: rgba(111,174,111,0.12); }
+  .why-lift.down { color: #c8624f; background: rgba(200,98,79,0.12); }
+  .why-lift.flat { color: rgba(244,237,225,0.5); background: rgba(244,237,225,0.06); }
+  .why-foot {
+    font-family: 'Source Serif 4',serif; font-size: 11.5px; line-height: 1.5;
+    color: rgba(244,237,225,0.5); margin: 16px 0 0; padding-top: 13px;
+    border-top: 1px solid rgba(244,237,225,0.12);
+  }
+  .why-foot code { font-family: 'JetBrains Mono',monospace; color: var(--aito-teal); font-size: 11px; }
+  .why-close {
+    position: absolute; top: 16px; right: 18px;
+    background: none; border: none; color: rgba(244,237,225,0.5);
+    font-size: 22px; line-height: 1; cursor: pointer;
+  }
+  .why-close:hover { color: var(--paper); }
 
   /* ===== RELATE / FEATURE IMPORTANCE ===== */
   .relate-grid {
@@ -1240,6 +1347,28 @@
   }
 
   /* ===== COMPANY LAB ===== */
+  .lab-presets { margin-bottom: 18px; }
+  .lab-presets-bar { display: flex; align-items: baseline; gap: 11px; flex-wrap: wrap; }
+  .lab-presets-label {
+    font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--ink-fade); font-weight: 600;
+  }
+  .lab-preset-select {
+    font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+    padding: 6px 28px 6px 11px; border: 1px solid var(--rule); border-radius: 2px;
+    background: var(--paper-2); color: var(--ink); cursor: pointer; min-width: 240px;
+  }
+  .lab-preset-select:hover { border-color: rgba(168,134,44,0.45); }
+  .lab-presets-hint {
+    font-family: 'Source Serif 4', serif; font-size: 11px; font-style: italic;
+    color: var(--ink-fade);
+  }
+  .lab-seeded-note {
+    font-family: 'Source Serif 4', serif; font-size: 12px; font-style: italic;
+    color: var(--ink-soft); margin: 8px 0 0;
+  }
+  .lab-seeded-note b { font-style: normal; color: var(--gold); font-weight: 600; }
+
   .lab-grid { display: grid; grid-template-columns: 300px 1fr; gap: 28px; align-items: start; }
   .lab-form { background: #fbf6ec; border: 1px solid var(--rule); padding: 18px 20px; position: sticky; top: 16px; }
   .lab-form-group { margin-bottom: 16px; }
@@ -1259,13 +1388,13 @@
   .lab-pred-n { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(244,237,225,0.6); }
   .lab-pred-n b { color: var(--paper); }
   .lab-bars { margin-top: 18px; display: flex; flex-direction: column; gap: 8px; }
-  .lab-bar { display: grid; grid-template-columns: 92px 1fr 50px; gap: 12px; align-items: center; }
+  .lab-bar { display: grid; grid-template-columns: 92px 1fr 74px; gap: 12px; align-items: center; }
   .lab-bar-lbl { font-family: 'Source Serif 4', serif; font-size: 12.5px; color: rgba(244,237,225,0.85); }
   .lab-bar-lbl em { font-style: italic; color: rgba(244,237,225,0.5); font-size: 10.5px; }
   .lab-bar-track { height: 13px; background: rgba(244,237,225,0.08); }
   .lab-bar-fill { height: 100%; background: var(--gold); transition: width 0.35s ease; }
   .lab-bar-fill.peak { background: linear-gradient(90deg, var(--gold), #d4a743); box-shadow: 0 0 12px rgba(168,134,44,0.4); }
-  .lab-bar-val { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--paper); text-align: right; }
+  .lab-bar-val { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--paper); display: flex; align-items: center; justify-content: flex-end; gap: 5px; white-space: nowrap; }
   .lab-pred-hint { margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(244,237,225,0.15); font-family: 'Source Serif 4', serif; font-style: italic; font-size: 12px; color: rgba(244,237,225,0.65); }
   .lab-pred-src { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: rgba(244,237,225,0.5); margin-top: 8px; }
   .lab-pred-src .pill { padding: 1px 6px; border-radius: 2px; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; }
@@ -1925,9 +2054,11 @@
         <div class="article-header">
           <div class="article-eyebrow">BUILD A COMPANY · WHAT WOULD THE ENGINE EXPECT?</div>
           <h1 class="article-title">Company <em>Lab</em></h1>
-          <p class="article-deck">Set any properties you like — leave the rest blank. The engine predicts from <em>whatever you give it</em>: no required fields, no retraining. Each constraint you add sharpens the forecast and pulls up the historical companies that matched.</p>
+          <p class="article-deck">Build a profile from scratch — or <em>start from a real company today</em>: its grades pre-set the knobs, and you can argue with any of them. Disagree the leadership's a 4? Drop it to 2 and watch the forecast move. The engine predicts from <em>whatever you give it</em>: no required fields, no retraining.</p>
           <div class="article-byline">live Aito <code style="font-family:'JetBrains Mono';font-size:12px;background:var(--paper-2);padding:1px 6px;">predict</code> + <code style="font-family:'JetBrains Mono';font-size:12px;background:var(--paper-2);padding:1px 6px;">similarity</code> on the companies table · partial profiles welcome</div>
         </div>
+
+        <div class="lab-presets" id="lab-presets"><!-- today's companies as starting points --></div>
 
         <div class="lab-grid">
           <div class="lab-form" id="lab-form"><!-- controls rendered by JS --></div>
@@ -2106,7 +2237,14 @@
           <div class="method-card">
             <div class="method-card-num">№ i</div>
             <h4>Point-in-time universe</h4>
-            <p>Constituents reconstructed from Wikipedia's historical S&P 500 edits as of January 1, 2014 / 2017 / 2020. Survivorship bias eliminated by tracking what happened to each constituent — including delistings, bankruptcies, acquisitions — not what is in the index today.</p>
+            <p>Constituents reconstructed from Wikipedia's historical S&P 500 edits as of January 1, 2014 / 2017 / 2020 — what an investor could actually have bought, not today's index. Each constituent is then tracked to its terminal state: still trading, acquired, or delisted.</p>
+          </div>
+
+          <div class="method-card">
+            <div class="method-card-num">№ i·b</div>
+            <h4>The survivorship trap — and where we still half-fall in</h4>
+            <p>The unit of analysis is a <em>snapshot</em>: grade a company from its filing at the vintage date, then observe what the position returned years later. A bankruptcy isn't a new data point — it's the <em>outcome</em> of a snapshot that already existed. The naïve study screens today's index and silently inherits the winners; we start from the point-in-time roster, so the Chesapeakes and Frontiers are present at vintage and graded from their pre-bankruptcy 10-K like any other name.</p>
+            <p>The leak is on the outcome side: our return source (yfinance) has <em>no price history after a stock is cancelled</em>, so a Chapter 11 that wipes out common holders returns null and would drop from every statistic — re-introducing the bias through the back door, this time hiding the <em>losers</em>. "Can't find the ticker → mark it gone" is the right instinct but unsafe alone: acquisitions vanish from the feed too, usually at a <em>premium</em>. So we resolve the <em>reason</em> a stock disappeared from its SEC record (Chapter 11 filing → common cancelled → booked at −100% from vintage to the filing date) and leave premium buyouts and take-unders to the price source. Scope is deliberately narrow — <strong>only confirmed equity-zeroing Chapter 11s</strong> (Frontier, Chesapeake, Windstream, Denbury, Diamond Offshore, Noble, Valaris, Rowan, Peabody). The disaster bucket now holds real −100% outcomes — but treat the absolute bankruptcy <em>rate</em> as a floor, not a census.</p>
           </div>
 
           <div class="method-card">
@@ -2483,6 +2621,58 @@
     { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
   ));
 
+  // ── $why explanation: parse Aito's tree (live path) + shared popup ──
+  function prettyField(n) { return String(n).replace(/_/g, ' ').trim(); }
+  function humanizeProp(prop) {
+    if (!prop || typeof prop !== 'object') return '';
+    if (prop['$and']) return prop['$and'].map(humanizeProp).filter(Boolean).join(' + ');
+    const parts = [];
+    for (const [field, cond] of Object.entries(prop)) {
+      if (field.startsWith('$')) continue;
+      if (cond && typeof cond === 'object' && '$has' in cond)
+        parts.push(`${prettyField(field)}: ${String(cond['$has']).replace(/_/g, ' ')}`);
+      else parts.push(prettyField(field));
+    }
+    return parts.join(' + ');
+  }
+  // Mirror of pipeline/aito/queries.py parse_why — flatten {base_rate, factors:[{label,lift}]}
+  function parseWhy(why) {
+    if (!why || typeof why !== 'object') return null;
+    let base = null; const factors = [];
+    (function walk(node) {
+      if (!node || typeof node !== 'object') return;
+      if (node.type === 'baseP') base = node.value;
+      else if (node.type === 'relatedPropositionLift') {
+        const label = humanizeProp(node.proposition);
+        if (label) factors.push({ label, lift: Math.round((node.value || 1) * 100) / 100 });
+      } else if (node.type === 'product') (node.factors || []).forEach(walk);
+    })(why);
+    if (base == null && !factors.length) return null;
+    factors.sort((a, b) => Math.abs(Math.log(b.lift || 1)) - Math.abs(Math.log(a.lift || 1)));
+    return { base_rate: base, factors };
+  }
+  function showWhy(label, prob, why) {
+    if (!why) return;
+    const ov = document.getElementById('why-overlay');
+    const liftCls = l => l >= 1.08 ? 'up' : (l <= 0.93 ? 'down' : 'flat');
+    const arrow = l => l >= 1.08 ? '↑' : (l <= 0.93 ? '↓' : '·');
+    const base = why.base_rate != null ? (why.base_rate * 100).toFixed(1) + '%' : '—';
+    document.getElementById('why-body').innerHTML = `
+      <button class="why-close" aria-label="close" onclick="hideWhy()">×</button>
+      <h4>Why <em>${esc(label)}</em> = <span class="why-pct">${(prob * 100).toFixed(1)}%</span></h4>
+      <p class="why-base">Base rate across all companies: <b>${base}</b> — then each property you set shifts it:</p>
+      ${why.factors.map(f => `<div class="why-row">
+        <div class="why-row-label">${esc(f.label)}</div>
+        <div class="why-lift ${liftCls(f.lift)}">×${f.lift.toFixed(2)} ${arrow(f.lift)}</div>
+      </div>`).join('')}
+      <p class="why-foot">Each multiplier is that property's <em>lift</em> — how much more (>1) or less (&lt;1) likely this outcome becomes given it. Aito combines them the Naive-Bayes way over the loaded data, so the final <code>$p</code> is the base rate adjusted by every lift together (not a literal product). Straight from one <code>_predict</code> query's <code>$why</code>.</p>`;
+    ov.hidden = false;
+  }
+  function hideWhy() { const ov = document.getElementById('why-overlay'); if (ov) ov.hidden = true; }
+  // registry so inline onclick can reach parsed why objects by id
+  const whyRegistry = {};
+  function showWhyById(id) { const w = whyRegistry[id]; if (w) showWhy(w.label, w.prob, w.why); }
+
   const pips = (filled, total = 5) => {
     let html = '<span class="grade-pip">';
     for (let i = 0; i < total; i++) html += `<span${i < filled ? ' class="on"' : ''}></span>`;
@@ -2512,21 +2702,27 @@
     if (byline) byline.textContent = `N = ${gradedN} graded observations · ${meta.vintages.length} vintage${meta.vintages.length === 1 ? '' : 's'} · target: outcome_bucket = great`;
 
     const companyByline = document.querySelector('[data-bind="company-byline"]');
-    if (companyByline) companyByline.textContent = `Demonstration · ${meta.vintages.join('/')} vintage${meta.vintages.length === 1 ? '' : 's'} · ${meta.window_years_default}-year forward window`;
+    if (companyByline) {
+      const fc = (meta.forecast_vintages || []).length ? ' + today (live forecast)' : '';
+      companyByline.textContent = `Demonstration · ${meta.vintages.join('/')} vintage${meta.vintages.length === 1 ? '' : 's'}${fc} · ${meta.window_years_default}-year forward window`;
+    }
   }
 
   // ── Render: company chips ───────────────────────────────────────
   function renderChips(companies, activeKey) {
     const el = document.getElementById('company-selector');
-    el.innerHTML = companies.map(c => {
+    // Company File shows the historical (outcome-known) names. "Today" companies
+    // live in the Company Lab, where their grades pre-seed the adjustable knobs.
+    const hist = companies.filter(c => !c.forecast);
+    el.innerHTML = `<div class="chip-row">${hist.map(c => {
       const key = `${c.ticker}_${c.vintage}`;
       return `<button class="company-chip${key === activeKey ? ' active' : ''}" data-focal="${esc(key)}">
         <div class="company-chip-ticker">${esc(c.chip_label)}</div>
         <div class="company-chip-name">${esc(c.short_name)}</div>
       </button>`;
-    }).join('');
-    el.querySelectorAll('.company-chip').forEach(chip => {
-      chip.addEventListener('click', () => loadFocal(chip.dataset.focal));
+    }).join('')}</div>`;
+    el.querySelectorAll('.company-chip').forEach(c => {
+      c.addEventListener('click', () => loadFocal(c.dataset.focal));
     });
   }
 
@@ -2540,8 +2736,8 @@
         </div>
         <div class="profile-vintage">
           <b>${esc(p.vintage_label)}</b>
-          vintage snapshot<br>
-          ${esc(p.window_label)} forward window
+          ${p.forecast ? 'snapshot · latest 10-K' : 'vintage snapshot'}<br>
+          ${p.forecast ? `${esc(p.window_label)} forward — pending` : `${esc(p.window_label)} forward window`}
         </div>
       </div>
       <div class="grades">
@@ -2556,18 +2752,25 @@
     `;
 
     document.getElementById('prediction-block').innerHTML = `
+      ${p.forecast ? `<div class="forecast-banner"><span class="dot"></span><span class="txt"><b>Live forecast.</b> This company's outcome isn't known yet — it's graded from its most recent 10-K and predicted against the 2014–2020 cohort whose outcomes we already have.</span></div>` : ''}
       <div class="prediction-head">
         <h3>aito.ai <em>predicts</em> · ${esc(p.window_label)} total return</h3>
         <div class="prediction-confidence">calibrated confidence · <b>${esc(p.prediction.confidence)}</b></div>
       </div>
       <div class="outcome-bars">
-        ${p.prediction.buckets.map(b => {
+        ${p.prediction.buckets.map((b, i) => {
           const pct = (b.prob * 100).toFixed(1);
           const peak = b.label === p.prediction.peak ? ' peak' : '';
+          let whyBtn = '';
+          if (b.why) {
+            const id = `cf-${esc(p.ticker)}-${i}`;
+            whyRegistry[id] = { label: b.label, prob: b.prob, why: b.why };
+            whyBtn = `<button class="why-btn" title="why this probability?" onclick="showWhyById('${id}')">?</button>`;
+          }
           return `<div class="outcome-bar">
             <div class="outcome-bar-label">${esc(b.label)} <em>${esc(b.range)}</em></div>
             <div class="outcome-bar-track"><div class="outcome-bar-fill${peak}" style="width: ${Math.max(1, b.prob * 100).toFixed(1)}%"></div></div>
-            <div class="outcome-bar-value">${pct}%</div>
+            <div class="outcome-bar-value">${pct}%${whyBtn}</div>
           </div>`;
         }).join('')}
       </div>
@@ -3052,7 +3255,65 @@
     { key: 'good', label: 'Good', range: '100–300%' },
     { key: 'great', label: 'Great', range: '300%+' },
   ];
-  const labState = { selected: {}, options: {}, bucketMeans: {}, timer: null };
+  const labState = { selected: {}, options: {}, bucketMeans: {}, timer: null, preset: null, presets: [], modified: false };
+
+  // The fields the Lab has knobs for — used when seeding from a real company.
+  const LAB_FIELDS = LAB_GROUPS.flatMap(g => g.fields.map(([f]) => f));
+
+  function renderLabPresets() {
+    const el = document.getElementById('lab-presets');
+    if (!el) return;
+    const ps = labState.presets;
+    if (!ps.length) { el.innerHTML = ''; return; }
+    const cur = labState.preset || '';
+    el.innerHTML = `
+      <div class="lab-presets-bar">
+        <label class="lab-presets-label" for="lab-preset-select">Start from a company today</label>
+        <select id="lab-preset-select" class="lab-preset-select">
+          <option value="">Blank — build from scratch</option>
+          ${ps.map(p => {
+            const key = `${p.ticker}_${p.vintage}`;
+            return `<option value="${esc(key)}"${key === cur ? ' selected' : ''}>${esc(p.ticker)} — ${esc(p.short_name || '')}</option>`;
+          }).join('')}
+        </select>
+        <span class="lab-presets-hint">graded from its latest 10-K · then adjust any knob you disagree with</span>
+      </div>
+      <div class="lab-seeded-note" id="lab-seeded-note"></div>`;
+    el.querySelector('#lab-preset-select').addEventListener('change', e => {
+      const v = e.target.value;
+      if (!v) { clearLab(); return; }
+      const i = v.lastIndexOf('_');
+      seedLabFromCompany(v.slice(0, i), parseInt(v.slice(i + 1), 10));
+    });
+  }
+
+  function clearLab() {
+    labState.selected = {};
+    labState.preset = null;
+    labState.modified = false;
+    renderLabPresets();
+    renderLabForm();
+    labPredict();
+  }
+
+  function seedLabFromCompany(ticker, vintage) {
+    const row = (universeState.all || []).find(r => r.ticker === ticker && Number(r.vintage_year) === vintage);
+    if (!row) return;
+    const sel = {};
+    let nFilled = 0;
+    LAB_FIELDS.forEach(f => {
+      const v = row[f];
+      if (v !== null && v !== undefined && v !== '') { sel[f] = String(v); nFilled++; }
+    });
+    labState.selected = sel;
+    labState.preset = `${ticker}_${vintage}`;
+    labState.modified = false;
+    renderLabPresets();
+    renderLabForm();
+    labPredict();
+    const note = document.getElementById('lab-seeded-note');
+    if (note) note.innerHTML = `Seeded <b>${esc(row.company_name || ticker)}</b> from its latest 10-K — ${nFilled} propert${nFilled===1?'y':'ies'} set. Change any knob to test your own view; clear to start blank.`;
+  }
 
   function labComputeOptionsAndMeans() {
     const rows = (universeState.all || []).filter(r => r.outcome_bucket);
@@ -3093,12 +3354,16 @@
       if (s.value === '') delete labState.selected[f];
       else labState.selected[f] = s.value;
       s.classList.toggle('set', s.value !== '');
+      // User diverged from the seeded grades — keep the dropdown on the
+      // company (it's the starting point) but flag that this is now their view.
+      if (labState.preset && !labState.modified) {
+        labState.modified = true;
+        const note = document.getElementById('lab-seeded-note');
+        if (note) note.innerHTML = 'Adjusted from the seeded grades — this is now <b>your own view</b>. Pick a different company to reseed.';
+      }
       labPredictDebounced();
     }));
-    document.getElementById('lab-reset').addEventListener('click', () => {
-      labState.selected = {};
-      renderLabForm(); labPredict();
-    });
+    document.getElementById('lab-reset').addEventListener('click', clearLab);
   }
 
   function labWhere() {
@@ -3121,15 +3386,15 @@
     const nSet = Object.keys(where).length;
     predEl.innerHTML = `<div class="lab-pred-src">querying Aito…</div>`;
 
-    let probs = {}, predSource = 'mock';
+    let probs = {}, why = {}, predSource = 'mock';
     try {
       const r = await fetch('./api/query', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kind: 'predict', body: { from: 'companies', where, predict: 'outcome_bucket' } }),
+        body: JSON.stringify({ kind: 'predict', body: { from: 'companies', where, predict: 'outcome_bucket', select: ['feature', '$p', '$why'] } }),
       });
       const p = await r.json();
       predSource = p.source || 'aito';
-      (p.result?.hits || []).forEach(h => { probs[h.feature] = h['$p']; });
+      (p.result?.hits || []).forEach(h => { probs[h.feature] = h['$p']; if (h['$why']) why[h.feature] = parseWhy(h['$why']); });
     } catch (e) { /* fall through to empty */ }
     if (!Object.keys(probs).length) {
       // fallback: base rate from the universe data
@@ -3151,10 +3416,16 @@
         ${LAB_BUCKETS.map(b => {
           const pv = probs[b.key] || 0;
           const w = (pv / maxP) * 100;
+          let whyBtn = '';
+          if (why[b.key]) {
+            const id = `lab-${b.key}`;
+            whyRegistry[id] = { label: b.label, prob: pv, why: why[b.key] };
+            whyBtn = `<button class="why-btn" title="why this probability?" onclick="showWhyById('${id}')">?</button>`;
+          }
           return `<div class="lab-bar">
             <div class="lab-bar-lbl">${b.label} <em>${b.range}</em></div>
             <div class="lab-bar-track"><div class="lab-bar-fill${b.key===peak.key?' peak':''}" style="width:${w.toFixed(1)}%"></div></div>
-            <div class="lab-bar-val">${(pv*100).toFixed(1)}%</div>
+            <div class="lab-bar-val">${(pv*100).toFixed(1)}%${whyBtn}</div>
           </div>`;
         }).join('')}
       </div>
@@ -3180,24 +3451,27 @@
     const top = hits.slice(0, 6);
     const rets = top.map(h => h.total_return_pct_local);
     const avg = rets.reduce((a, c) => a + c, 0) / rets.length;
+    const anyBankrupt = top.some(h => h.terminal_event === 'bankrupt');
     el.innerHTML = `
       <div class="lab-similar-label">Closest historical analogues</div>
       <div class="lab-sim-grid">
         ${top.map(h => {
           const ret = h.total_return_pct_local;
-          const cls = ret >= 0 ? '' : 'red';
+          const bankrupt = h.terminal_event === 'bankrupt';
+          const tag = bankrupt ? ` <span title="common stock cancelled in Chapter 11" style="color:var(--red);font-weight:700;">✝</span>` : '';
           return `<div class="lab-sim">
-            <h4>${esc(h.company_name || h.ticker)}</h4>
+            <h4>${esc(h.company_name || h.ticker)}${tag}</h4>
             <div class="lab-sim-meta">${esc(h.ticker)} · '${String(h.vintage_year).slice(2)} · sim ${(h['$score']||0).toFixed(2)}</div>
             <div class="lab-sim-outcome"><span class="bucket-chip ${esc(h.outcome_bucket)}">${esc(h.outcome_bucket)}</span> <b style="color:${ret>=0?'var(--green)':'var(--red)'}">${ret>=0?'+':''}${ret.toFixed(0)}%</b></div>
           </div>`;
         }).join('')}
       </div>
-      <div class="lab-sim-avg">These ${top.length} closest matches averaged <b>${avg>=0?'+':''}${avg.toFixed(0)}%</b> over the window.</div>`;
+      <div class="lab-sim-avg">These ${top.length} closest matches averaged <b>${avg>=0?'+':''}${avg.toFixed(0)}%</b> over the window.${anyBankrupt ? ` <span style="color:var(--ink-fade);">✝ = common cancelled in Chapter 11, booked at −100%. Only documented equity wipeouts are re-injected; other delistings (premium buyouts) sit in the price record. See <em>On Methodology № i·b</em>.</span>` : ''}</div>`;
   }
 
   function renderLab() {
     labComputeOptionsAndMeans();
+    renderLabPresets();
     renderLabForm();
     labPredict();
   }
@@ -3824,6 +4098,8 @@ However, citing a more cautious consumer environment and rising input costs, the
       renderNews(news);
       renderEarningsSignals(earningsSignals);
       setupPredictBox();
+      // "Today" companies become Lab presets (seed the knobs from their grades).
+      labState.presets = companies.filter(c => c.forecast);
       renderLab();   // after renderUniverse (uses universe data for options + bucket means)
       setupConsole();
 
@@ -3837,6 +4113,16 @@ However, citing a more cautious consumer environment and rising input costs, the
       );
     }
   })();
+
+  // $why popup mount point
+  document.body.insertAdjacentHTML('beforeend',
+    '<div class="why-overlay" id="why-overlay" hidden><div class="why-modal" id="why-body"></div></div>');
+
+  // Dismiss the $why popup on backdrop click or Escape.
+  document.getElementById('why-overlay').addEventListener('click', e => {
+    if (e.target.id === 'why-overlay') hideWhy();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') hideWhy(); });
 </script>
 
 </body>

@@ -41,6 +41,23 @@ TICKER_CIK_URL = "https://www.sec.gov/files/company_tickers.json"
 SUBMISSIONS_URL = "https://data.sec.gov/submissions/CIK{cik:010d}.json"
 ARCHIVES_URL = "https://www.sec.gov/Archives/edgar/data/{cik}/{accession}/{file}"
 
+# Delisted tickers drop out of SEC's current company_tickers.json, so the
+# ticker→CIK index can't resolve them. These are companies that went through
+# Chapter 11 (common cancelled) but were live and filing at their vintage —
+# we still want to grade their pre-bankruptcy 10-K. CIKs verified against
+# data.sec.gov/submissions (the entity that filed the relevant 10-K).
+CIK_OVERRIDES: dict[str, int] = {
+    "FTR": 20520,    # Frontier Communications
+    "CHK": 895126,   # Chesapeake Energy (now Expand Energy)
+    "WIN": 1282266,  # Windstream Holdings
+    "DNR": 945764,   # Denbury Resources
+    "DO": 949039,    # Diamond Offshore Drilling
+    "NE": 1458891,   # Noble Corp (drilling — not Noble Energy)
+    "ESV": 314808,   # Ensco (now Valaris)
+    "RDC": 85408,    # Rowan Companies plc
+    "BTU": 1064728,  # Peabody Energy
+}
+
 # SEC's documented limit is 10 req/s. We stay well under to be polite and
 # avoid throttling under burst.
 THROTTLE_SECONDS = 0.15
@@ -130,6 +147,12 @@ class EDGARFetcher:
     # ── CIK lookup ───────────────────────────────────────────────
 
     def _cik_for(self, ticker: str) -> tuple[int | None, str]:
+        # Overrides win: these tickers were either dropped from the current
+        # index (delisted) or REUSED by a different company (e.g. NE → the
+        # 2022 re-listed Noble plc), so the live index would resolve the wrong
+        # entity. Our vintages predate every reuse, so the override is correct.
+        if ticker in CIK_OVERRIDES:
+            return CIK_OVERRIDES[ticker], ""
         if self._ticker_to_cik is None:
             self._ticker_to_cik = self._load_ticker_index()
         if ticker in self._ticker_to_cik:

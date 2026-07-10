@@ -60,7 +60,11 @@ def load_cik_index() -> dict[str, int]:
     if not TICKER_INDEX.exists():
         raise RuntimeError(f"{TICKER_INDEX} missing — run `./do pipeline filings` first")
     idx = json.loads(TICKER_INDEX.read_text(encoding="utf-8"))
-    return {v["ticker"]: int(v["cik_str"]) for v in idx.values()}
+    out = {v["ticker"]: int(v["cik_str"]) for v in idx.values()}
+    # Delisted / ticker-reused names absent from (or wrong in) the current index.
+    from pipeline.filings.edgar import CIK_OVERRIDES
+    out.update(CIK_OVERRIDES)
+    return out
 
 
 def fetch_companyfacts(cik: int, client: httpx.Client) -> dict | None:
@@ -171,7 +175,14 @@ def _revenue_n_years_before(facts: dict, cutoff: date, years_back: int) -> tuple
 
 
 def compute_fundamentals(facts: dict, vintage_date: date) -> dict:
-    rev = _value_at(facts, CONCEPTS["revenue"], vintage_date)
+    # Revenue tags drift (a company switches from e.g. "Revenues" to
+    # "RevenueFromContractWithCustomerExcludingAssessedTax" post-ASC 606). The
+    # plain first-concept lookup can lock onto a deprecated tag whose latest
+    # point is years stale (NVDA: 26.9B@FY22 vs the real 130.5B@FY25), which
+    # also poisons margins and makes CAGR collapse to ~0. Resolve revenue from
+    # the merged-across-tags points, the same source the CAGR uses.
+    rev_latest = _latest_before(_revenue_points(facts), vintage_date)
+    rev = float(rev_latest["val"]) if rev_latest and rev_latest.get("val") is not None else None
     ni = _value_at(facts, CONCEPTS["net_income"], vintage_date)
     gp = _value_at(facts, CONCEPTS["gross_profit"], vintage_date)
     oi = _value_at(facts, CONCEPTS["operating_income"], vintage_date)

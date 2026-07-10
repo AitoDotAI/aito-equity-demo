@@ -9,7 +9,7 @@
       "ticker": "AKAM",
       "vintage": 2017,
       "name": "Akamai Technologies",
-      "similarity": 5.409,
+      "similarity": 5.301,
       "description": "The company highlights its Akamai Intelligent Platform that can \"constantly monitor Internet conditions\" and leverage distributed servers and traffic data to identify threats and optimize routing \u2014 a data-driven network effect \u2014 however the filing also notes pricing pressure, customers taking \"do-it",
       "outcome": {
         "text": "+116%",
@@ -21,7 +21,7 @@
       "ticker": "INTU",
       "vintage": 2014,
       "name": "Intuit",
-      "similarity": 5.175,
+      "similarity": 5.063,
       "description": "The company emphasizes \u201cCreating network effect platforms\u201d and describes QuickBooks Online as open to third\u2011party developers and data leverage (\u201cUsing data to create delight\u201d), with 50 million customers and growing connected services (64% of revenue) creating reinforcing platform and data advantages",
       "outcome": {
         "text": "+365%",
@@ -33,7 +33,7 @@
       "ticker": "CRM",
       "vintage": 2017,
       "name": "Salesforce",
-      "similarity": 5.175,
+      "similarity": 5.063,
       "description": "The company emphasizes a single platform and ecosystem strategy\u2014\"encouraging the development of third-party applications on our cloud computing platforms,\" AppExchange and developer tools and a multi-tenant architecture\u2014creating reinforcing platform and partner dynamics that support a durable advant",
       "outcome": {
         "text": "+162%",
@@ -45,7 +45,7 @@
       "ticker": "INTU",
       "vintage": 2017,
       "name": "Intuit",
-      "similarity": 5.175,
+      "similarity": 5.063,
       "description": "The filing emphasizes a platform and ecosystem approach (\"QuickBooks Online Ecosystem\", third-party apps, QuickBooks ProAdvisor Program) and explicitly calls out \"Creating network effect platforms \u2013 we call it 'Enabling the contributions of others,'\" which creates reinforcing dynamics across custome",
       "outcome": {
         "text": "+194%",
@@ -57,7 +57,7 @@
       "ticker": "CRM",
       "vintage": 2020,
       "name": "Salesforce",
-      "similarity": 5.175,
+      "similarity": 5.063,
       "description": "The primary defensible asset is the platform and ecosystem: the Customer Success Platform, AppExchange and third\u2011party developer ecosystem (the filing cites \"third\u2011party developers\u2019 willingness to develop applications on our platforms\" and that \"most of our service offerings operate on a single cust",
       "outcome": {
         "text": "+11%",
@@ -69,7 +69,7 @@
       "ticker": "AAPL",
       "vintage": 2020,
       "name": "Apple Inc.",
-      "similarity": 4.798,
+      "similarity": 4.695,
       "description": "The filing highlights growing Services (up 16% to $46,291 million) driven by the App Store, licensing and AppleCare and describes bundled product-related services and software upgrade rights that are deferred and recognized over time \u2014 evidence of an installed\u2011base ecosystem and platform/network eff",
       "outcome": {
         "text": "+342%",

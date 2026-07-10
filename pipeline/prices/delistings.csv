@@ -1,0 +1,37 @@
+# Curated terminal-value overrides for common-equity wipeouts.
+#
+# WHY THIS FILE EXISTS — survivorship bias.
+# Our forward-return source (yfinance) has no price history after a stock is
+# delisted, so a Chapter 11 that wipes out common shareholders shows up as a
+# NULL outcome and silently drops from every statistic. That biases the whole
+# study upward: the disaster bucket ends up containing only survivors that fell
+# hard (worst ≈ -96%), never the positions that actually went to zero.
+#
+# This table re-injects the high-confidence cases. Scope is deliberately
+# narrow: only Chapter 11 reorganisations / liquidations where the OLD common
+# stock was cancelled or reduced to a negligible stub (creditors took the new
+# equity). Premium acquisitions (GGP→Brookfield), below-market take-unders
+# (SCANA→Dominion) and spin-offs are NOT here — those aren't zeroing events and
+# yfinance usually captures their terminal price anyway.
+#
+# total_return_pct_local = -100.0 means common was wiped. A few cases left a
+# token recovery (warrants / litigation trusts); we still book -100 because the
+# position as held at the vintage was extinguished. Conservative by design.
+#
+# delisting_date drives window_years (vintage -> delisting) so the CAGR-based
+# bucketer sees the true (short, catastrophic) holding period.
+#
+# Sources: SEC 8-K item 1.03 (bankruptcy) + 3.01 (delisting) filings, exchange
+# delisting notices. Each row is a documented common-equity cancellation.
+ticker,vintage_year,delisting_date,terminal_event,total_return_pct_local,note
+FTR,2014,2020-04-14,bankrupt,-100.0,Frontier Communications Ch11 2020-04; common cancelled
+FTR,2017,2020-04-14,bankrupt,-100.0,Frontier Communications Ch11 2020-04; common cancelled
+CHK,2014,2020-06-28,bankrupt,-100.0,Chesapeake Energy Ch11 2020-06; common cancelled
+CHK,2017,2020-06-28,bankrupt,-100.0,Chesapeake Energy Ch11 2020-06; common cancelled
+WIN,2014,2019-02-25,bankrupt,-100.0,Windstream Holdings Ch11 2019-02; common cancelled
+DNR,2014,2020-07-30,bankrupt,-100.0,Denbury Resources Ch11 2020-07; common cancelled
+DO,2014,2020-04-26,bankrupt,-100.0,Diamond Offshore Ch11 2020-04; common cancelled
+NE,2014,2020-07-31,bankrupt,-100.0,Noble Corporation Ch11 2020-07; common cancelled
+ESV,2014,2020-08-19,bankrupt,-100.0,Ensco/Valaris Ch11 2020-08; common cancelled
+RDC,2014,2020-08-19,bankrupt,-100.0,Rowan (merged into Valaris) Ch11 2020-08; common cancelled
+BTU,2014,2016-04-13,bankrupt,-100.0,Peabody Energy Ch11 2016-04; pre-emergence common cancelled

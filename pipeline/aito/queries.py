@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import time
 from dataclasses import dataclass
 from datetime import date
@@ -39,6 +40,7 @@ class Focal:
     name: str  # full legal/display name (h2 in profile card)
     chip_label: str
     short_name: str  # sector / subtitle text under the chip
+    forecast: bool = False  # True = "today" vintage, no realised outcome yet
 
 
 # Focal set for v1 (2017 vintage — the only vintage with LLM grades loaded).
@@ -51,6 +53,39 @@ FOCAL_COMPANIES: list[Focal] = [
     Focal(ticker="MMM", vintage=2017, name="3M Company", chip_label="MMM · '17", short_name="industrial conglomerate"),
     Focal(ticker="AAL", vintage=2017, name="American Airlines", chip_label="AAL · '17", short_name="airlines, cyclical"),
 ]
+
+# "Today" cohort (current vintage): predict-only — no realised outcome yet.
+# Short descriptors for the marquee names; others fall back to their sector.
+TODAY_DESCRIPTORS = {
+    "NVDA": "AI accelerators", "MSFT": "software, cloud", "AAPL": "consumer hardware",
+    "GOOGL": "search, ads, cloud", "AMZN": "e-commerce, cloud", "META": "social, ads",
+    "AVGO": "semiconductors", "LLY": "pharma — GLP-1", "COST": "warehouse retail",
+    "V": "payments network", "TSLA": "EVs, expensive", "PLTR": "data analytics, expensive",
+    "AMD": "semiconductors", "NFLX": "streaming", "CRM": "enterprise SaaS",
+    "XOM": "integrated oil", "CVX": "integrated oil", "FCX": "copper mining, cyclical",
+    "DAL": "airline, cyclical", "UAL": "airline, cyclical", "NEE": "utility — renewables",
+    "DUK": "regulated utility", "SO": "regulated utility", "JPM": "money-center bank",
+    "GS": "investment bank", "UNH": "managed care", "BA": "aerospace, high debt",
+    "CCL": "cruise line, high leverage", "F": "legacy autos, cyclical",
+}
+
+
+def _today_focals(companies_df: pd.DataFrame, vintage: int = 2026) -> list[Focal]:
+    """Build the 'today' focal set dynamically from whatever current-vintage
+    rows are loaded (predict-only — outcome is null by construction)."""
+    today = companies_df[companies_df["vintage_year"] == vintage]
+    focals = []
+    for _, r in today.sort_values("ticker").iterrows():
+        tk = str(r["ticker"])
+        focals.append(Focal(
+            ticker=tk, vintage=vintage,
+            name=str(r.get("company_name") or tk),
+            chip_label=f"{tk} · now",
+            short_name=TODAY_DESCRIPTORS.get(tk, str(r.get("sector") or "")),
+            forecast=True,
+        ))
+    return focals
+
 
 # Feature columns used to define a company's "profile" for similarity search.
 SIMILARITY_PROFILE_COLUMNS = [
@@ -87,7 +122,14 @@ def _measure_latency(client: AitoClient, body: dict, kind: str) -> tuple[dict, f
 
 
 def emit_meta(companies_df: pd.DataFrame, latency_samples: list[float], out_dir: Path) -> None:
-    vintages = sorted(set(int(v) for v in companies_df["vintage_year"].dropna()))
+    all_vintages = sorted(set(int(v) for v in companies_df["vintage_year"].dropna()))
+    # Analytical base = vintages that actually have realised outcomes. "Today"
+    # vintages are forecast-only and must not inflate the thesis/leakage stats.
+    outcome_vintages = sorted(
+        set(int(v) for v in companies_df.loc[companies_df["outcome_bucket"].notna(), "vintage_year"].dropna())
+    )
+    forecast_vintages = [v for v in all_vintages if v not in outcome_vintages]
+    vintages = outcome_vintages or all_vintages
     n_features = sum(
         1
         for c in companies_df.columns
@@ -120,6 +162,7 @@ def emit_meta(companies_df: pd.DataFrame, latency_samples: list[float], out_dir:
         "p50_latency_ms": p50_latency,
         "training_runs": 0,
         "vintages": vintages,
+        "forecast_vintages": forecast_vintages,
         "vintages_label": vintages_label,
         "window_years_default": window_default,
         "data_source_note": "S&P 500 historical constituents · SEC EDGAR · yfinance",
@@ -183,17 +226,17 @@ def emit_universe(companies_df: pd.DataFrame, out_dir: Path) -> None:
     (out_dir / "universe.json").write_text(json.dumps(payload), encoding="utf-8")
 
 
-def emit_companies(out_dir: Path) -> None:
-    payload = [
-        {
+def emit_companies(out_dir: Path, today_focals: list[Focal] | None = None) -> None:
+    def _entry(f: Focal) -> dict:
+        return {
             "ticker": f.ticker,
             "vintage": f.vintage,
             "name": f.name,
             "chip_label": f.chip_label,
             "short_name": f.short_name,
+            "forecast": f.forecast,
         }
-        for f in FOCAL_COMPANIES
-    ]
+    payload = [_entry(f) for f in FOCAL_COMPANIES] + [_entry(f) for f in (today_focals or [])]
     (out_dir / "companies.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
@@ -586,10 +629,11 @@ def emit_predict_per_focal(
     companies_df: pd.DataFrame,
     out_dir: Path,
     latency_samples: list[float],
+    focals: list[Focal] | None = None,
 ) -> None:
     predict_dir = out_dir / "predict"
     predict_dir.mkdir(parents=True, exist_ok=True)
-    for focal in FOCAL_COMPANIES:
+    for focal in (focals if focals is not None else FOCAL_COMPANIES):
         row = companies_df[
             (companies_df["ticker"] == focal.ticker)
             & (companies_df["vintage_year"] == focal.vintage)
@@ -606,11 +650,13 @@ def emit_predict_per_focal(
         if "founder_still_ceo" in r.index and pd.notna(r["founder_still_ceo"]):
             where["founder_still_ceo"] = bool(r["founder_still_ceo"])
 
-        body = {"from": COMPANIES_TABLE, "where": where, "predict": "outcome_bucket"}
+        body = {"from": COMPANIES_TABLE, "where": where, "predict": "outcome_bucket",
+                "select": ["feature", "$p", "$why"]}
         result, ms = _measure_latency(client, body, "predict")
         latency_samples.append(ms)
 
-        window_years = float(r.get("window_years") or 12)
+        wy = r.get("window_years")
+        window_years = float(wy) if pd.notna(wy) else 12.0  # forecasts: default 12-yr horizon
         buckets = _hits_to_buckets(result, window_years)
         peak = max(buckets, key=lambda b: b["prob"])["label"]
         payload = {
@@ -622,13 +668,19 @@ def emit_predict_per_focal(
             "market_cap": "",  # to be populated from a price-snapshot stage
             "vintage_label": pd.to_datetime(r["vintage_date"]).strftime("%B %Y"),
             "window_label": f"{int(window_years)}-year",
+            "forecast": focal.forecast,
             "grades": _build_grades(r),
             "prediction": {
                 "confidence": _classify_confidence(buckets),
                 "peak": peak,
                 "buckets": buckets,
             },
-            "pullquote": "Generated from a live Aito _predict query on the loaded data.",
+            "pullquote": (
+                "Live forecast — outcome unknown. Graded from this company's most recent 10-K, "
+                "predicted against the 2014–2020 cohort whose outcomes we already know."
+                if focal.forecast else
+                "Generated from a live Aito _predict query on the loaded data."
+            ),
             "pullquote_attr": "From the demo pipeline · auto-regenerated",
         }
         (predict_dir / f"{focal.ticker}_{focal.vintage}.json").write_text(
@@ -636,22 +688,84 @@ def emit_predict_per_focal(
         )
 
 
+def _pretty_field(name: str) -> str:
+    return str(name).replace("_", " ").strip()
+
+
+def _humanize_proposition(prop: dict) -> str:
+    """Turn an Aito $why proposition into a human label, e.g.
+    {"sector": {"$has": "Energy"}} → 'sector: Energy';
+    {"$and": [...]} → 'sector: Energy + market quality: cyclical'."""
+    if not isinstance(prop, dict):
+        return ""
+    if "$and" in prop:
+        return " + ".join(_humanize_proposition(p) for p in prop["$and"])
+    parts = []
+    for field, cond in prop.items():
+        if field.startswith("$"):
+            continue
+        if isinstance(cond, dict) and "$has" in cond:
+            val = str(cond["$has"]).replace("_", " ")
+            parts.append(f"{_pretty_field(field)}: {val}")
+        else:
+            parts.append(_pretty_field(field))
+    return " + ".join(parts)
+
+
+def parse_why(why: dict) -> dict | None:
+    """Flatten Aito's nested $why tree into {base_rate, factors:[{label, lift}]}.
+
+    The tree is a product of: a baseP (the bucket's unconditional rate), some
+    model-internal normalizers (skipped — they're tiny exclusiveness terms),
+    and one relatedPropositionLift per input feature (the multiplier we show).
+    """
+    if not isinstance(why, dict):
+        return None
+    base = {"v": None}
+    factors: list[dict] = []
+
+    def walk(node: dict) -> None:
+        if not isinstance(node, dict):
+            return
+        t = node.get("type")
+        if t == "baseP":
+            base["v"] = node.get("value")
+        elif t == "relatedPropositionLift":
+            label = _humanize_proposition(node.get("proposition", {}))
+            if label:
+                factors.append({"label": label, "lift": round(float(node.get("value", 1.0)), 2)})
+        elif t == "product":
+            for f in node.get("factors", []):
+                walk(f)
+
+    walk(why)
+    if base["v"] is None and not factors:
+        return None
+    # Most-influential first (largest absolute log-lift).
+    factors.sort(key=lambda f: abs(math.log(f["lift"])) if f["lift"] > 0 else 0, reverse=True)
+    return {"base_rate": round(float(base["v"]), 4) if base["v"] is not None else None, "factors": factors}
+
+
 def _hits_to_buckets(result: dict, window_years: float) -> list[dict]:
     """Normalise Aito's _predict response into the UI's bucket shape."""
     ranges = absolute_range_label(window_years)
     by_label = {}
+    why_by_label = {}
     for hit in result.get("hits", []):
         label = str(hit.get("feature") or hit.get("$value") or "").strip()
         prob = float(hit.get("$p") or hit.get("p") or 0.0)
         if label.lower() not in OUTCOME_BUCKET_LABELS:
             continue
         by_label[label.lower()] = prob
+        if "$why" in hit:
+            why_by_label[label.lower()] = parse_why(hit["$why"])
     order = ["disaster", "poor", "market", "good", "great"]
     return [
         {
             "label": OUTCOME_BUCKET_LABELS[k],
             "range": ranges.get(k, ""),
             "prob": round(by_label.get(k, 0.0), 4),
+            "why": why_by_label.get(k),
         }
         for k in order
     ]
@@ -722,11 +836,12 @@ def emit_match_per_focal(
     companies_df: pd.DataFrame,
     out_dir: Path,
     latency_samples: list[float],
+    focals: list[Focal] | None = None,
 ) -> None:
     match_dir = out_dir / "match"
     match_dir.mkdir(parents=True, exist_ok=True)
     end_year = date.today().year
-    for focal in FOCAL_COMPANIES:
+    for focal in (focals if focals is not None else FOCAL_COMPANIES):
         # Build the similarity proposition from the focal's FEATURE PROFILE, not
         # its identity — keying on {ticker, vintage} just matches the row to
         # itself and returns 1.0 ties for everything else. We want companies
@@ -776,6 +891,10 @@ def emit_match_per_focal(
             if str(hit.get("terminal_event", "")).lower() in ("acquired", "bankrupt", "delisted"):
                 outcome_text = str(hit["terminal_event"])
                 sentiment = "negative"
+            # Analogues are only useful if we know what happened to them — skip
+            # outcome-less rows (e.g. other "today" companies match each other).
+            if not outcome_text:
+                continue
             matches.append(
                 {
                     "ticker": ticker,
@@ -1006,6 +1125,12 @@ def precompute_all(out_dir: Path = SITE_DATA, static_only: bool = False) -> None
     companies_df = pd.read_csv("data/companies.csv")
     latency_samples: list[float] = []
 
+    # "Today" companies are explored interactively in the Company Lab (knobs
+    # pre-seeded from their grades), not as static Company File cards — so we
+    # don't precompute predict/match for them; the Lab does it live. We still
+    # list them in companies.json so the Lab can offer them as presets.
+    today_focals = _today_focals(companies_df)
+
     if not static_only:
         with AitoClient() as client:
             print("→ relate + leakage probe (per-vintage relate × 3)")
@@ -1031,7 +1156,7 @@ def precompute_all(out_dir: Path = SITE_DATA, static_only: bool = False) -> None
     print("→ meta")
     emit_meta(companies_df, latency_samples, out_dir)
     print("→ companies")
-    emit_companies(out_dir)
+    emit_companies(out_dir, today_focals)
     print("→ universe")
     emit_universe(companies_df, out_dir)
     print(f"✓ wrote JSON to {out_dir}/")
