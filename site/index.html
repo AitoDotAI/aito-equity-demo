@@ -1963,6 +1963,60 @@
     .content { padding: 32px 36px 60px; }
     .article-title { font-size: 34px; }
   }
+
+  /* ===== MOBILE (<=768px): single column + off-canvas nav drawer ===== */
+  @media (max-width: 768px) {
+    /* one column — only the main content is in flow */
+    .app,
+    .app.sidebar-collapsed,
+    .app.aito-collapsed,
+    .app.sidebar-collapsed.aito-collapsed { grid-template-columns: 1fr; }
+
+    /* left sidebar → off-canvas drawer, opened via the ☰ button */
+    .sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0;
+      width: 84vw; max-width: 300px; z-index: 100;
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      overflow-y: auto;
+      box-shadow: 6px 0 28px rgba(0, 0, 0, 0.45);
+    }
+    .app.nav-open .sidebar { transform: translateX(0); }
+    .app.nav-open::after {                 /* tap-to-close backdrop */
+      content: ''; position: fixed; inset: 0;
+      background: rgba(12, 10, 8, 0.5); z-index: 90;
+    }
+
+    /* right Aito panel is hidden on phones (its ◧ toggle too) */
+    .aito-panel { display: none; }
+    #toggleAito { display: none; }
+
+    /* tighter chrome */
+    .topbar { padding: 10px 16px; }
+    .content { padding: 22px 16px 56px; }
+    .article-header { margin-bottom: 20px; }
+    .article-title { font-size: 25px; }
+    .article-deck { font-size: 13.5px; line-height: 1.5; }
+    .breadcrumb { font-size: 12px; }
+
+    /* stack multi-column grids */
+    .grades,
+    .methodology-grid,
+    .similar-card,
+    .lab-sim-grid { grid-template-columns: 1fr; }
+
+    /* profile header stacks vertically */
+    .profile-head { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .profile-vintage { text-align: left; }
+
+    /* wide tables scroll inside their own box, never the page */
+    .universe-table-wrap { overflow-x: auto; }
+    table.universe-table { min-width: 640px; }
+
+    /* earnings-signal + factor rows: shrink fixed columns */
+    .esig-row, .esig-colhead { grid-template-columns: 92px 1fr 44px 44px; gap: 8px; }
+    .lab-bar { grid-template-columns: 84px 1fr 62px; gap: 10px; }
+  }
 </style>
 </head>
 <body>
@@ -2967,6 +3021,7 @@
     });
     breadcrumb.innerHTML = `The Study · <b>${viewTitles[v]}</b>`;
     document.querySelector('.main').scrollTop = 0;
+    document.getElementById('app').classList.remove('nav-open');  // close mobile drawer on select
   }
 
   nav.forEach(n => n.addEventListener('click', () => setView(n.dataset.view)));
@@ -2974,11 +3029,20 @@
 
   // ── Sidebar / Aito panel toggles ────────────────────────────────
   const app = document.getElementById('app');
+  const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
   document.getElementById('toggleSidebar').addEventListener('click', () => {
-    app.classList.toggle('sidebar-collapsed');
+    // on phones the ☰ opens the off-canvas drawer; on desktop it collapses the column
+    if (isMobile()) app.classList.toggle('nav-open');
+    else app.classList.toggle('sidebar-collapsed');
   });
   document.getElementById('toggleAito').addEventListener('click', () => {
     app.classList.toggle('aito-collapsed');
+  });
+  // tap the backdrop / content to close the mobile drawer
+  document.addEventListener('click', (e) => {
+    if (!app.classList.contains('nav-open')) return;
+    if (e.target.closest('.sidebar') || e.target.closest('#toggleSidebar')) return;
+    app.classList.remove('nav-open');
   });
 
   // ── Render: view 5 (universe) ───────────────────────────────────
