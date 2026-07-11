@@ -1,0 +1,172 @@
+{
+  "note": "Held-out via Aito _evaluate, which masks each test row from the model. Random cross-year 5-fold CV (companies grouped by ticker so no company appears in both train and test). These are the honest, leakage-free numbers \u2014 not in-sample.",
+  "n_graded": 1294,
+  "classes": [
+    "disaster",
+    "poor",
+    "market",
+    "good",
+    "great"
+  ],
+  "metrics_glossary": {
+    "accuracy": "share of held-out companies whose top-predicted bucket was correct",
+    "accuracy_gain": "accuracy above always guessing the most common bucket",
+    "information_gain": "bits the predicted probabilities beat the base rate (>0 good, <0 worse than base)",
+    "geom_mean_lift": "geometric-mean probability assigned to the true bucket vs base (>1 good)"
+  },
+  "headline": {
+    "feature_set": "calibrated",
+    "features": [
+      "sector",
+      "momentum_bucket",
+      "volatility_bucket",
+      "market_quality",
+      "valuation_bucket",
+      "moat_strength"
+    ],
+    "accuracy": 0.326,
+    "base_accuracy": 0.267,
+    "accuracy_gain": 0.059,
+    "information_gain": 0.139,
+    "geom_mean_lift": 1.102,
+    "mean_rank": 1.775,
+    "base_mean_rank": 1.915
+  },
+  "comparison": [
+    {
+      "label": "base rate",
+      "sub": "guess the most common bucket",
+      "accuracy": 0.267,
+      "information_gain": 0.0
+    },
+    {
+      "label": "calibrated features",
+      "sub": "6 decorrelated features",
+      "accuracy": 0.326,
+      "information_gain": 0.139
+    },
+    {
+      "label": "all 16 features",
+      "sub": "everything, incl. redundant/noisy",
+      "accuracy": 0.304,
+      "information_gain": -0.03
+    }
+  ],
+  "feature_sweep": [
+    {
+      "k": 1,
+      "information_gain": 0.155,
+      "accuracy": 0.287,
+      "added": "sector"
+    },
+    {
+      "k": 2,
+      "information_gain": 0.156,
+      "accuracy": 0.323,
+      "added": "volatility_bucket"
+    },
+    {
+      "k": 3,
+      "information_gain": 0.17,
+      "accuracy": 0.312,
+      "added": "momentum_bucket"
+    },
+    {
+      "k": 4,
+      "information_gain": 0.174,
+      "accuracy": 0.329,
+      "added": "market_quality"
+    },
+    {
+      "k": 6,
+      "information_gain": 0.182,
+      "accuracy": 0.331,
+      "added": "moat_strength"
+    },
+    {
+      "k": 9,
+      "information_gain": 0.15,
+      "accuracy": 0.315,
+      "added": "market_position"
+    },
+    {
+      "k": 12,
+      "information_gain": 0.146,
+      "accuracy": 0.331,
+      "added": "profitability_bucket"
+    },
+    {
+      "k": 16,
+      "information_gain": 0.047,
+      "accuracy": 0.32,
+      "added": "growth_bucket"
+    }
+  ],
+  "peak_k": 6,
+  "single_feature_ranking": [
+    {
+      "feature": "sector",
+      "information_gain": 0.155
+    },
+    {
+      "feature": "volatility_bucket",
+      "information_gain": 0.051
+    },
+    {
+      "feature": "momentum_bucket",
+      "information_gain": 0.035
+    },
+    {
+      "feature": "market_quality",
+      "information_gain": 0.014
+    },
+    {
+      "feature": "valuation_bucket",
+      "information_gain": 0.006
+    },
+    {
+      "feature": "moat_strength",
+      "information_gain": 0.005
+    },
+    {
+      "feature": "leadership_quality",
+      "information_gain": 0.002
+    },
+    {
+      "feature": "founder_still_ceo",
+      "information_gain": 0.0
+    },
+    {
+      "feature": "market_position",
+      "information_gain": -0.005
+    },
+    {
+      "feature": "capital_allocation",
+      "information_gain": -0.006
+    },
+    {
+      "feature": "moat_type",
+      "information_gain": -0.007
+    },
+    {
+      "feature": "profitability_bucket",
+      "information_gain": -0.009
+    },
+    {
+      "feature": "strategic_clarity",
+      "information_gain": -0.012
+    },
+    {
+      "feature": "execution_track_record",
+      "information_gain": -0.013
+    },
+    {
+      "feature": "leverage_bucket",
+      "information_gain": -0.025
+    },
+    {
+      "feature": "growth_bucket",
+      "information_gain": -0.027
+    }
+  ]
+}
