@@ -164,6 +164,11 @@ What's NOT done (deliberately):
 
 ## Releasing a change
 
+**This is a public repo — make changes on a feature branch and open a PR;
+don't commit or push directly to `main`.** Branch → commit → push branch →
+open PR → review → merge. `main` is what the demo deploys from, so keep it
+green and let changes land through review.
+
 aito-demo-server tracks each demo's `main` branch by default. So:
 
 1. PR your change in this repo
