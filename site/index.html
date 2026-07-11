@@ -1958,6 +1958,34 @@
   .aito-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); }
 
   /* ===== RESPONSIVE ===== */
+  /* ===== EVALUATION view ===== */
+  .eval-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 22px 0 6px; }
+  .eval-tile { background: #fbf6ec; border: 1px solid var(--rule); padding: 16px 16px 14px; }
+  .eval-tile .val { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 700; color: var(--ink); line-height: 1; }
+  .eval-tile .val.pos { color: #3c5630; }
+  .eval-tile .val.neg { color: var(--red); }
+  .eval-tile .lbl { font-family: 'Inter', sans-serif; font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 11px 0 4px; }
+  .eval-tile .sub { font-family: 'Source Serif 4', serif; font-size: 11px; font-style: italic; color: var(--ink-fade); line-height: 1.35; }
+
+  .eval-cmp-row { display: grid; grid-template-columns: 160px 1fr 54px; gap: 14px; align-items: center; padding: 10px 0; border-bottom: 1px dotted var(--rule-soft); }
+  .eval-cmp-label { font-family: 'Source Serif 4', serif; font-size: 13px; color: var(--ink); }
+  .eval-cmp-label small { display: block; font-style: italic; font-size: 10.5px; color: var(--ink-fade); }
+  .eval-cmp-track { height: 15px; background: rgba(0,0,0,0.05); position: relative; }
+  .eval-cmp-fill { height: 100%; background: var(--gold); }
+  .eval-cmp-fill.dim { background: var(--rule); }
+  .eval-cmp-val { font-family: 'JetBrains Mono', monospace; font-size: 12px; text-align: right; color: var(--ink); }
+
+  /* feature-count sweep — diverging bars around a zero baseline */
+  .eval-sweep-row { display: grid; grid-template-columns: 70px 1fr 56px; gap: 12px; align-items: center; padding: 5px 0; }
+  .eval-sweep-k { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-soft); text-align: right; }
+  .eval-sweep-track { position: relative; height: 14px; background: rgba(0,0,0,0.04); }
+  .eval-sweep-track::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--rule); }
+  .eval-sweep-fill { position: absolute; top: 0; bottom: 0; background: var(--gold); }
+  .eval-sweep-fill.peak { background: linear-gradient(90deg, var(--gold), #d4a743); box-shadow: 0 0 10px rgba(168,134,44,0.4); }
+  .eval-sweep-fill.neg { background: var(--red); }
+  .eval-sweep-v { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-align: right; color: var(--ink-soft); }
+  .eval-sweep-v.neg { color: var(--red); }
+
   @media (max-width: 1100px) {
     .app { grid-template-columns: 240px 1fr 320px; }
     .content { padding: 32px 36px 60px; }
@@ -2004,6 +2032,9 @@
     .methodology-grid,
     .similar-card,
     .lab-sim-grid { grid-template-columns: 1fr; }
+    .eval-tiles { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .eval-tile .val { font-size: 26px; }
+    .eval-cmp-row { grid-template-columns: 120px 1fr 44px; gap: 8px; }
 
     /* profile header stacks vertically */
     .profile-head { flex-direction: column; align-items: flex-start; gap: 10px; }
@@ -2057,8 +2088,11 @@
       <div class="nav-item" data-view="console">
         <span class="nav-num">viii.</span><span>Live Query</span>
       </div>
+      <div class="nav-item" data-view="eval">
+        <span class="nav-num">ix.</span><span>Evaluation</span>
+      </div>
       <div class="nav-item" data-view="method">
-        <span class="nav-num">ix.</span><span>On Methodology</span>
+        <span class="nav-num">x.</span><span>On Methodology</span>
       </div>
     </div>
 
@@ -2141,7 +2175,7 @@
 
         <div class="calib-chart">
           <div style="font-family: 'Fraunces', serif; font-size: 17px; margin-bottom: 6px; font-weight: 600;">Predicted vs. realised frequency, by confidence decile</div>
-          <div style="font-family: 'Source Serif 4', serif; font-style: italic; font-size: 13px; color: var(--ink-soft); margin-bottom: 22px;">A well-calibrated engine: when it says 80%, it should be right ~80% of the time.</div>
+          <div style="font-family: 'Source Serif 4', serif; font-style: italic; font-size: 13px; color: var(--ink-soft); margin-bottom: 22px;">A well-calibrated engine: when it says 80%, it should be right ~80% of the time. <span style="color: var(--accent)">This chart is <em>in-sample</em> (each row scored against a corpus that still contains it) — see <strong>Evaluation</strong> for the honest held-out numbers.</span></div>
 
           <div class="calib-bars" id="calib-bars"><!-- rendered from data/calibration.json --></div>
 
@@ -2275,6 +2309,30 @@
         <div id="similar-cards-container"><!-- rendered from data/match/{focal}.json --></div>
 
         <div class="pullquote" id="similar-pullquote"><!-- rendered from data/match/{focal}.json --></div>
+
+      </section>
+
+      <!-- ============ VIEW: EVALUATION ============ -->
+      <section class="view" id="view-eval">
+
+        <div class="article-header">
+          <div class="article-eyebrow">HELD-OUT PERFORMANCE · MASKED TEST SET</div>
+          <h1 class="article-title">How good is it, <em>honestly?</em></h1>
+          <p class="article-deck">Every number here comes from Aito's <code style="font-family:'JetBrains Mono';font-size:13px;background:var(--paper-2);padding:1px 6px;">_evaluate</code>, which <strong>hides each test company from the model</strong> and scores its blind prediction — a random cross-year 5-fold split with no company in both train and test. No in-sample flattery.</p>
+          <div class="article-byline" data-bind="eval-byline">N = — held-out observations · 5-fold random cross-year CV · Aito _evaluate (masked)</div>
+        </div>
+
+        <div class="eval-tiles" id="eval-tiles"><!-- rendered from data/eval.json --></div>
+
+        <div class="section-rule"><span>Against the alternatives</span></div>
+        <p class="article-deck" style="font-size:14px">Two bars to clear: guessing the most common outcome, and the naive "throw every feature at it." Accuracy is the easy one; <em>information gain</em> — do the predicted probabilities actually beat the base rate? — is the honest one.</p>
+        <div id="eval-cmp"><!-- rendered from data/eval.json --></div>
+
+        <div class="section-rule"><span>Does adding features help?</span></div>
+        <p class="article-deck" style="font-size:14px">Features added in order of individual usefulness (one held-out fold). Information gain <strong>peaks around <span data-bind="eval-peak">—</span> features</strong>, then erodes — extra features stop informing and start overfitting. The demo doing model selection in the open.</p>
+        <div id="eval-sweep"><!-- rendered from data/eval.json --></div>
+
+        <div class="pullquote" id="eval-pullquote"><!-- rendered from data/eval.json --></div>
 
       </section>
 
@@ -2609,6 +2667,24 @@
         <p>Each tab loads with a realistic example. Edit freely — Aito accepts any combination of <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">where</code>, <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">predict</code>, <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">relate</code>, <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">match</code>, and <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">limit</code> per endpoint.</p>
       </div>
 
+      <div class="aito-section" data-view="eval">
+        <div class="aito-section-label">Masked held-out</div>
+        <p><code style="font-family:'JetBrains Mono';color:var(--aito-teal);">_evaluate</code> splits the data into train and test, <strong>hides the test rows' outcomes</strong>, predicts them from the rest, and scores the blind guesses. That's why these numbers are honest — the model never sees the answer it's graded on.</p>
+      </div>
+
+      <div class="aito-section" data-view="eval">
+        <div class="aito-section-label">The Query</div>
+        <div class="aito-endpoint">POST /api/v1/_evaluate</div>
+        <div class="aito-code">{
+  <span class="k">"test"</span>: { <span class="k">"eval_fold"</span>: <span class="s">"0"</span> },
+  <span class="k">"evaluate"</span>: {
+    <span class="k">"from"</span>: <span class="s">"companies"</span>,
+    <span class="k">"where"</span>: { <span class="c">/* features via $get */</span> },
+    <span class="k">"predict"</span>: <span class="s">"outcome_bucket"</span>
+  }
+}</div>
+      </div>
+
       <div class="aito-section" data-view="universe">
         <div class="aito-section-label">The Table</div>
         <p>Every row the engine sees. <strong>Filtering and sorting happen client-side</strong> — the entire 1,500-row universe ships as a single JSON file (~700KB), small enough that no server round-trip is needed for browse.</p>
@@ -2908,6 +2984,54 @@
     }
   }
 
+  // ── Render: Evaluation (held-out metrics from Aito _evaluate) ────
+  function renderEval(e) {
+    if (!e || !e.headline) return;
+    const pct = v => (v * 100).toFixed(0) + '%';
+    const h = e.headline;
+    const byl = document.querySelector('[data-bind="eval-byline"]');
+    if (byl) byl.textContent = `N = ${e.n_graded.toLocaleString()} held-out observations · 5-fold random cross-year CV · Aito _evaluate (masked)`;
+    const pk = document.querySelector('[data-bind="eval-peak"]'); if (pk) pk.textContent = e.peak_k;
+
+    // metric tiles
+    const igPos = h.information_gain >= 0;
+    document.getElementById('eval-tiles').innerHTML = [
+      { val: pct(h.accuracy), cls: '', lbl: 'Held-out accuracy', sub: `top-bucket correct · base rate ${pct(h.base_accuracy)}` },
+      { val: (h.accuracy_gain >= 0 ? '+' : '') + (h.accuracy_gain * 100).toFixed(0) + 'pt', cls: h.accuracy_gain >= 0 ? 'pos' : 'neg', lbl: 'Accuracy gain', sub: 'over guessing the most common bucket' },
+      { val: (igPos ? '+' : '') + h.information_gain.toFixed(3), cls: igPos ? 'pos' : 'neg', lbl: 'Information gain', sub: 'bits the probabilities beat base rate' },
+      { val: h.geom_mean_lift.toFixed(2) + '×', cls: h.geom_mean_lift >= 1 ? 'pos' : 'neg', lbl: 'Geom-mean lift', sub: 'prob. on the true bucket vs base' },
+    ].map(t => `<div class="eval-tile"><div class="val ${t.cls}">${esc(t.val)}</div><div class="lbl">${esc(t.lbl)}</div><div class="sub">${esc(t.sub)}</div></div>`).join('');
+
+    // comparison — accuracy bars, info gain annotated
+    const maxAcc = Math.max(...e.comparison.map(c => c.accuracy), 0.01);
+    document.getElementById('eval-cmp').innerHTML = e.comparison.map((c, i) => {
+      const ig = c.information_gain, igStr = (ig >= 0 ? '+' : '') + ig.toFixed(3);
+      const igCol = ig >= 0 ? '#3c5630' : 'var(--red)';
+      return `<div class="eval-cmp-row">
+        <div class="eval-cmp-label">${esc(c.label)}<small>${esc(c.sub)} · info gain <b style="color:${igCol}">${igStr}</b></small></div>
+        <div class="eval-cmp-track"><div class="eval-cmp-fill${i === 0 ? ' dim' : ''}" style="width:${(c.accuracy / maxAcc * 100).toFixed(0)}%"></div></div>
+        <div class="eval-cmp-val">${pct(c.accuracy)}</div>
+      </div>`;
+    }).join('');
+
+    // feature-count sweep — diverging bars around a zero baseline
+    const maxAbs = Math.max(...e.feature_sweep.map(s => Math.abs(s.information_gain)), 0.001);
+    document.getElementById('eval-sweep').innerHTML = e.feature_sweep.map(s => {
+      const ig = s.information_gain, w = (Math.abs(ig) / maxAbs * 50).toFixed(1), isPeak = s.k === e.peak_k;
+      const fill = ig >= 0
+        ? `<div class="eval-sweep-fill${isPeak ? ' peak' : ''}" style="left:50%; width:${w}%"></div>`
+        : `<div class="eval-sweep-fill neg" style="left:${(50 - w).toFixed(1)}%; width:${w}%"></div>`;
+      return `<div class="eval-sweep-row">
+        <div class="eval-sweep-k">${s.k} feat${s.k > 1 ? 's' : ''}</div>
+        <div class="eval-sweep-track">${fill}</div>
+        <div class="eval-sweep-v${ig < 0 ? ' neg' : ''}">${(ig >= 0 ? '+' : '') + ig.toFixed(3)}</div>
+      </div>`;
+    }).join('');
+
+    const pq = document.getElementById('eval-pullquote');
+    if (pq) pq.innerHTML = esc(e.note);
+  }
+
   function renderLeakage(payload) {
     const wrap = document.getElementById('leakage-wrap');
     if (!wrap) return;
@@ -3010,6 +3134,7 @@
     similar: 'Historical Analogues',
     universe: 'The Universe',
     console: 'Live Query',
+    eval: 'Evaluation',
     method: 'On Methodology'
   };
 
@@ -4153,6 +4278,7 @@ However, citing a more cautious consumer environment and rising input costs, the
         fetchJson('./data/news_reaction.json').catch(() => ({ _pending: true, themes: [] })),
         fetchJson('./data/earnings_signals.json').catch(() => ({ _pending: true, fields: [] }))
       ]);
+      fetchJson('./data/eval.json').then(renderEval).catch(() => {});  // optional; may not be generated yet
       renderMeta(meta);
       renderRelate(relate);
       renderCalibration(calibration);
