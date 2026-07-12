@@ -2006,6 +2006,31 @@
   .ea-lift.ok  { color: #3c5630; }
   .ea-legend { font-family: 'Source Serif 4', serif; font-size: 11.5px; font-style: italic; color: var(--ink-fade); margin: 12px 0 0; }
 
+  /* ===== BACKTEST view ===== */
+  .bt-hero { display: flex; gap: 20px 28px; align-items: baseline; flex-wrap: wrap; margin: 22px 0 6px; padding: 18px 22px; background: #fbf6ec; border: 1px solid var(--rule); }
+  .bt-hero .big { font-family: 'Fraunces', serif; font-size: 40px; font-weight: 700; color: #3c5630; line-height: 1; }
+  .bt-hero .big small { font-size: 16px; font-weight: 500; color: var(--ink-fade); }
+  .bt-hero .vs { font-family: 'Source Serif 4', serif; font-size: 13.5px; color: var(--ink-soft); font-style: italic; max-width: 320px; line-height: 1.4; }
+  .bt-hero .vs b { font-style: normal; color: var(--ink); }
+  .bt-fund-row { display: grid; grid-template-columns: 150px 1fr 118px; gap: 14px; align-items: center; padding: 9px 0; border-bottom: 1px dotted var(--rule-soft); }
+  .bt-fund-label { font-family: 'Source Serif 4', serif; font-size: 13px; color: var(--ink); }
+  .bt-fund-label small { display: block; font-style: italic; font-size: 10.5px; color: var(--ink-fade); }
+  .bt-track { position: relative; height: 16px; background: rgba(0,0,0,0.05); }
+  .bt-fill { position: absolute; top: 0; bottom: 0; left: 0; background: var(--gold); }
+  .bt-fill.market { background: var(--rule); }
+  .bt-fill.neg { background: var(--red); }
+  .bt-mkline { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); z-index: 2; }
+  .bt-fund-val { font-family: 'JetBrains Mono', monospace; font-size: 12px; text-align: right; color: var(--ink); }
+  .bt-fund-val b { color: #3c5630; }
+  .bt-vint-row { display: grid; grid-template-columns: 58px 1fr; gap: 14px; padding: 11px 0; border-bottom: 1px dotted var(--rule-soft); align-items: baseline; }
+  .bt-vint-y { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; color: var(--ink); }
+  .bt-vint-body { font-family: 'Source Serif 4', serif; font-size: 12.5px; color: var(--ink-soft); }
+  .bt-vint-body b { color: #3c5630; font-style: normal; }
+  .bt-vint-names { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--ink-fade); margin-top: 4px; letter-spacing: 0.02em; }
+  .bt-caveats { list-style: none; padding: 0; margin: 12px 0 0; }
+  .bt-caveats li { font-family: 'Source Serif 4', serif; font-size: 12.5px; color: var(--ink-soft); padding: 5px 0 5px 20px; position: relative; line-height: 1.45; }
+  .bt-caveats li::before { content: '*'; position: absolute; left: 2px; color: var(--accent); font-weight: 700; }
+
   @media (max-width: 1100px) {
     .app { grid-template-columns: 240px 1fr 320px; }
     .content { padding: 32px 36px 60px; }
@@ -2057,6 +2082,8 @@
     .eval-cmp-row { grid-template-columns: 120px 1fr 44px; gap: 8px; }
     .ea-row { grid-template-columns: 128px 1fr 40px; gap: 8px; }
     .ea-label { font-size: 11.5px; }
+    .bt-fund-row { grid-template-columns: 96px 1fr 92px; gap: 8px; }
+    .bt-hero .big { font-size: 32px; }
 
     /* profile header stacks vertically */
     .profile-head { flex-direction: column; align-items: flex-start; gap: 10px; }
@@ -2116,8 +2143,11 @@
       <div class="nav-item" data-view="errors">
         <span class="nav-num">x.</span><span>Error Analysis</span>
       </div>
+      <div class="nav-item" data-view="backtest">
+        <span class="nav-num">xi.</span><span>Beat the Market?</span>
+      </div>
       <div class="nav-item" data-view="method">
-        <span class="nav-num">xi.</span><span>On Methodology</span>
+        <span class="nav-num">xii.</span><span>On Methodology</span>
       </div>
     </div>
 
@@ -2384,6 +2414,36 @@
         <div class="ea-legend"><span style="color:var(--red)">■</span> lift &gt; 1 — the engine errs <em>more</em> on these · <span style="color:#3c5630">■</span> lift &lt; 1 — <em>more reliable</em> here. n = held-out companies with that feature value.</div>
 
         <div class="pullquote" id="ea-pullquote"><!-- rendered from data/error_analysis.json --></div>
+
+      </section>
+
+      <!-- ============ VIEW: BEAT THE MARKET? (backtest) ============ -->
+      <section class="view" id="view-backtest">
+
+        <div class="article-header">
+          <div class="article-eyebrow">THE ACID TEST · WOULD IT HAVE MADE MONEY</div>
+          <h1 class="article-title">Does it <em>beat the market?</em></h1>
+          <p class="article-deck">Accuracy is a lab number. The honest question is a fund. Take every held-out company, rank it by the engine's predicted expected outcome, buy the top <em>N</em>, hold to today. No look-ahead: folds are grouped by ticker, so a company never scores its own other-vintage result. Here is what the picks actually returned.</p>
+          <div class="article-byline" data-bind="bt-byline">held-out ranking · actual forward returns to ~2026</div>
+        </div>
+
+        <div class="bt-hero">
+          <div><div class="big" data-bind="bt-hero-top">—<small>/yr</small></div><div style="font-family:'Source Serif 4';font-size:12px;color:var(--ink-fade);font-style:italic;margin-top:3px;">top-20 fund CAGR</div></div>
+          <div class="vs" data-bind="bt-hero-vs">—</div>
+        </div>
+
+        <div class="section-rule"><span>The funds — ranked by the engine, measured on reality</span></div>
+        <div id="bt-funds"><!-- fund rows --></div>
+        <p class="ea-legend"><span style="color:var(--ink)">▏</span> black line = the equal-weight market (every graded company). Bars are mean total return over the holding window; the number to the right is annualized (CAGR).</p>
+
+        <div class="section-rule"><span>Same test, one vintage at a time</span></div>
+        <div id="bt-vintages"><!-- per-vintage rows --></div>
+
+        <div class="section-rule"><span>As a classifier, though — mediocre and optimistic</span></div>
+        <p class="article-deck" style="font-size:13.5px" id="bt-confusion-desc"><!-- confusion summary --></p>
+
+        <div class="section-rule"><span>Read the asterisks</span></div>
+        <ul class="bt-caveats" id="bt-caveats"><!-- caveats --></ul>
 
       </section>
 
@@ -2752,6 +2812,24 @@
   }},
   <span class="k">"relate"</span>: [ <span class="c">/* input features */</span> ]
 }</div>
+      </div>
+
+      <div class="aito-section" data-view="backtest">
+        <div class="aito-section-label">From accuracy to alpha</div>
+        <p>Same held-out predictions as the Evaluation view — but instead of scoring hit-rate, each company gets an <strong>expected outcome</strong>: <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">Σ p(bucket) · rank(bucket)</code> over the five probabilities Aito returns. Rank the universe by that scalar, buy the top slice, hold to today.</p>
+        <p>The ranking is leakage-safe by construction: the 5 folds are grouped on <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">ticker</code>, so every prediction is made by a corpus that has never seen that company.</p>
+      </div>
+
+      <div class="aito-section" data-view="backtest">
+        <div class="aito-section-label">The Score</div>
+        <div class="aito-endpoint">POST /api/v1/_predict → expected rank</div>
+        <div class="aito-code">{
+  <span class="k">"from"</span>: <span class="s">"companies_train_fold_k"</span>,
+  <span class="k">"where"</span>: { <span class="c">/* held-out company's features */</span> },
+  <span class="k">"predict"</span>: <span class="s">"outcome_bucket"</span>,
+  <span class="k">"config"</span>: { <span class="k">"ai"</span>: <span class="s">"high"</span> }
+}
+<span class="c">// → score = Σ p·rank; sort desc; take top-N</span></div>
       </div>
 
       <div class="aito-section" data-view="universe">
@@ -3140,6 +3218,61 @@
     draw(ea.scopes[0].key);
   }
 
+  // ── Render: Beat the Market? (held-out ranking → fund returns) ──
+  function renderBacktest(bt) {
+    if (!bt || !bt.funds) return;
+    const mkt = bt.market || {};
+    const funds = bt.funds || [];
+    const sign = n => (n >= 0 ? '+' : '') + n;
+
+    const byl = document.querySelector('[data-bind="bt-byline"]');
+    if (byl) byl.textContent = `${bt.n_heldout.toLocaleString()} held-out companies · ranked by expected outcome · actual returns to ~2026`;
+
+    const top = funds.find(f => /top\s*20/i.test(f.label)) || funds[0];
+    const heroTop = document.querySelector('[data-bind="bt-hero-top"]');
+    if (heroTop) heroTop.innerHTML = `${sign(top.cagr)}%<small>/yr</small>`;
+    const heroVs = document.querySelector('[data-bind="bt-hero-vs"]');
+    if (heroVs) heroVs.innerHTML = `The equal-weight market returned <b>${sign(mkt.cagr)}%/yr</b> over the same window. Buying the engine's top 20 beat it by <b>${sign(top.excess_cagr)} points a year</b> — and cleared the market in <b>${Math.round(top.upside_hit * 100)}%</b> of picks.`;
+
+    // Fund bars — scaled to the largest mean total return; market drawn as a reference line.
+    const allTotals = funds.map(f => f.mean_total).concat([mkt.mean_total]);
+    const maxTot = Math.max(...allTotals, 1);
+    const mkPct = (mkt.mean_total / maxTot * 100).toFixed(1);
+    const rows = [];
+    rows.push(`<div class="bt-fund-row">
+      <div class="bt-fund-label">Market<small>equal-weight, all ${bt.n_heldout.toLocaleString()}</small></div>
+      <div class="bt-track"><div class="bt-fill market" style="width:${mkPct}%"></div></div>
+      <div class="bt-fund-val">${sign(mkt.mean_total)}%<br><span style="color:var(--ink-fade)">${sign(mkt.cagr)}%/yr</span></div>
+    </div>`);
+    funds.forEach(f => {
+      const w = (f.mean_total / maxTot * 100).toFixed(1);
+      const neg = f.cagr < 0;
+      rows.push(`<div class="bt-fund-row">
+        <div class="bt-fund-label">${esc(f.label)}<small>${Math.round(f.upside_hit * 100)}% beat market</small></div>
+        <div class="bt-track"><div class="bt-fill${neg ? ' neg' : ''}" style="width:${w}%"></div><div class="bt-mkline" style="left:${mkPct}%"></div></div>
+        <div class="bt-fund-val"><b${neg ? ' style="color:var(--red)"' : ''}>${sign(f.mean_total)}%</b><br><span style="color:var(--ink-fade)">${sign(f.cagr)}%/yr</span></div>
+      </div>`);
+    });
+    document.getElementById('bt-funds').innerHTML = rows.join('');
+
+    // Per-vintage — same holding window, one starting year at a time.
+    document.getElementById('bt-vintages').innerHTML = (bt.per_vintage || []).map(v => `
+      <div class="bt-vint-row">
+        <div class="bt-vint-y">${v.vintage}</div>
+        <div>
+          <div class="bt-vint-body">${v.window_years}-yr hold · market <b style="color:var(--ink)">${sign(v.market_mean)}%</b> · top-20 <b>${sign(v.top20_mean)}%</b> <span style="color:var(--accent)">(${sign(v.excess)}pt)</span></div>
+          <div class="bt-vint-names">${(v.names || []).map(esc).join(' · ')}${(v.names || []).length >= 10 ? ' · …' : ''}</div>
+        </div>
+      </div>`).join('');
+
+    // Confusion summary — the honest classifier caveat.
+    const c = bt.confusion || {};
+    const cd = document.getElementById('bt-confusion-desc');
+    if (cd) cd.innerHTML = `Picked as a stock-picker, the engine ranks well. Scored as a five-way classifier, it is ordinary: <b>${Math.round(c.exact * 100)}%</b> land in the exact bucket, <b>${Math.round(c.within_one * 100)}%</b> within one, and errors skew <b>optimistic</b> — it over-promises (${Math.round(c.optimistic * 100)}%) far more than it under-promises (${Math.round(c.pessimistic * 100)}%). Why ranking still works: the <em>order</em> of expected outcomes is right even when the exact bucket is not.`;
+
+    document.getElementById('bt-caveats').innerHTML = (bt.caveats || []).map(x => `<li>${esc(x)}</li>`).join('');
+  }
+
   function renderLeakage(payload) {
     const wrap = document.getElementById('leakage-wrap');
     if (!wrap) return;
@@ -3244,6 +3377,7 @@
     console: 'Live Query',
     eval: 'Evaluation',
     errors: 'Error Analysis',
+    backtest: 'Beat the Market?',
     method: 'On Methodology'
   };
 
@@ -4389,6 +4523,7 @@ However, citing a more cautious consumer environment and rising input costs, the
       ]);
       fetchJson('./data/eval.json').then(renderEval).catch(() => {});  // optional; may not be generated yet
       fetchJson('./data/error_analysis.json').then(renderErrors).catch(() => {});  // optional
+      fetchJson('./data/backtest.json').then(renderBacktest).catch(() => {});  // optional
       renderMeta(meta);
       renderRelate(relate);
       renderCalibration(calibration);
