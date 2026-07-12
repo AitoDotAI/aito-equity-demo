@@ -1,0 +1,165 @@
+{
+  "note": "Held-out backtest: every company is scored by the model's predicted expected outcome (5-fold CV, ai:high grouping), then top-N funds are formed and measured on ACTUAL returns. Folds are grouped by ticker, so no company appears in both train and test.",
+  "n_heldout": 1294,
+  "accuracy": 0.35,
+  "confusion": {
+    "matrix": [
+      [
+        2,
+        7,
+        8,
+        33,
+        29
+      ],
+      [
+        5,
+        7,
+        10,
+        65,
+        66
+      ],
+      [
+        2,
+        4,
+        22,
+        155,
+        84
+      ],
+      [
+        4,
+        10,
+        31,
+        216,
+        152
+      ],
+      [
+        4,
+        6,
+        21,
+        145,
+        206
+      ]
+    ],
+    "labels": [
+      "disaster",
+      "poor",
+      "market",
+      "good",
+      "great"
+    ],
+    "exact": 0.35,
+    "within_one": 0.743,
+    "off_by_3plus": 0.11,
+    "optimistic": 0.471,
+    "pessimistic": 0.179
+  },
+  "market": {
+    "mean_total": 260,
+    "median_total": 118,
+    "cagr": 7.9
+  },
+  "funds": [
+    {
+      "label": "Top 20",
+      "n": 20,
+      "mean_total": 898,
+      "median_total": 288,
+      "cagr": 20.6,
+      "excess_cagr": 12.7,
+      "upside_hit": 0.85
+    },
+    {
+      "label": "Top 50",
+      "n": 50,
+      "mean_total": 734,
+      "median_total": 243,
+      "cagr": 18.3,
+      "excess_cagr": 10.4,
+      "upside_hit": 0.82
+    },
+    {
+      "label": "Top 100",
+      "n": 100,
+      "mean_total": 572,
+      "median_total": 222,
+      "cagr": 15.9,
+      "excess_cagr": 8.0,
+      "upside_hit": 0.79
+    },
+    {
+      "label": "Bottom 20",
+      "n": 20,
+      "mean_total": 79,
+      "median_total": 2,
+      "cagr": -4.1,
+      "excess_cagr": -12.0,
+      "upside_hit": 0.35
+    }
+  ],
+  "per_vintage": [
+    {
+      "vintage": 2014,
+      "window_years": 12.4,
+      "market_mean": 461,
+      "top20_mean": 812,
+      "excess": 351,
+      "names": [
+        "CTSH",
+        "AAPL",
+        "INTU",
+        "CRM",
+        "ADBE",
+        "WDC",
+        "LRCX",
+        "MSFT",
+        "ROP",
+        "GLW"
+      ]
+    },
+    {
+      "vintage": 2017,
+      "window_years": 9.4,
+      "market_mean": 225,
+      "top20_mean": 688,
+      "excess": 464,
+      "names": [
+        "HD",
+        "CRM",
+        "GOOGL",
+        "AAPL",
+        "INTU",
+        "ALK",
+        "GEN",
+        "NVDA",
+        "GOOG",
+        "CHRW"
+      ]
+    },
+    {
+      "vintage": 2020,
+      "window_years": 6.4,
+      "market_mean": 120,
+      "top20_mean": 476,
+      "excess": 356,
+      "names": [
+        "GOOGL",
+        "HD",
+        "AAPL",
+        "NVDA",
+        "CRM",
+        "V",
+        "GOOG",
+        "STX",
+        "MSFT",
+        "GEN"
+      ]
+    }
+  ],
+  "caveats": [
+    "Folds are grouped by ticker \u2014 no company predicts its own other-vintage outcome.",
+    "But every outcome window ends at the same date (~2026), so different companies' overlapping-period returns share one market regime \u2014 this is not a pure out-of-time backtest.",
+    "The graded universe under-represents companies that delisted early (survivorship); the disaster bucket is thin.",
+    "'Market' = equal-weight of the graded universe, not the cap-weighted S&P 500 (~13%/yr over this window).",
+    "Top picks tilt mega-cap tech \u2014 a factor exposure that paid off in 2014\u20132020, not necessarily repeatable stock-picking skill."
+  ]
+}
