@@ -81,6 +81,7 @@ cmd_pipeline() {
     model-eval)   uv run python -m pipeline.model.eval_aito "$@" ;;       # honest, masked (_evaluate)
     model-eval-insample) uv run python -m pipeline.model.eval_live "$@" ;; # in-sample only (flatters)
     eval-page)    uv run python -m pipeline.model.emit_eval "$@" ;;       # → site/data/eval.json (Evaluation view)
+    error-page)   uv run python -m pipeline.model.emit_error_analysis "$@" ;;  # → site/data/error_analysis.json (Error Analysis view)
     all)
       # Free, deterministic stages always run.
       say "universe"     && cmd_pipeline universe "$@"
