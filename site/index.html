@@ -1986,6 +1986,26 @@
   .eval-sweep-v { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-align: right; color: var(--ink-soft); }
   .eval-sweep-v.neg { color: var(--red); }
 
+  /* ===== ERROR ANALYSIS view ===== */
+  .ea-scope-bar { display: flex; align-items: baseline; gap: 11px; flex-wrap: wrap; margin: 6px 0 4px; }
+  .ea-scope-bar label { font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-fade); font-weight: 600; }
+  .ea-select { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; padding: 6px 28px 6px 11px; border: 1px solid var(--rule); border-radius: 2px; background: var(--paper-2); color: var(--ink); cursor: pointer; min-width: 220px; }
+  .ea-stat { font-family: 'Source Serif 4', serif; font-size: 12px; font-style: italic; color: var(--ink-fade); }
+  .ea-stat b { font-style: normal; color: var(--ink); }
+  .ea-row { display: grid; grid-template-columns: 210px 1fr 50px; gap: 14px; align-items: center; padding: 7px 0; border-bottom: 1px dotted var(--rule-soft); }
+  .ea-label { font-family: 'Source Serif 4', serif; font-size: 12.5px; color: var(--ink); }
+  .ea-label b { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; }
+  .ea-label small { color: var(--ink-fade); font-style: italic; }
+  .ea-track { position: relative; height: 14px; background: rgba(0,0,0,0.04); }
+  .ea-track::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--rule); }
+  .ea-fill { position: absolute; top: 0; bottom: 0; }
+  .ea-fill.err { background: var(--red); }
+  .ea-fill.ok  { background: #3c5630; }
+  .ea-lift { font-family: 'JetBrains Mono', monospace; font-size: 12px; text-align: right; }
+  .ea-lift.err { color: var(--red); }
+  .ea-lift.ok  { color: #3c5630; }
+  .ea-legend { font-family: 'Source Serif 4', serif; font-size: 11.5px; font-style: italic; color: var(--ink-fade); margin: 12px 0 0; }
+
   @media (max-width: 1100px) {
     .app { grid-template-columns: 240px 1fr 320px; }
     .content { padding: 32px 36px 60px; }
@@ -2035,6 +2055,8 @@
     .eval-tiles { grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .eval-tile .val { font-size: 26px; }
     .eval-cmp-row { grid-template-columns: 120px 1fr 44px; gap: 8px; }
+    .ea-row { grid-template-columns: 128px 1fr 40px; gap: 8px; }
+    .ea-label { font-size: 11.5px; }
 
     /* profile header stacks vertically */
     .profile-head { flex-direction: column; align-items: flex-start; gap: 10px; }
@@ -2091,8 +2113,11 @@
       <div class="nav-item" data-view="eval">
         <span class="nav-num">ix.</span><span>Evaluation</span>
       </div>
+      <div class="nav-item" data-view="errors">
+        <span class="nav-num">x.</span><span>Error Analysis</span>
+      </div>
       <div class="nav-item" data-view="method">
-        <span class="nav-num">x.</span><span>On Methodology</span>
+        <span class="nav-num">xi.</span><span>On Methodology</span>
       </div>
     </div>
 
@@ -2335,6 +2360,30 @@
         <p class="article-deck" style="font-size:13px; color: var(--ink-fade)">The figures above are the default-inference floor that <code style="font-family:'JetBrains Mono';font-size:12px">_evaluate</code> reports. The demo's live predictions use Aito's <code style="font-family:'JetBrains Mono';font-size:12px">ai: high</code> grouping mode, which collapses correlated features into single votes — on the full 16-feature set it lifts held-out information gain further (≈ +0.04 → +0.08 measured separately), i.e. "throw every feature at it," made calibrated.</p>
 
         <div class="pullquote" id="eval-pullquote"><!-- rendered from data/eval.json --></div>
+
+      </section>
+
+      <!-- ============ VIEW: ERROR ANALYSIS ============ -->
+      <section class="view" id="view-errors">
+
+        <div class="article-header">
+          <div class="article-eyebrow">SELF-DIAGNOSIS · THE ENGINE ON ITS OWN ERRORS</div>
+          <h1 class="article-title">Where does it <em>fail?</em></h1>
+          <p class="article-deck">Held-out predictions marked right or wrong, then loaded back into Aito. A single <code style="font-family:'JetBrains Mono';font-size:13px;background:var(--paper-2);padding:1px 6px;">relate</code> query asks: which input features go with the engine being <em>wrong</em>? Pick a bucket to scope it with <code style="font-family:'JetBrains Mono';font-size:13px;background:var(--paper-2);padding:1px 6px;">$on</code>. The same predictive database, pointed at itself.</p>
+          <div class="article-byline" data-bind="errors-byline">held-out predictions · Aito relate on the error flag</div>
+        </div>
+
+        <div class="ea-scope-bar">
+          <label for="ea-select">Scope</label>
+          <select id="ea-select"><!-- populated from data/error_analysis.json --></select>
+          <span class="ea-stat" id="ea-stat"></span>
+        </div>
+        <p class="article-deck" style="font-size:13.5px" id="ea-scope-desc"><!-- scope description --></p>
+
+        <div id="ea-rows"><!-- relate rows --></div>
+        <div class="ea-legend"><span style="color:var(--red)">■</span> lift &gt; 1 — the engine errs <em>more</em> on these · <span style="color:#3c5630">■</span> lift &lt; 1 — <em>more reliable</em> here. n = held-out companies with that feature value.</div>
+
+        <div class="pullquote" id="ea-pullquote"><!-- rendered from data/error_analysis.json --></div>
 
       </section>
 
@@ -2687,6 +2736,24 @@
 }</div>
       </div>
 
+      <div class="aito-section" data-view="errors">
+        <div class="aito-section-label">The engine on itself</div>
+        <p>Held-out predictions are marked <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">correct</code> or not and loaded into an <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">eval_predictions</code> table. Then a plain <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">relate</code> finds the features that co-occur with error — no new machinery, the same query type the Thesis view uses.</p>
+      </div>
+
+      <div class="aito-section" data-view="errors">
+        <div class="aito-section-label">The Query</div>
+        <div class="aito-endpoint">POST /api/v1/_relate</div>
+        <div class="aito-code">{
+  <span class="k">"from"</span>: <span class="s">"eval_predictions"</span>,
+  <span class="k">"where"</span>: { <span class="k">"$on"</span>: {
+    <span class="k">"prop"</span>: { <span class="k">"correct"</span>: <span class="n">false</span> },
+    <span class="k">"on"</span>: { <span class="k">"true_bucket"</span>: <span class="s">"great"</span> }
+  }},
+  <span class="k">"relate"</span>: [ <span class="c">/* input features */</span> ]
+}</div>
+      </div>
+
       <div class="aito-section" data-view="universe">
         <div class="aito-section-label">The Table</div>
         <p>Every row the engine sees. <strong>Filtering and sorting happen client-side</strong> — the entire 1,500-row universe ships as a single JSON file (~700KB), small enough that no server round-trip is needed for browse.</p>
@@ -3034,6 +3101,45 @@
     if (pq) pq.innerHTML = esc(e.note);
   }
 
+  // ── Render: Error Analysis (relate on the engine's own errors) ──
+  function renderErrors(ea) {
+    if (!ea || !ea.scopes) return;
+    const byl = document.querySelector('[data-bind="errors-byline"]');
+    if (byl) byl.textContent = `${ea.n_heldout.toLocaleString()} held-out predictions · overall accuracy ${(ea.accuracy * 100).toFixed(0)}% · Aito relate on the error flag`;
+    const pq = document.getElementById('ea-pullquote');
+    if (pq) pq.innerHTML = esc(ea.note);
+
+    const sel = document.getElementById('ea-select');
+    const byGroup = {};
+    ea.scopes.forEach(s => { (byGroup[s.group] = byGroup[s.group] || []).push(s); });
+    sel.innerHTML = Object.entries(byGroup).map(([g, arr]) =>
+      `<optgroup label="${esc(g)}">${arr.map(s => `<option value="${esc(s.key)}">${esc(s.label)}</option>`).join('')}</optgroup>`
+    ).join('');
+
+    const draw = (key) => {
+      const s = ea.scopes.find(x => x.key === key) || ea.scopes[0];
+      const errRate = s.n ? (s.errors / s.n * 100).toFixed(0) : '—';
+      document.getElementById('ea-stat').innerHTML = `<b>${s.n}</b> companies · <b>${s.errors}</b> wrong (${errRate}%)`;
+      document.getElementById('ea-scope-desc').innerHTML = esc(s.sub);
+      const rel = s.relate || [];
+      if (!rel.length) { document.getElementById('ea-rows').innerHTML = `<p style="font-style:italic;color:var(--ink-fade)">Too few held-out companies in this scope for a stable relate.</p>`; return; }
+      const maxDev = Math.max(...rel.map(r => Math.abs(r.lift - 1)), 0.05);
+      document.getElementById('ea-rows').innerHTML = rel.map(r => {
+        const err = r.lift >= 1, dev = Math.abs(r.lift - 1) / maxDev * 50;
+        const fill = err
+          ? `<div class="ea-fill err" style="left:50%; width:${dev.toFixed(1)}%"></div>`
+          : `<div class="ea-fill ok" style="left:${(50 - dev).toFixed(1)}%; width:${dev.toFixed(1)}%"></div>`;
+        return `<div class="ea-row">
+          <div class="ea-label">${esc(r.feature.replace(/_/g, ' '))}: <b>${esc(String(r.value).replace(/_/g, ' '))}</b> <small>n${r.n}</small></div>
+          <div class="ea-track">${fill}</div>
+          <div class="ea-lift ${err ? 'err' : 'ok'}">${r.lift.toFixed(2)}</div>
+        </div>`;
+      }).join('');
+    };
+    sel.onchange = () => draw(sel.value);
+    draw(ea.scopes[0].key);
+  }
+
   function renderLeakage(payload) {
     const wrap = document.getElementById('leakage-wrap');
     if (!wrap) return;
@@ -3137,6 +3243,7 @@
     universe: 'The Universe',
     console: 'Live Query',
     eval: 'Evaluation',
+    errors: 'Error Analysis',
     method: 'On Methodology'
   };
 
@@ -4281,6 +4388,7 @@ However, citing a more cautious consumer environment and rising input costs, the
         fetchJson('./data/earnings_signals.json').catch(() => ({ _pending: true, fields: [] }))
       ]);
       fetchJson('./data/eval.json').then(renderEval).catch(() => {});  // optional; may not be generated yet
+      fetchJson('./data/error_analysis.json').then(renderErrors).catch(() => {});  // optional
       renderMeta(meta);
       renderRelate(relate);
       renderCalibration(calibration);

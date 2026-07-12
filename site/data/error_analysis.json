@@ -1,0 +1,933 @@
+{
+  "note": "Aito's own relate query pointed at its errors. Held-out predictions (5-fold, ai:high grouping); each is marked correct/incorrect and loaded back into Aito. relate(correct=false) surfaces which input features associate with the engine being wrong. lift > 1 = more error-prone, < 1 = more reliable. $on scopes it within an actual/predicted bucket.",
+  "n_heldout": 1294,
+  "accuracy": 0.35,
+  "classes": [
+    "disaster",
+    "poor",
+    "market",
+    "good",
+    "great"
+  ],
+  "features": [
+    "market_position",
+    "moat_type",
+    "moat_strength",
+    "market_quality",
+    "leadership_quality",
+    "capital_allocation",
+    "strategic_clarity",
+    "execution_track_record",
+    "sector",
+    "valuation_bucket",
+    "growth_bucket",
+    "leverage_bucket",
+    "profitability_bucket",
+    "momentum_bucket",
+    "volatility_bucket"
+  ],
+  "scopes": [
+    {
+      "key": "overall",
+      "group": "Overall",
+      "label": "All predictions",
+      "sub": "every held-out prediction",
+      "n": 1294,
+      "errors": 841,
+      "relate": [
+        {
+          "feature": "moat_type",
+          "value": "brand",
+          "lift": 1.08,
+          "n": 216
+        },
+        {
+          "feature": "volatility_bucket",
+          "value": "medium",
+          "lift": 1.03,
+          "n": 662
+        },
+        {
+          "feature": "market_position",
+          "value": "dominant",
+          "lift": 0.95,
+          "n": 320
+        },
+        {
+          "feature": "volatility_bucket",
+          "value": "low",
+          "lift": 0.94,
+          "n": 538
+        },
+        {
+          "feature": "valuation_bucket",
+          "value": "fair",
+          "lift": 0.94,
+          "n": 409
+        },
+        {
+          "feature": "moat_strength",
+          "value": "wide",
+          "lift": 0.92,
+          "n": 223
+        },
+        {
+          "feature": "strategic_clarity",
+          "value": "5",
+          "lift": 0.91,
+          "n": 203
+        },
+        {
+          "feature": "market_quality",
+          "value": "stable",
+          "lift": 0.9,
+          "n": 217
+        },
+        {
+          "feature": "moat_type",
+          "value": "regulatory",
+          "lift": 0.84,
+          "n": 141
+        },
+        {
+          "feature": "leadership_quality",
+          "value": "5",
+          "lift": 0.82,
+          "n": 56
+        },
+        {
+          "feature": "sector",
+          "value": "Utilities",
+          "lift": 0.7,
+          "n": 80
+        },
+        {
+          "feature": "sector",
+          "value": "Information Technology",
+          "lift": 0.56,
+          "n": 121
+        }
+      ]
+    },
+    {
+      "key": "true:disaster",
+      "group": "By actual outcome",
+      "label": "Actual 'disaster'",
+      "sub": "the crashes \u2014 did it warn?",
+      "n": 79,
+      "errors": 77,
+      "relate": [
+        {
+          "feature": "leadership_quality",
+          "value": "3",
+          "lift": 0.97,
+          "n": 28
+        },
+        {
+          "feature": "sector",
+          "value": "Energy",
+          "lift": 0.91,
+          "n": 8
+        },
+        {
+          "feature": "moat_strength",
+          "value": "wide",
+          "lift": 0.85,
+          "n": 2
+        },
+        {
+          "feature": "moat_strength",
+          "value": "none",
+          "lift": 0.85,
+          "n": 2
+        },
+        {
+          "feature": "capital_allocation",
+          "value": "2",
+          "lift": 0.84,
+          "n": 9
+        },
+        {
+          "feature": "sector",
+          "value": "Utilities",
+          "lift": 0.76,
+          "n": 1
+        },
+        {
+          "feature": "moat_type",
+          "value": "cost_advantage",
+          "lift": 0.76,
+          "n": 1
+        },
+        {
+          "feature": "strategic_clarity",
+          "value": "2",
+          "lift": 0.76,
+          "n": 1
+        },
+        {
+          "feature": "sector",
+          "value": "Real Estate",
+          "lift": 0.76,
+          "n": 1
+        },
+        {
+          "feature": "sector",
+          "value": "Consumer Staples",
+          "lift": 0.76,
+          "n": 1
+        },
+        {
+          "feature": "sector",
+          "value": "Health Care",
+          "lift": 0.76,
+          "n": 1
+        },
+        {
+          "feature": "leverage_bucket",
+          "value": "negative_equity",
+          "lift": 0.74,
+          "n": 1
+        }
+      ]
+    },
+    {
+      "key": "true:poor",
+      "group": "By actual outcome",
+      "label": "Actual 'poor'",
+      "sub": "companies that turned out poor",
+      "n": 153,
+      "errors": 146,
+      "relate": [
+        {
+          "feature": "leadership_quality",
+          "value": "4",
+          "lift": 1.02,
+          "n": 91
+        },
+        {
+          "feature": "market_quality",
+          "value": "cyclical",
+          "lift": 1.02,
+          "n": 67
+        },
+        {
+          "feature": "moat_type",
+          "value": "scale_economies",
+          "lift": 1.02,
+          "n": 84
+        },
+        {
+          "feature": "leadership_quality",
+          "value": "3",
+          "lift": 0.95,
+          "n": 47
+        },
+        {
+          "feature": "moat_type",
+          "value": "brand",
+          "lift": 0.94,
+          "n": 42
+        },
+        {
+          "feature": "market_quality",
+          "value": "stable",
+          "lift": 0.94,
+          "n": 22
+        },
+        {
+          "feature": "volatility_bucket",
+          "value": "high",
+          "lift": 0.94,
+          "n": 16
+        },
+        {
+          "feature": "sector",
+          "value": "Consumer Staples",
+          "lift": 0.88,
+          "n": 19
+        },
+        {
+          "feature": "capital_allocation",
+          "value": "2",
+          "lift": 0.88,
+          "n": 6
+        },
+        {
+          "feature": "strategic_clarity",
+          "value": "3",
+          "lift": 0.87,
+          "n": 9
+        },
+        {
+          "feature": "execution_track_record",
+          "value": "2",
+          "lift": 0.85,
+          "n": 8
+        },
+        {
+          "feature": "market_quality",
+          "value": "disrupted",
+          "lift": 0.72,
+          "n": 11
+        }
+      ]
+    },
+    {
+      "key": "true:market",
+      "group": "By actual outcome",
+      "label": "Actual 'market'",
+      "sub": "companies that turned out market",
+      "n": 267,
+      "errors": 245,
+      "relate": [
+        {
+          "feature": "sector",
+          "value": "Financials",
+          "lift": 1.03,
+          "n": 32
+        },
+        {
+          "feature": "moat_type",
+          "value": "regulatory",
+          "lift": 1.03,
+          "n": 31
+        },
+        {
+          "feature": "sector",
+          "value": "Industrials",
+          "lift": 1.03,
+          "n": 29
+        },
+        {
+          "feature": "moat_type",
+          "value": "switching_costs",
+          "lift": 1.02,
+          "n": 20
+        },
+        {
+          "feature": "sector",
+          "value": "Utilities",
+          "lift": 1.02,
+          "n": 19
+        },
+        {
+          "feature": "volatility_bucket",
+          "value": "low",
+          "lift": 0.98,
+          "n": 126
+        },
+        {
+          "feature": "profitability_bucket",
+          "value": "low",
+          "lift": 0.96,
+          "n": 67
+        },
+        {
+          "feature": "moat_type",
+          "value": "brand",
+          "lift": 0.96,
+          "n": 46
+        },
+        {
+          "feature": "valuation_bucket",
+          "value": "expensive",
+          "lift": 0.95,
+          "n": 60
+        },
+        {
+          "feature": "market_quality",
+          "value": "stable",
+          "lift": 0.95,
+          "n": 57
+        },
+        {
+          "feature": "sector",
+          "value": "Consumer Staples",
+          "lift": 0.84,
+          "n": 33
+        },
+        {
+          "feature": "sector",
+          "value": "Real Estate",
+          "lift": 0.72,
+          "n": 26
+        }
+      ]
+    },
+    {
+      "key": "true:good",
+      "group": "By actual outcome",
+      "label": "Actual 'good'",
+      "sub": "companies that turned out good",
+      "n": 413,
+      "errors": 197,
+      "relate": [
+        {
+          "feature": "sector",
+          "value": "Information Technology",
+          "lift": 1.71,
+          "n": 22
+        },
+        {
+          "feature": "sector",
+          "value": "Consumer Discretionary",
+          "lift": 1.5,
+          "n": 38
+        },
+        {
+          "feature": "growth_bucket",
+          "value": "high",
+          "lift": 1.47,
+          "n": 47
+        },
+        {
+          "feature": "volatility_bucket",
+          "value": "medium",
+          "lift": 1.37,
+          "n": 182
+        },
+        {
+          "feature": "leverage_bucket",
+          "value": "low",
+          "lift": 1.26,
+          "n": 116
+        },
+        {
+          "feature": "execution_track_record",
+          "value": "3",
+          "lift": 0.79,
+          "n": 129
+        },
+        {
+          "feature": "profitability_bucket",
+          "value": "low",
+          "lift": 0.77,
+          "n": 116
+        },
+        {
+          "feature": "leverage_bucket",
+          "value": "moderate",
+          "lift": 0.69,
+          "n": 161
+        },
+        {
+          "feature": "volatility_bucket",
+          "value": "low",
+          "lift": 0.63,
+          "n": 217
+        },
+        {
+          "feature": "market_quality",
+          "value": "stable",
+          "lift": 0.35,
+          "n": 95
+        },
+        {
+          "feature": "moat_type",
+          "value": "regulatory",
+          "lift": 0.19,
+          "n": 68
+        },
+        {
+          "feature": "sector",
+          "value": "Utilities",
+          "lift": 0.1,
+          "n": 49
+        }
+      ]
+    },
+    {
+      "key": "true:great",
+      "group": "By actual outcome",
+      "label": "Actual 'great'",
+      "sub": "the winners \u2014 where did it miss?",
+      "n": 382,
+      "errors": 176,
+      "relate": [
+        {
+          "feature": "market_quality",
+          "value": "stable",
+          "lift": 1.83,
+          "n": 39
+        },
+        {
+          "feature": "sector",
+          "value": "Financials",
+          "lift": 1.75,
+          "n": 60
+        },
+        {
+          "feature": "moat_type",
+          "value": "regulatory",
+          "lift": 1.53,
+          "n": 33
+        },
+        {
+          "feature": "profitability_bucket",
+          "value": "low",
+          "lift": 1.43,
+          "n": 74
+        },
+        {
+          "feature": "volatility_bucket",
+          "value": "low",
+          "lift": 1.4,
+          "n": 133
+        },
+        {
+          "feature": "volatility_bucket",
+          "value": "medium",
+          "lift": 0.82,
+          "n": 220
+        },
+        {
+          "feature": "leverage_bucket",
+          "value": "low",
+          "lift": 0.79,
+          "n": 139
+        },
+        {
+          "feature": "market_quality",
+          "value": "cyclical",
+          "lift": 0.77,
+          "n": 155
+        },
+        {
+          "feature": "strategic_clarity",
+          "value": "5",
+          "lift": 0.46,
+          "n": 78
+        },
+        {
+          "feature": "leadership_quality",
+          "value": "5",
+          "lift": 0.41,
+          "n": 33
+        },
+        {
+          "feature": "moat_type",
+          "value": "switching_costs",
+          "lift": 0.23,
+          "n": 37
+        },
+        {
+          "feature": "sector",
+          "value": "Information Technology",
+          "lift": 0.07,
+          "n": 82
+        }
+      ]
+    },
+    {
+      "key": "pred:disaster",
+      "group": "By predicted call",
+      "label": "Predicted 'disaster'",
+      "sub": "when it called 'disaster', when was it wrong?",
+      "n": 17,
+      "errors": 15,
+      "relate": [
+        {
+          "feature": "valuation_bucket",
+          "value": "negative_earnings",
+          "lift": 1.06,
+          "n": 7
+        },
+        {
+          "feature": "leverage_bucket",
+          "value": "high",
+          "lift": 1.04,
+          "n": 3
+        },
+        {
+          "feature": "leverage_bucket",
+          "value": "low",
+          "lift": 0.98,
+          "n": 2
+        },
+        {
+          "feature": "strategic_clarity",
+          "value": "4",
+          "lift": 0.97,
+          "n": 11
+        },
+        {
+          "feature": "moat_type",
+          "value": "scale_economies",
+          "lift": 0.96,
+          "n": 10
+        },
+        {
+          "feature": "growth_bucket",
+          "value": "moderate",
+          "lift": 0.95,
+          "n": 7
+        },
+        {
+          "feature": "execution_track_record",
+          "value": "3",
+          "lift": 0.94,
+          "n": 9
+        },
+        {
+          "feature": "capital_allocation",
+          "value": "2",
+          "lift": 0.89,
+          "n": 7
+        },
+        {
+          "feature": "leverage_bucket",
+          "value": "moderate",
+          "lift": 0.85,
+          "n": 3
+        },
+        {
+          "feature": "profitability_bucket",
+          "value": "low",
+          "lift": 0.81,
+          "n": 3
+        },
+        {
+          "feature": "market_quality",
+          "value": "secular_growth",
+          "lift": 0.66,
+          "n": 2
+        },
+        {
+          "feature": "valuation_bucket",
+          "value": "expensive",
+          "lift": 0.66,
+          "n": 2
+        }
+      ]
+    },
+    {
+      "key": "pred:poor",
+      "group": "By predicted call",
+      "label": "Predicted 'poor'",
+      "sub": "when it called 'poor', when was it wrong?",
+      "n": 34,
+      "errors": 27,
+      "relate": [
+        {
+          "feature": "profitability_bucket",
+          "value": "negative",
+          "lift": 1.1,
+          "n": 9
+        },
+        {
+          "feature": "market_quality",
+          "value": "secular_growth",
+          "lift": 1.07,
+          "n": 6
+        },
+        {
+          "feature": "market_quality",
+          "value": "cyclical",
+          "lift": 1.07,
+          "n": 6
+        },
+        {
+          "feature": "valuation_bucket",
+          "value": "negative_earnings",
+          "lift": 1.07,
+          "n": 6
+        },
+        {
+          "feature": "sector",
+          "value": "Communication Services",
+          "lift": 1.06,
+          "n": 5
+        },
+        {
+          "feature": "market_quality",
+          "value": "declining",
+          "lift": 1.03,
+          "n": 4
+        },
+        {
+          "feature": "leadership_quality",
+          "value": "2",
+          "lift": 1.03,
+          "n": 4
+        },
+        {
+          "feature": "market_position",
+          "value": "strong",
+          "lift": 0.99,
+          "n": 30
+        },
+        {
+          "feature": "sector",
+          "value": "Consumer Staples",
+          "lift": 0.89,
+          "n": 11
+        },
+        {
+          "feature": "market_quality",
+          "value": "disrupted",
+          "lift": 0.89,
+          "n": 11
+        },
+        {
+          "feature": "growth_bucket",
+          "value": "high",
+          "lift": 0.84,
+          "n": 5
+        },
+        {
+          "feature": "market_quality",
+          "value": "stable",
+          "lift": 0.77,
+          "n": 6
+        }
+      ]
+    },
+    {
+      "key": "pred:market",
+      "group": "By predicted call",
+      "label": "Predicted 'market'",
+      "sub": "when it called 'market', when was it wrong?",
+      "n": 92,
+      "errors": 70,
+      "relate": [
+        {
+          "feature": "market_quality",
+          "value": "secular_growth",
+          "lift": 1.09,
+          "n": 47
+        },
+        {
+          "feature": "moat_type",
+          "value": "switching_costs",
+          "lift": 1.08,
+          "n": 6
+        },
+        {
+          "feature": "volatility_bucket",
+          "value": "medium",
+          "lift": 1.06,
+          "n": 42
+        },
+        {
+          "feature": "volatility_bucket",
+          "value": "high",
+          "lift": 1.06,
+          "n": 5
+        },
+        {
+          "feature": "sector",
+          "value": "Communication Services",
+          "lift": 1.06,
+          "n": 11
+        },
+        {
+          "feature": "growth_bucket",
+          "value": "high",
+          "lift": 1.05,
+          "n": 15
+        },
+        {
+          "feature": "momentum_bucket",
+          "value": "weak",
+          "lift": 1.05,
+          "n": 10
+        },
+        {
+          "feature": "sector",
+          "value": "Materials",
+          "lift": 1.04,
+          "n": 4
+        },
+        {
+          "feature": "sector",
+          "value": "Consumer Staples",
+          "lift": 0.92,
+          "n": 26
+        },
+        {
+          "feature": "market_quality",
+          "value": "stable",
+          "lift": 0.91,
+          "n": 25
+        },
+        {
+          "feature": "volatility_bucket",
+          "value": "low",
+          "lift": 0.89,
+          "n": 44
+        },
+        {
+          "feature": "market_quality",
+          "value": "cyclical",
+          "lift": 0.84,
+          "n": 13
+        }
+      ]
+    },
+    {
+      "key": "pred:good",
+      "group": "By predicted call",
+      "label": "Predicted 'good'",
+      "sub": "when it called 'good', when was it wrong?",
+      "n": 614,
+      "errors": 398,
+      "relate": [
+        {
+          "feature": "leverage_bucket",
+          "value": "negative_equity",
+          "lift": 1.15,
+          "n": 11
+        },
+        {
+          "feature": "volatility_bucket",
+          "value": "high",
+          "lift": 1.15,
+          "n": 12
+        },
+        {
+          "feature": "moat_type",
+          "value": "switching_costs",
+          "lift": 1.13,
+          "n": 10
+        },
+        {
+          "feature": "sector",
+          "value": "Communication Services",
+          "lift": 1.12,
+          "n": 14
+        },
+        {
+          "feature": "volatility_bucket",
+          "value": "medium",
+          "lift": 1.1,
+          "n": 227
+        },
+        {
+          "feature": "growth_bucket",
+          "value": "high",
+          "lift": 1.09,
+          "n": 43
+        },
+        {
+          "feature": "market_quality",
+          "value": "secular_growth",
+          "lift": 1.05,
+          "n": 201
+        },
+        {
+          "feature": "leverage_bucket",
+          "value": "moderate",
+          "lift": 0.96,
+          "n": 283
+        },
+        {
+          "feature": "volatility_bucket",
+          "value": "low",
+          "lift": 0.92,
+          "n": 371
+        },
+        {
+          "feature": "market_quality",
+          "value": "stable",
+          "lift": 0.85,
+          "n": 172
+        },
+        {
+          "feature": "moat_type",
+          "value": "regulatory",
+          "lift": 0.81,
+          "n": 127
+        },
+        {
+          "feature": "sector",
+          "value": "Utilities",
+          "lift": 0.65,
+          "n": 79
+        }
+      ]
+    },
+    {
+      "key": "pred:great",
+      "group": "By predicted call",
+      "label": "Predicted 'great'",
+      "sub": "when it called 'great', when was it wrong?",
+      "n": 537,
+      "errors": 331,
+      "relate": [
+        {
+          "feature": "sector",
+          "value": "Financials",
+          "lift": 1.12,
+          "n": 40
+        },
+        {
+          "feature": "moat_type",
+          "value": "brand",
+          "lift": 1.11,
+          "n": 54
+        },
+        {
+          "feature": "valuation_bucket",
+          "value": "expensive",
+          "lift": 1.08,
+          "n": 65
+        },
+        {
+          "feature": "valuation_bucket",
+          "value": "fair",
+          "lift": 0.93,
+          "n": 165
+        },
+        {
+          "feature": "market_position",
+          "value": "dominant",
+          "lift": 0.93,
+          "n": 142
+        },
+        {
+          "feature": "strategic_clarity",
+          "value": "5",
+          "lift": 0.92,
+          "n": 138
+        },
+        {
+          "feature": "moat_strength",
+          "value": "wide",
+          "lift": 0.92,
+          "n": 106
+        },
+        {
+          "feature": "execution_track_record",
+          "value": "5",
+          "lift": 0.88,
+          "n": 57
+        },
+        {
+          "feature": "moat_type",
+          "value": "switching_costs",
+          "lift": 0.81,
+          "n": 64
+        },
+        {
+          "feature": "sector",
+          "value": "Communication Services",
+          "lift": 0.81,
+          "n": 15
+        },
+        {
+          "feature": "leadership_quality",
+          "value": "5",
+          "lift": 0.76,
+          "n": 49
+        },
+        {
+          "feature": "sector",
+          "value": "Information Technology",
+          "lift": 0.55,
+          "n": 120
+        }
+      ]
+    }
+  ]
+}
