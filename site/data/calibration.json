@@ -2,66 +2,66 @@
   "deciles": [
     {
       "label": "D1",
-      "predicted": 0.026,
+      "predicted": 0.031,
       "actual": 0.02,
       "n": 50
     },
     {
       "label": "D2",
-      "predicted": 0.115,
+      "predicted": 0.131,
       "actual": 0.16,
       "n": 50
     },
     {
       "label": "D3",
-      "predicted": 0.178,
-      "actual": 0.32,
+      "predicted": 0.202,
+      "actual": 0.3,
       "n": 50
     },
     {
       "label": "D4",
-      "predicted": 0.224,
-      "actual": 0.22,
+      "predicted": 0.243,
+      "actual": 0.14,
       "n": 50
     },
     {
       "label": "D5",
-      "predicted": 0.26,
-      "actual": 0.24,
-      "n": 50
-    },
-    {
-      "label": "D6",
-      "predicted": 0.322,
-      "actual": 0.26,
-      "n": 50
-    },
-    {
-      "label": "D7",
-      "predicted": 0.366,
-      "actual": 0.18,
-      "n": 50
-    },
-    {
-      "label": "D8",
-      "predicted": 0.443,
+      "predicted": 0.271,
       "actual": 0.32,
       "n": 50
     },
     {
+      "label": "D6",
+      "predicted": 0.31,
+      "actual": 0.24,
+      "n": 50
+    },
+    {
+      "label": "D7",
+      "predicted": 0.344,
+      "actual": 0.24,
+      "n": 50
+    },
+    {
+      "label": "D8",
+      "predicted": 0.418,
+      "actual": 0.28,
+      "n": 50
+    },
+    {
       "label": "D9",
-      "predicted": 0.552,
+      "predicted": 0.532,
       "actual": 0.6,
       "n": 50
     },
     {
       "label": "D10",
-      "predicted": 0.692,
-      "actual": 0.62,
+      "predicted": 0.654,
+      "actual": 0.64,
       "n": 50
     }
   ],
   "n_observations": 500,
-  "brier_score": 0.1835,
+  "brier_score": 0.181,
   "methodology": "In-sample calibration. For each row with a recorded outcome, P(great) predicted from its features (no outcome lookup); rows binned into deciles by predicted probability; mean predicted vs realised frequency plotted per bin. Lower Brier is better; perfect = 0, random = 0.25."
 }

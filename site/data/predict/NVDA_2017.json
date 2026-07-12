@@ -45,7 +45,7 @@
       {
         "label": "Disaster",
         "range": "< -63%",
-        "prob": 0.0831,
+        "prob": 0.0779,
         "why": {
           "base_rate": 0.0616,
           "factors": [
@@ -67,7 +67,7 @@
       {
         "label": "Poor",
         "range": "-63% to +0%",
-        "prob": 0.0603,
+        "prob": 0.0694,
         "why": {
           "base_rate": 0.1186,
           "factors": [
@@ -89,7 +89,7 @@
       {
         "label": "Market",
         "range": "+0% to +89%",
-        "prob": 0.0346,
+        "prob": 0.0538,
         "why": {
           "base_rate": 0.2063,
           "factors": [
@@ -111,7 +111,7 @@
       {
         "label": "Good",
         "range": "+89% to +215%",
-        "prob": 0.348,
+        "prob": 0.3485,
         "why": {
           "base_rate": 0.3187,
           "factors": [
@@ -133,7 +133,7 @@
       {
         "label": "Great",
         "range": ">= +215%",
-        "prob": 0.474,
+        "prob": 0.4503,
         "why": {
           "base_rate": 0.2948,
           "factors": [

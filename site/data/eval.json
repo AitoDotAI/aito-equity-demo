@@ -24,12 +24,12 @@
       "valuation_bucket",
       "moat_strength"
     ],
-    "accuracy": 0.326,
+    "accuracy": 0.323,
     "base_accuracy": 0.267,
-    "accuracy_gain": 0.059,
-    "information_gain": 0.139,
-    "geom_mean_lift": 1.102,
-    "mean_rank": 1.775,
+    "accuracy_gain": 0.056,
+    "information_gain": 0.107,
+    "geom_mean_lift": 1.08,
+    "mean_rank": 1.787,
     "base_mean_rank": 1.915
   },
   "comparison": [
@@ -42,115 +42,115 @@
     {
       "label": "calibrated features",
       "sub": "6 decorrelated features",
-      "accuracy": 0.326,
-      "information_gain": 0.139
+      "accuracy": 0.323,
+      "information_gain": 0.107
     },
     {
       "label": "all 16 features",
       "sub": "everything, incl. redundant/noisy",
-      "accuracy": 0.304,
-      "information_gain": -0.03
+      "accuracy": 0.305,
+      "information_gain": 0.023
     }
   ],
   "feature_sweep": [
     {
       "k": 1,
-      "information_gain": 0.155,
+      "information_gain": 0.156,
       "accuracy": 0.287,
       "added": "sector"
     },
     {
       "k": 2,
-      "information_gain": 0.156,
-      "accuracy": 0.323,
+      "information_gain": 0.079,
+      "accuracy": 0.282,
       "added": "volatility_bucket"
     },
     {
       "k": 3,
-      "information_gain": 0.17,
-      "accuracy": 0.312,
+      "information_gain": 0.173,
+      "accuracy": 0.307,
       "added": "momentum_bucket"
     },
     {
       "k": 4,
-      "information_gain": 0.174,
-      "accuracy": 0.329,
-      "added": "market_quality"
+      "information_gain": 0.072,
+      "accuracy": 0.29,
+      "added": "valuation_bucket"
     },
     {
       "k": 6,
-      "information_gain": 0.182,
-      "accuracy": 0.331,
+      "information_gain": 0.057,
+      "accuracy": 0.312,
       "added": "moat_strength"
     },
     {
       "k": 9,
-      "information_gain": 0.15,
-      "accuracy": 0.315,
-      "added": "market_position"
+      "information_gain": 0.186,
+      "accuracy": 0.307,
+      "added": "leadership_quality"
     },
     {
       "k": 12,
-      "information_gain": 0.146,
-      "accuracy": 0.331,
+      "information_gain": 0.139,
+      "accuracy": 0.309,
       "added": "profitability_bucket"
     },
     {
       "k": 16,
-      "information_gain": 0.047,
-      "accuracy": 0.32,
-      "added": "growth_bucket"
+      "information_gain": 0.013,
+      "accuracy": 0.323,
+      "added": "leverage_bucket"
     }
   ],
-  "peak_k": 6,
+  "peak_k": 9,
   "single_feature_ranking": [
     {
       "feature": "sector",
-      "information_gain": 0.155
+      "information_gain": 0.156
     },
     {
       "feature": "volatility_bucket",
-      "information_gain": 0.051
+      "information_gain": 0.048
     },
     {
       "feature": "momentum_bucket",
-      "information_gain": 0.035
-    },
-    {
-      "feature": "market_quality",
-      "information_gain": 0.014
+      "information_gain": 0.034
     },
     {
       "feature": "valuation_bucket",
-      "information_gain": 0.006
+      "information_gain": 0.013
+    },
+    {
+      "feature": "market_quality",
+      "information_gain": 0.013
     },
     {
       "feature": "moat_strength",
-      "information_gain": 0.005
-    },
-    {
-      "feature": "leadership_quality",
-      "information_gain": 0.002
+      "information_gain": 0.001
     },
     {
       "feature": "founder_still_ceo",
       "information_gain": 0.0
     },
     {
-      "feature": "market_position",
-      "information_gain": -0.005
+      "feature": "capital_allocation",
+      "information_gain": -0.001
     },
     {
-      "feature": "capital_allocation",
-      "information_gain": -0.006
+      "feature": "leadership_quality",
+      "information_gain": -0.003
+    },
+    {
+      "feature": "market_position",
+      "information_gain": -0.009
     },
     {
       "feature": "moat_type",
-      "information_gain": -0.007
+      "information_gain": -0.01
     },
     {
       "feature": "profitability_bucket",
-      "information_gain": -0.009
+      "information_gain": -0.011
     },
     {
       "feature": "strategic_clarity",
@@ -158,15 +158,15 @@
     },
     {
       "feature": "execution_track_record",
-      "information_gain": -0.013
-    },
-    {
-      "feature": "leverage_bucket",
-      "information_gain": -0.025
+      "information_gain": -0.017
     },
     {
       "feature": "growth_bucket",
-      "information_gain": -0.027
+      "information_gain": -0.02
+    },
+    {
+      "feature": "leverage_bucket",
+      "information_gain": -0.023
     }
   ]
 }
