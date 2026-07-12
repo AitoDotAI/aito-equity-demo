@@ -171,7 +171,8 @@ def classify_earnings(req: ClassifyRequest) -> dict:
             with httpx.Client(timeout=15.0) as client:
                 r = client.post(
                     f"{aito_url.rstrip('/')}/api/v1/_predict",
-                    json={"from": "earnings_events", "where": where, "predict": "react_1d_bucket"},
+                    json={"from": "earnings_events", "where": where, "predict": "react_1d_bucket",
+                          "config": {"ai": "high"}},
                     headers={"x-api-key": aito_key, "Content-Type": "application/json"},
                 )
             if r.status_code < 400:

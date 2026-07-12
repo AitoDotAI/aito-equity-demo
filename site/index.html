@@ -2332,6 +2332,8 @@
         <p class="article-deck" style="font-size:14px">Features added in order of individual usefulness (one held-out fold). Information gain <strong>peaks around <span data-bind="eval-peak">—</span> features</strong>, then erodes — extra features stop informing and start overfitting. The demo doing model selection in the open.</p>
         <div id="eval-sweep"><!-- rendered from data/eval.json --></div>
 
+        <p class="article-deck" style="font-size:13px; color: var(--ink-fade)">The figures above are the default-inference floor that <code style="font-family:'JetBrains Mono';font-size:12px">_evaluate</code> reports. The demo's live predictions use Aito's <code style="font-family:'JetBrains Mono';font-size:12px">ai: high</code> grouping mode, which collapses correlated features into single votes — on the full 16-feature set it lifts held-out information gain further (≈ +0.04 → +0.08 measured separately), i.e. "throw every feature at it," made calibrated.</p>
+
         <div class="pullquote" id="eval-pullquote"><!-- rendered from data/eval.json --></div>
 
       </section>
@@ -3579,7 +3581,7 @@
     try {
       const r = await fetch('./api/query', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kind: 'predict', body: { from: 'companies', where, predict: 'outcome_bucket', select: ['feature', '$p', '$why'] } }),
+        body: JSON.stringify({ kind: 'predict', body: { from: 'companies', where, predict: 'outcome_bucket', select: ['feature', '$p', '$why'], config: { ai: 'high' } } }),
       });
       const p = await r.json();
       predSource = p.source || 'aito';

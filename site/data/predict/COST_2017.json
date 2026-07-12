@@ -75,7 +75,7 @@
       {
         "label": "Poor",
         "range": "-63% to +0%",
-        "prob": 0.0487,
+        "prob": 0.0582,
         "why": {
           "base_rate": 0.1186,
           "factors": [
@@ -105,7 +105,7 @@
       {
         "label": "Market",
         "range": "+0% to +89%",
-        "prob": 0.2467,
+        "prob": 0.2365,
         "why": {
           "base_rate": 0.2063,
           "factors": [
@@ -122,11 +122,11 @@
               "lift": 1.07
             },
             {
-              "label": "leadership quality: 4",
+              "label": "moat type: scale economies",
               "lift": 1.03
             },
             {
-              "label": "moat type: scale economies",
+              "label": "leadership quality: 4",
               "lift": 1.03
             }
           ]
@@ -135,7 +135,7 @@
       {
         "label": "Good",
         "range": "+89% to +215%",
-        "prob": 0.4586,
+        "prob": 0.4446,
         "why": {
           "base_rate": 0.3187,
           "factors": [
@@ -165,7 +165,7 @@
       {
         "label": "Great",
         "range": ">= +215%",
-        "prob": 0.2414,
+        "prob": 0.2562,
         "why": {
           "base_rate": 0.2948,
           "factors": [
@@ -182,11 +182,11 @@
               "lift": 0.96
             },
             {
-              "label": "leadership quality: 4",
+              "label": "moat type: scale economies",
               "lift": 1.03
             },
             {
-              "label": "moat type: scale economies",
+              "label": "leadership quality: 4",
               "lift": 1.03
             }
           ]
