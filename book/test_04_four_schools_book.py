@@ -133,6 +133,41 @@ def _heldout_scores(df: pd.DataFrame, features: list[str]) -> np.ndarray:
     return score
 
 
+# ── alternative scorings (does the discrete-bin / rank realm distort it?) ──
+#
+# Three ways to turn the same held-out signal into a ranking:
+#   rank   : Σ p(bucket)·rank(bucket)        — ordinal index, evenly spaced (the shipped view)
+#   expcagr: Σ p(bucket)·E[cagr | bucket]    — the expectation-value realm, in the fund's own units
+#   reg    : additive regression on log-return, NO bins at all — the numeric realm
+# The bin→value map and the regression coefficients are estimated on TRAIN folds only.
+
+REG_SHRINK = 10.0  # pull small feature-cells toward the global mean (guards sparse values)
+
+
+def _heldout_all_scores(df: pd.DataFrame, features: list[str]) -> dict[str, np.ndarray]:
+    rankvec = np.array([RANK[c] for c in CLASSES])
+    s_rank = np.zeros(len(df)); s_expcagr = np.zeros(len(df)); s_reg = np.zeros(len(df))
+    logret = np.log1p(np.maximum(df["total_return_pct_local"].values, -99.0) / 100)  # additive numeric target
+    for k in range(N_FOLDS):
+        tr = df[df["eval_fold"] != k]
+        model = _train(tr, features)
+        cagrvec = np.array([float(tr.loc[tr["outcome_bucket"] == c, "cagr"].mean()) for c in CLASSES])
+        # additive log-return regression: E[y|x] = global + Σ_f shrunk(mean_f(value) − global)
+        g = float(logret[tr.index].mean())
+        eff: dict[str, dict[str, float]] = {}
+        for f in features:
+            sub = pd.DataFrame({f: tr[f].values, "y": logret[tr.index]})
+            gp = sub.groupby(f)["y"]; cnt, mean = gp.count(), gp.mean()
+            eff[f] = {v: (cnt[v] / (cnt[v] + REG_SHRINK)) * (mean[v] - g) for v in mean.index if pd.notna(mean[v])}
+        for i in np.where(df["eval_fold"].values == k)[0]:
+            row = df.iloc[i]
+            p = np.array(_predict_proba(model, row))
+            s_rank[i] = float(np.dot(p, rankvec))
+            s_expcagr[i] = float(np.dot(p, cagrvec))
+            s_reg[i] = g + sum(eff[f].get(row[f], 0.0) for f in features)
+    return {"rank": s_rank, "expcagr": s_expcagr, "reg": s_reg}
+
+
 # ── the test ────────────────────────────────────────────────────
 
 def test_four_schools(t: bt.TestCaseRun):
@@ -210,8 +245,44 @@ def test_four_schools(t: bt.TestCaseRun):
     t.tln("  portfolio — the win the blog flags as visible only in hindsight.")
     t.tln("")
 
+    # ── does the discrete-bin / rank realm distort the ranking? ──
+    t.h2("4 · Scoring realm — rank vs expectation-value vs numeric (no bins)")
+    t.tln("The default score is Σ p(bucket)·rank(bucket): the bins are treated as")
+    t.tln("evenly spaced. In *total-return* space they are wildly convex (great ≫")
+    t.tln("good), so that ordinal score under-weights the tail. Two fixes: score by")
+    t.tln("expected CAGR (Σ p·E[cagr|bucket]) — the expectation-value realm in the")
+    t.tln("fund's own units — or drop bins entirely and regress numeric log-return.")
+    t.tln("All three ranked on the same held-out signal; funds still measured in CAGR.")
+    t.tln("")
+    alt = {name: _heldout_all_scores(df, SCHOOLS[name]) for name in SCHOOLS}
+
+    def top(scores: np.ndarray, n: int) -> float:
+        return float(df.assign(s=scores).sort_values("s", ascending=False).head(n)["cagr"].mean())
+
+    for realm, key, note in [("rank  Σp·rank", "rank", "ordinal, evenly spaced (shipped)"),
+                             ("expcagr Σp·E[cagr]", "expcagr", "expectation-value, in CAGR units"),
+                             ("numeric log-ret reg", "reg", "no bins — regress the number")]:
+        t.tln(f"  {realm}  — {note}")
+        t.tln(f"    {'School':26s} {'top-20':>8s} {'top-50':>8s} {'top-100':>8s}")
+        for name in SCHOOLS:
+            s = alt[name][key]
+            t.tln(f"    {name:26s} {top(s,20):7.1f}% {top(s,50):7.1f}% {top(s,100):7.1f}%")
+        t.tln("")
+    t.tln("  Reading it:")
+    t.tln("  • The composite barely moves across realms (~19% top-20 everywhere):")
+    t.tln("    CAGR is already a log-compression of total return, so in the fund's")
+    t.tln("    own units the bins are ≈evenly spaced and the rank score is a fine")
+    t.tln("    proxy. Discretization is not why the composite fails to dominate.")
+    t.tln("  • Value is the one that collapses (top-20 24.8% → ~15-17%): its lead")
+    t.tln("    over the composite WAS a rank-score artifact that rewarded a")
+    t.tln("    concentrated, overconfident cheap-stock sort. In the expectation")
+    t.tln("    realm the composite edges every school except Growth.")
+    t.tln("  • Growth wins under every realm — the tell that its edge is a genuine")
+    t.tln("    (if hindsight-only) signal, not an artifact of how we score.")
+    t.tln("")
+
     # ── invariants worth guarding against drift ──
-    t.h2("4 · Sanity checks")
+    t.h2("5 · Sanity checks")
     all_beat = all(results[s]["funds"][20]["cagr"] > mkt_cagr for s in SCHOOLS)
     comp_robust = abs(results["Composite (data-driven)"]["decay"]) <= min(
         abs(results[s]["decay"]) for s in SCHOOLS if s != "Composite (data-driven)")

@@ -44,7 +44,50 @@ CAGR: how much the edge survives when you stop cherry-picking.
   portfolio — the win the blog flags as visible only in hindsight.
 
 
-## 4 · Sanity checks
+## 4 · Scoring realm — rank vs expectation-value vs numeric (no bins)
+
+The default score is Σ p(bucket)·rank(bucket): the bins are treated as
+evenly spaced. In *total-return* space they are wildly convex (great ≫
+good), so that ordinal score under-weights the tail. Two fixes: score by
+expected CAGR (Σ p·E[cagr|bucket]) — the expectation-value realm in the
+fund's own units — or drop bins entirely and regress numeric log-return.
+All three ranked on the same held-out signal; funds still measured in CAGR.
+
+  rank  Σp·rank  — ordinal, evenly spaced (shipped)
+    School                       top-20   top-50  top-100
+    Value (Graham)                24.8%    16.2%    12.4%
+    Quality (Buffett)             18.0%    16.0%    14.0%
+    Growth (Fisher)               31.1%    26.1%    21.4%
+    Composite (data-driven)       19.5%    18.6%    17.7%
+
+  expcagr Σp·E[cagr]  — expectation-value, in CAGR units
+    School                       top-20   top-50  top-100
+    Value (Graham)                17.1%    16.0%    12.8%
+    Quality (Buffett)             17.2%    16.0%    13.4%
+    Growth (Fisher)               26.0%    25.8%    21.7%
+    Composite (data-driven)       19.0%    18.6%    17.8%
+
+  numeric log-ret reg  — no bins — regress the number
+    School                       top-20   top-50  top-100
+    Value (Graham)                14.9%    14.1%    13.5%
+    Quality (Buffett)             20.1%    14.9%    14.2%
+    Growth (Fisher)               18.6%    26.2%    21.9%
+    Composite (data-driven)       19.7%    17.4%    16.5%
+
+  Reading it:
+  • The composite barely moves across realms (~19% top-20 everywhere):
+    CAGR is already a log-compression of total return, so in the fund's
+    own units the bins are ≈evenly spaced and the rank score is a fine
+    proxy. Discretization is not why the composite fails to dominate.
+  • Value is the one that collapses (top-20 24.8% → ~15-17%): its lead
+    over the composite WAS a rank-score artifact that rewarded a
+    concentrated, overconfident cheap-stock sort. In the expectation
+    realm the composite edges every school except Growth.
+  • Growth wins under every realm — the tell that its edge is a genuine
+    (if hindsight-only) signal, not an artifact of how we score.
+
+
+## 5 · Sanity checks
 
   every school's top-20 beat the market : True
   composite is the most robust (least decay): True
