@@ -30,3 +30,6 @@ scripts/output/*
 
 # Booktest snapshot output
 books/.out/
+
+# Agent scratch: analyses, results, working notes — not committed
+.ai/
