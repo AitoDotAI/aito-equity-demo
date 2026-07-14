@@ -2012,7 +2012,7 @@
   .bt-hero .big small { font-size: 16px; font-weight: 500; color: var(--ink-fade); }
   .bt-hero .vs { font-family: 'Source Serif 4', serif; font-size: 13.5px; color: var(--ink-soft); font-style: italic; max-width: 320px; line-height: 1.4; }
   .bt-hero .vs b { font-style: normal; color: var(--ink); }
-  .bt-fund-row { display: grid; grid-template-columns: 150px 1fr 118px; gap: 14px; align-items: center; padding: 9px 0; border-bottom: 1px dotted var(--rule-soft); }
+  .bt-fund-row { display: grid; grid-template-columns: 150px 1fr 118px 24px; gap: 14px; align-items: center; padding: 9px 0; border-bottom: 1px dotted var(--rule-soft); }
   .bt-fund-label { font-family: 'Source Serif 4', serif; font-size: 13px; color: var(--ink); }
   .bt-fund-label small { display: block; font-style: italic; font-size: 10.5px; color: var(--ink-fade); }
   .bt-track { position: relative; height: 16px; background: rgba(0,0,0,0.05); }
@@ -2022,6 +2022,37 @@
   .bt-mkline { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); z-index: 2; }
   .bt-fund-val { font-family: 'JetBrains Mono', monospace; font-size: 12px; text-align: right; color: var(--ink); }
   .bt-fund-val b { color: #3c5630; }
+  /* "?" holdings toggle + drill-down panel */
+  .bt-q { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--rule); background: transparent; color: var(--ink-fade); font-family: 'Source Serif 4', serif; font-size: 12px; font-style: italic; cursor: pointer; padding: 0; line-height: 1; transition: all 0.12s; }
+  .bt-q:hover { border-color: var(--accent); color: var(--accent); }
+  .bt-q.open { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .bt-q.spacer { visibility: hidden; }
+  .bt-holdings { display: none; margin: 2px 0 10px; padding: 12px 14px; background: #fbf6ec; border: 1px solid var(--rule); }
+  .bt-holdings.open { display: block; }
+  .bt-holdings-cap { font-family: 'Source Serif 4', serif; font-size: 11.5px; font-style: italic; color: var(--ink-soft); margin: 0 0 8px; }
+  .bt-hold-scroll { max-height: 340px; overflow-y: auto; }
+  .bt-hold-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .bt-hold-tbl th { text-align: left; font-family: 'Source Serif 4', serif; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-fade); font-weight: 600; padding: 3px 8px 6px; border-bottom: 1px solid var(--rule); position: sticky; top: 0; background: #fbf6ec; }
+  .bt-hold-tbl td { padding: 4px 8px; border-bottom: 1px dotted var(--rule-soft); }
+  .bt-hold-tbl td.n { font-family: 'JetBrains Mono', monospace; text-align: right; }
+  .bt-hold-tk { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--ink); }
+  .bt-hold-co { font-family: 'Source Serif 4', serif; color: var(--ink-fade); font-size: 11px; }
+  .bt-hold-rank { font-family: 'JetBrains Mono', monospace; color: var(--ink-fade); font-size: 10.5px; }
+  .bt-hold-b { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.04em; padding: 1px 6px; border-radius: 2px; }
+  .bt-hold-b.great, .bt-hold-b.good { background: rgba(60,86,48,0.12); color: #3c5630; }
+  .bt-hold-b.market { background: rgba(0,0,0,0.06); color: var(--ink-soft); }
+  .bt-hold-b.poor, .bt-hold-b.disaster { background: rgba(150,40,30,0.1); color: var(--red); }
+  .bt-hold-call { cursor: pointer; border: 1px solid transparent; }
+  .bt-hold-call:hover { border-color: currentColor; }
+  .bt-hold-call::after { content: ' ?'; font-style: italic; opacity: 0.6; }
+  /* per-basket relate strip — "what these picks share" */
+  .bt-share { margin: 0 0 12px; padding: 0 0 10px; border-bottom: 1px solid var(--rule); }
+  .bt-share-lbl { font-family: 'Source Serif 4', serif; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-fade); font-weight: 600; margin: 0 0 6px; }
+  .bt-share-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .bt-share-chip { font-family: 'Source Serif 4', serif; font-size: 11.5px; color: var(--ink); background: rgba(60,86,48,0.08); border: 1px solid rgba(60,86,48,0.2); border-radius: 3px; padding: 2px 8px; }
+  .bt-share-chip b { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #3c5630; font-weight: 600; }
+  .bt-share-chip small { color: var(--ink-fade); font-size: 9.5px; }
+  .bt-share-none { font-family: 'Source Serif 4', serif; font-style: italic; font-size: 11.5px; color: var(--ink-fade); }
   .bt-vint-row { display: grid; grid-template-columns: 58px 1fr; gap: 14px; padding: 11px 0; border-bottom: 1px dotted var(--rule-soft); align-items: baseline; }
   .bt-vint-y { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; color: var(--ink); }
   .bt-vint-body { font-family: 'Source Serif 4', serif; font-size: 12.5px; color: var(--ink-soft); }
@@ -2082,7 +2113,8 @@
     .eval-cmp-row { grid-template-columns: 120px 1fr 44px; gap: 8px; }
     .ea-row { grid-template-columns: 128px 1fr 40px; gap: 8px; }
     .ea-label { font-size: 11.5px; }
-    .bt-fund-row { grid-template-columns: 96px 1fr 92px; gap: 8px; }
+    .bt-fund-row { grid-template-columns: 82px 1fr 84px 22px; gap: 7px; }
+    .bt-hold-co { display: none; }
     .bt-hero .big { font-size: 32px; }
 
     /* profile header stacks vertically */
@@ -2832,6 +2864,24 @@
 <span class="c">// → score = Σ p·rank; sort desc; take top-N</span></div>
       </div>
 
+      <div class="aito-section" data-view="backtest">
+        <div class="aito-section-label">Two ways to open the box</div>
+        <p>Hit <strong>?</strong> on any basket to see every pick and its realised return. Two explanations ride along, both reusing query types you've already seen:</p>
+        <p><strong>Per pick</strong> — the <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">$why</code> of that company's <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">_predict</code>: base rate × each feature's lift. Click a <em>Call</em> chip — the same popup the Company Lab uses.</p>
+        <p><strong>Per basket</strong> — a <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">_relate</code> over basket membership answers "what kind of company got selected here?" The same query the Error Analysis view points at its own mistakes.</p>
+      </div>
+
+      <div class="aito-section" data-view="backtest">
+        <div class="aito-section-label">The Explain Query</div>
+        <div class="aito-endpoint">POST /api/v1/_relate</div>
+        <div class="aito-code">{
+  <span class="k">"from"</span>: <span class="s">"bt_baskets"</span>,
+  <span class="k">"where"</span>: { <span class="k">"in_top20"</span>: <span class="n">true</span> },
+  <span class="k">"relate"</span>: [ <span class="c">/* input features */</span> ]
+}
+<span class="c">// → lift per feature-value for being picked</span></div>
+      </div>
+
       <div class="aito-section" data-view="universe">
         <div class="aito-section-label">The Table</div>
         <p>Every row the engine sees. <strong>Filtering and sorting happen client-side</strong> — the entire 1,500-row universe ships as a single JSON file (~700KB), small enough that no server round-trip is needed for browse.</p>
@@ -3238,22 +3288,80 @@
     const allTotals = funds.map(f => f.mean_total).concat([mkt.mean_total]);
     const maxTot = Math.max(...allTotals, 1);
     const mkPct = (mkt.mean_total / maxTot * 100).toFixed(1);
+    // Per-pick $why lives in the shared registry the Company Lab popup reads.
+    Object.assign(whyRegistry, bt.whys || {});
+    const hasWhy = k => bt.whys && bt.whys[k] && bt.whys[k].why;
+
+    // Basket-level relate: which feature values lift membership in this group.
+    const shareStrip = (f) => {
+      const rel = (f.relate || []).filter(r => r.lift >= 1.15).slice(0, 7);
+      if (!rel.length) return `<p class="bt-share-none">Too few names / no feature stands out strongly enough for a stable relate on this basket.</p>`;
+      const chips = rel.map(r => `<span class="bt-share-chip">${esc(r.feature.replace(/_/g, ' '))}: <b>${esc(String(r.value).replace(/_/g, ' '))}</b> <small>×${r.lift.toFixed(1)}</small></span>`).join('');
+      return `<div class="bt-share-chips">${chips}</div>`;
+    };
+
+    // Holdings drill-down: every pick in a basket with its ACTUAL return, as picked (score order).
+    const holdingsPanel = (f, idx) => {
+      const rowsH = (f.holdings || []).map((hd, i) => {
+        const neg = hd.ret < 0;
+        const call = hasWhy(hd.key)
+          ? `<span class="bt-hold-b ${esc(hd.pred)} bt-hold-call" data-why="${esc(hd.key)}" title="Why the engine called '${esc(hd.pred)}' — its $why">${esc(hd.pred)}</span>`
+          : `<span class="bt-hold-b ${esc(hd.pred)}">${esc(hd.pred)}</span>`;
+        return `<tr>
+          <td class="bt-hold-rank">${i + 1}</td>
+          <td><span class="bt-hold-tk">${esc(hd.ticker)}</span> <span class="bt-hold-co">${esc(hd.company || '')}</span></td>
+          <td class="n">${hd.vintage}</td>
+          <td class="n" style="color:${neg ? 'var(--red)' : '#3c5630'};font-weight:600">${sign(hd.ret)}%</td>
+          <td>${call}</td>
+          <td><span class="bt-hold-b ${esc(hd.bucket)}">${esc(hd.bucket)}</span></td>
+        </tr>`;
+      }).join('');
+      return `<div class="bt-holdings" id="bt-hold-${idx}">
+        <div class="bt-share">
+          <p class="bt-share-lbl">What the ${esc(f.label)} picks share · relate over basket membership</p>
+          ${shareStrip(f)}
+        </div>
+        <p class="bt-holdings-cap">Every name, in the order the engine ranked it — with the return it actually delivered (held to ~2026). <b>Call</b> = the engine's predicted bucket (click for its <code style="font-family:'JetBrains Mono';font-size:11px">$why</code>); <b>Outcome</b> = what actually happened.</p>
+        <div class="bt-hold-scroll"><table class="bt-hold-tbl">
+          <thead><tr><th>#</th><th>Pick</th><th>Vintage</th><th>Total ret</th><th>Call</th><th>Outcome</th></tr></thead>
+          <tbody>${rowsH}</tbody>
+        </table></div>
+      </div>`;
+    };
+
     const rows = [];
     rows.push(`<div class="bt-fund-row">
       <div class="bt-fund-label">Market<small>equal-weight, all ${bt.n_heldout.toLocaleString()}</small></div>
       <div class="bt-track"><div class="bt-fill market" style="width:${mkPct}%"></div></div>
       <div class="bt-fund-val">${sign(mkt.mean_total)}%<br><span style="color:var(--ink-fade)">${sign(mkt.cagr)}%/yr</span></div>
+      <button class="bt-q spacer" tabindex="-1">?</button>
     </div>`);
-    funds.forEach(f => {
+    funds.forEach((f, idx) => {
       const w = (f.mean_total / maxTot * 100).toFixed(1);
       const neg = f.cagr < 0;
+      const hasHoldings = (f.holdings || []).length > 0;
       rows.push(`<div class="bt-fund-row">
         <div class="bt-fund-label">${esc(f.label)}<small>${Math.round(f.upside_hit * 100)}% beat market</small></div>
         <div class="bt-track"><div class="bt-fill${neg ? ' neg' : ''}" style="width:${w}%"></div><div class="bt-mkline" style="left:${mkPct}%"></div></div>
         <div class="bt-fund-val"><b${neg ? ' style="color:var(--red)"' : ''}>${sign(f.mean_total)}%</b><br><span style="color:var(--ink-fade)">${sign(f.cagr)}%/yr</span></div>
+        ${hasHoldings ? `<button class="bt-q" data-hold="${idx}" title="Show every pick in this basket" aria-label="Show holdings for ${esc(f.label)}">?</button>` : `<button class="bt-q spacer" tabindex="-1">?</button>`}
       </div>`);
+      if (hasHoldings) rows.push(holdingsPanel(f, idx));
     });
-    document.getElementById('bt-funds').innerHTML = rows.join('');
+    const fundsEl = document.getElementById('bt-funds');
+    fundsEl.innerHTML = rows.join('');
+    fundsEl.querySelectorAll('.bt-q[data-hold]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panel = document.getElementById('bt-hold-' + btn.dataset.hold);
+        const nowOpen = !panel.classList.contains('open');
+        panel.classList.toggle('open', nowOpen);
+        btn.classList.toggle('open', nowOpen);
+        btn.textContent = nowOpen ? '×' : '?';
+      });
+    });
+    fundsEl.querySelectorAll('.bt-hold-call[data-why]').forEach(el => {
+      el.addEventListener('click', () => showWhyById(el.dataset.why));
+    });
 
     // Per-vintage — same holding window, one starting year at a time.
     document.getElementById('bt-vintages').innerHTML = (bt.per_vintage || []).map(v => `
