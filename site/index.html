@@ -65,11 +65,15 @@
     height: 100vh;
     position: relative;
     z-index: 1;
+    transition: grid-template-columns 0.28s ease;
   }
 
   .app.sidebar-collapsed { grid-template-columns: 0 1fr 360px; }
   .app.aito-collapsed { grid-template-columns: 260px 1fr 0; }
   .app.sidebar-collapsed.aito-collapsed { grid-template-columns: 0 1fr 0; }
+  /* clip panel content while the column animates to/from 0 width */
+  .aito-panel { overflow-x: hidden; }
+  .app.aito-collapsed .aito-panel { border-left: none; }
 
   /* ===== LEFT SIDEBAR — editorial masthead style ===== */
   .sidebar {
@@ -225,6 +229,8 @@
     transition: all 0.15s;
     font-family: 'JetBrains Mono', monospace;
   }
+  .toggle-btn:hover { border-color: var(--ink-soft); color: var(--ink); }
+  .toggle-btn.active { border-color: var(--gold); color: var(--gold); }
 
   .toggle-btn:hover {
     background: var(--ink);
@@ -1130,6 +1136,8 @@
     margin-top: 12px;
     overflow-x: auto;
     border: 1px solid var(--aito-border);
+    white-space: pre;   /* preserve the authored JSON indentation (was collapsing to one flow) */
+    tab-size: 2;
   }
 
   .aito-code .k { color: var(--aito-purple); }
@@ -2705,6 +2713,40 @@
         </ul>
       </div>
 
+      <div class="aito-section" data-view="lab">
+        <div class="aito-section-label">Partial profiles, no retraining</div>
+        <p>A trained model needs every feature it was fitted on. Aito doesn't — it predicts from <strong>whatever you supply</strong>. Set two knobs or ten; the engine conditions on exactly what it's given and integrates over the rest. Move any grade and the forecast moves live, because nothing was pre-fit.</p>
+      </div>
+
+      <div class="aito-section" data-view="lab">
+        <div class="aito-section-label">The Query</div>
+        <div class="aito-endpoint">POST /api/query · predict</div>
+        <div class="aito-code"><span class="c">// only the knobs you set; rest left out</span>
+{
+  <span class="k">"from"</span>: <span class="s">"companies"</span>,
+  <span class="k">"where"</span>: {
+    <span class="k">"moat_strength"</span>: <span class="s">"wide"</span>,
+    <span class="k">"leadership_quality"</span>: <span class="n">4</span>
+  },
+  <span class="k">"predict"</span>: <span class="s">"outcome_bucket"</span>,
+  <span class="k">"select"</span>: [<span class="s">"feature"</span>, <span class="s">"$p"</span>, <span class="s">"$why"</span>],
+  <span class="k">"config"</span>: { <span class="k">"ai"</span>: <span class="s">"high"</span> }
+}</div>
+        <p>The same <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">$why</code> tree the prediction card opens: base rate × each knob's lift. Change a knob, re-query, watch the lifts recompute.</p>
+      </div>
+
+      <div class="aito-section" data-view="lab">
+        <div class="aito-section-label">And the analogues</div>
+        <div class="aito-endpoint">POST /api/query · similarity</div>
+        <div class="aito-code"><span class="c">// closest real companies to your profile</span>
+{
+  <span class="k">"from"</span>: <span class="s">"companies"</span>,
+  <span class="k">"similarity"</span>: { <span class="c">/* profile */</span> },
+  <span class="k">"limit"</span>: <span class="n">12</span>
+}</div>
+        <p>One built profile drives two queries — a calibrated forecast and its nearest historical precedents — with no model to train between them.</p>
+      </div>
+
       <div class="aito-section" data-view="thesis">
         <div class="aito-section-label">The Question Asked</div>
         <p>Which features in the table are most strongly associated with the 'great' outcome? The <code style="font-family: 'JetBrains Mono'; color: var(--aito-purple);">relate</code> endpoint answers this in a single call — no separate feature-importance model required.</p>
@@ -3511,8 +3553,13 @@
     if (isMobile()) app.classList.toggle('nav-open');
     else app.classList.toggle('sidebar-collapsed');
   });
-  document.getElementById('toggleAito').addEventListener('click', () => {
-    app.classList.toggle('aito-collapsed');
+  const toggleAitoBtn = document.getElementById('toggleAito');
+  toggleAitoBtn.addEventListener('click', () => {
+    const collapsed = app.classList.toggle('aito-collapsed');
+    // active = panel is HIDDEN; flip the glyph and label so the control reads its own state
+    toggleAitoBtn.classList.toggle('active', collapsed);
+    toggleAitoBtn.textContent = collapsed ? '◨' : '◧';
+    toggleAitoBtn.title = collapsed ? 'Show Aito panel' : 'Hide Aito panel';
   });
   // tap the backdrop / content to close the mobile drawer
   document.addEventListener('click', (e) => {
