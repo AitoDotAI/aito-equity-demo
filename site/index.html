@@ -2705,6 +2705,40 @@
         </ul>
       </div>
 
+      <div class="aito-section" data-view="lab">
+        <div class="aito-section-label">Partial profiles, no retraining</div>
+        <p>A trained model needs every feature it was fitted on. Aito doesn't — it predicts from <strong>whatever you supply</strong>. Set two knobs or ten; the engine conditions on exactly what it's given and integrates over the rest. Move any grade and the forecast moves live, because nothing was pre-fit.</p>
+      </div>
+
+      <div class="aito-section" data-view="lab">
+        <div class="aito-section-label">The Query</div>
+        <div class="aito-endpoint">POST /api/query · predict</div>
+        <div class="aito-code"><span class="c">// Only the knobs you set — the rest is left out, not guessed</span>
+{
+  <span class="k">"from"</span>: <span class="s">"companies"</span>,
+  <span class="k">"where"</span>: { <span class="c">/* your profile, whole or partial */</span>
+    <span class="k">"moat_strength"</span>: <span class="s">"wide"</span>,
+    <span class="k">"leadership_quality"</span>: <span class="n">4</span>
+  },
+  <span class="k">"predict"</span>: <span class="s">"outcome_bucket"</span>,
+  <span class="k">"select"</span>: [<span class="s">"feature"</span>, <span class="s">"$p"</span>, <span class="s">"$why"</span>],
+  <span class="k">"config"</span>: { <span class="k">"ai"</span>: <span class="s">"high"</span> }
+}</div>
+        <p>The same <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">$why</code> tree the prediction card opens: base rate × each knob's lift. Change a knob, re-query, watch the lifts recompute.</p>
+      </div>
+
+      <div class="aito-section" data-view="lab">
+        <div class="aito-section-label">And the analogues</div>
+        <div class="aito-endpoint">POST /api/query · similarity</div>
+        <div class="aito-code"><span class="c">// Real companies closest to the profile you built</span>
+{
+  <span class="k">"from"</span>: <span class="s">"companies"</span>,
+  <span class="k">"similarity"</span>: { <span class="c">/* your profile */</span> },
+  <span class="k">"limit"</span>: <span class="n">12</span>
+}</div>
+        <p>One built profile drives two queries — a calibrated forecast and its nearest historical precedents — with no model to train between them.</p>
+      </div>
+
       <div class="aito-section" data-view="thesis">
         <div class="aito-section-label">The Question Asked</div>
         <p>Which features in the table are most strongly associated with the 'great' outcome? The <code style="font-family: 'JetBrains Mono'; color: var(--aito-purple);">relate</code> endpoint answers this in a single call — no separate feature-importance model required.</p>
