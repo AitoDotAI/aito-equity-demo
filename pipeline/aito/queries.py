@@ -32,10 +32,23 @@ from pipeline.outcomes import absolute_range_label
 SITE_DATA = Path("site/data")
 COMPANIES_TABLE = "companies"
 
-# Aito's aggressive-grouping inference mode: collapses correlated features into
-# single $and votes (no double-counting), which keeps predictions calibrated on
-# wide feature spaces. Measured to ~2x held-out info gain on the full feature
-# set vs the default. Every predict the demo shows uses it.
+# Aito inference profile the demo pins. "high" = correlated features combined into
+# $and votes (grouping) PLUS a calibration normalizer, which pulls overconfident
+# wide-feature predictions down to well-calibrated ones. The engine exposes
+# profiles {v1, v2, and, group, high, fast, flat}; "high" is its own composite —
+# it coincides with plain "and" on ~80% of rows but diverges where grouping bites
+# (correlated-feature names: ADI, AMAT, ALK), and is never plain "group".
+#
+# This instance is V1 (rep1/TableDb): the absent-config default learner is "and"
+# (AndPropositionLearner), confirmed 40/40 companies (default==and, never group;
+# V2/rep2 would default to GroupLearner="group"). So the demo does NOT ride the
+# default — it pins "high" explicitly, and every live predict/relate uses it.
+#
+# Caveat for the eval story: _evaluate takes no config, so eval_aito.py and the
+# before/after table in docs/wide-feature-calibration.md are measured on the V1
+# "and" default, NOT on "high". You cannot masked-evaluate "high" on this
+# instance; to characterise what the demo ships, use the pandas mirror or a
+# DB-side default override.
 AI_CONFIG = {"ai": "high"}
 
 
