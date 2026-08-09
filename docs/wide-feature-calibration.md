@@ -278,3 +278,80 @@ cross-reference (§6) and the `$on` conditioning test (§5) are ad-hoc `_predict
 feature schema, the discovered clusters, and out-of-fold reference predictions —
 useful for a from-scratch re-implementation, though §2–§7 above (Aito's own
 masked `_evaluate`) are the authoritative measurements.
+
+---
+
+## 8 · Which inference profile does the demo ship, and is it the best? (live probe)
+
+The demo pins `config.ai = "high"` on every predict/relate (`pipeline/aito/queries.py`).
+This section records what that profile is, which engine rep this instance runs,
+and a held-out bake-off against the alternatives. All numbers probed live against
+`shared.aito.ai/db/aito-equity-demo` (scripts kept in the gitignored `.ai/`).
+
+### 8.1 · The `config.ai` profiles, mapped
+
+The instance accepts `{v1, v2, and, group, high, fast, flat}`. On AAPL (15 feats):
+
+| profile | P(great) | what it is |
+|---|---|---|
+| **high** (shipped), and¹ | 0.74 | `and` (correlated feats → `$and` votes) **+ calibration normalizer** |
+| group | 0.90 | grouping, no calibration (most overconfident) |
+| fast, flat | 0.83 | flat Naive-Bayes |
+
+¹ `high` == plain `and` on ~80% of rows but **diverges where grouping bites**
+(correlated-feature names: ADI, AMAT, ALK), and is never plain `group`. So `high`
+is a genuine composite, not an alias.
+
+### 8.2 · This instance is V1 (rep1/TableDb)
+
+Per aito-core, the absent-config default learner is set by the DB representation:
+V1/rep1/TableDb → `AndPropositionLearner` (`and`); V2/rep2/CollectionDb →
+`GroupLearner` (`group`). Probing the bare default (no `config.ai`) across 40
+companies: **default == `and` 40/40**, default == `group` only 6/40 (all-collapse
+rows), `and` != `group` on 34/40. → **this instance is V1**, and its `and` default
+is itself a grouping learner (the "grouping-on-by-default" of V1).
+
+Naming caveat being reconciled in V2 mode: the `v2` *profile name* resolves to the
+`and`+`group` composite, while a rep2 *API default* resolves to plain `group` —
+the two disagree today; consistency is an in-flight aito-core fix.
+
+### 8.3 · Held-out bake-off — is `group` (or anything) better than `high`?
+
+Config-aware masked held-out (5-fold TMP-table split, no company predicts its own
+outcome — same masking as `emit_error_analysis.py`), 1,294 rows, ranking by the
+shipped Σ p·rank score, measured in CAGR (`.ai/profile_bakeoff.py`):
+
+| profile | acc | log-loss | top20 CAGR | top50 | top100 |
+|---|---|---|---|---|---|
+| **high** (shipped) | 0.364 | **1.484** | **19.1%** | 20.1 | 18.2 |
+| group | 0.367 | 1.490 | 15.7% | 20.0 | 18.5 |
+| and | 0.364 | 1.490 | 20.7% | 20.9 | 17.9 |
+| flat | 0.369 | 1.487 | 15.5% | 18.0 | 18.3 |
+
+Market (equal-weight) = 7.9%.
+
+**Decision: keep `high`; `group` is not better here.**
+
+- Money metric (top-20 CAGR): `high` 19.1% > `group` 15.7% (−3.4pts). The two
+  un-calibrated profiles (`group`, `flat`) are the *worst* top-slice pickers.
+- Calibration: `high` has the best log-loss (1.484); `group` the worst (1.490).
+- Accuracy: dead heat (0.364–0.369 ≈ noise on 1,294 rows).
+- **The calibration normalizer earns its keep**: it is the only difference between
+  `high` and `group`, and it improves *both* log-loss and top-20 CAGR — dropping it
+  makes the top-slice ranking worse, not better.
+- Surprise: plain `and` tops the top-20 (20.7%), but it is worse calibrated and the
+  +1.6pt edge on a 20-name slice is within slice noise — not worth flipping the
+  shipped ranking for.
+- Small-N caveat: top-20 is a 20-name, high-variance slice; on top-50/top-100 all
+  four converge to ~18–21%. Honest framing: `high` wins on calibration and the
+  headline top-20; broader baskets are a wash. Everything beats 7.9% market at every
+  depth.
+
+### 8.4 · Eval caveat — `_evaluate` can't see `config`
+
+`_evaluate` rejects a `config` field (grammar: `train/test/testSource/select/maxTime/
+evaluate`). So `eval_aito.py` and the before/after `informationGain` tables in §2–§4
+above are measured on the **V1 `and` default**, NOT on the shipped `high` — and
+`high` diverges from `and` on ~20% of names. To measure `high` held-out you must use
+the TMP-table masking of §8.3 (config-aware) or a DB-side default override; the bare
+masked `_evaluate` will always give you `and` on this instance.
