@@ -32,17 +32,23 @@ from pipeline.outcomes import absolute_range_label
 SITE_DATA = Path("site/data")
 COMPANIES_TABLE = "companies"
 
-# Aito's grouping+calibration inference profile. It combines correlated features
-# into single $and votes and applies a calibration normalizer, pulling
-# overconfident wide-feature predictions down to well-calibrated ones — on this
-# dataset ~2x held-out info gain on the full 16-feature set (see
-# docs/wide-feature-calibration.md). The engine exposes several ai profiles
-# {v1, v2, and, group, high, fast, flat}; on AAPL, "high" == v1 == v2 == the bare
-# default (P(great) 0.74), while "flat" is materially more overconfident (0.83).
-# So this is NOT a no-op vs flat — it PINS the calibrated codepath. We name it
-# explicitly rather than ride the default, so the demo's calibration can't
-# silently change if the instance default moves. (_evaluate takes no config, so
-# masked-eval tooling still rides the instance default — pin it DB-side.)
+# Aito inference profile the demo pins. "high" = correlated features combined into
+# $and votes (grouping) PLUS a calibration normalizer, which pulls overconfident
+# wide-feature predictions down to well-calibrated ones. The engine exposes
+# profiles {v1, v2, and, group, high, fast, flat}; "high" is its own composite —
+# it coincides with plain "and" on ~80% of rows but diverges where grouping bites
+# (correlated-feature names: ADI, AMAT, ALK), and is never plain "group".
+#
+# This instance is V1 (rep1/TableDb): the absent-config default learner is "and"
+# (AndPropositionLearner), confirmed 40/40 companies (default==and, never group;
+# V2/rep2 would default to GroupLearner="group"). So the demo does NOT ride the
+# default — it pins "high" explicitly, and every live predict/relate uses it.
+#
+# Caveat for the eval story: _evaluate takes no config, so eval_aito.py and the
+# before/after table in docs/wide-feature-calibration.md are measured on the V1
+# "and" default, NOT on "high". You cannot masked-evaluate "high" on this
+# instance; to characterise what the demo ships, use the pandas mirror or a
+# DB-side default override.
 AI_CONFIG = {"ai": "high"}
 
 
