@@ -32,14 +32,17 @@ from pipeline.outcomes import absolute_range_label
 SITE_DATA = Path("site/data")
 COMPANIES_TABLE = "companies"
 
-# Aito's grouping+calibration inference: collapses correlated features into
-# single $and votes (no double-counting), which keeps predictions calibrated on
-# wide feature spaces. On this dataset it lifted held-out info gain ~2x on the
-# full 16-feature set vs the pre-grouping engine (docs/wide-feature-calibration.md).
-# NOTE: grouping has since shipped as aito-core's *default* inference, so on the
-# current engine this flag is a no-op — a live _predict is bit-identical with and
-# without it. We keep it as an explicit intent marker: the demo's calibration
-# depends on grouping, and this pins that dependency in case the default changes.
+# Aito's grouping+calibration inference profile. It combines correlated features
+# into single $and votes and applies a calibration normalizer, pulling
+# overconfident wide-feature predictions down to well-calibrated ones — on this
+# dataset ~2x held-out info gain on the full 16-feature set (see
+# docs/wide-feature-calibration.md). The engine exposes several ai profiles
+# {v1, v2, and, group, high, fast, flat}; on AAPL, "high" == v1 == v2 == the bare
+# default (P(great) 0.74), while "flat" is materially more overconfident (0.83).
+# So this is NOT a no-op vs flat — it PINS the calibrated codepath. We name it
+# explicitly rather than ride the default, so the demo's calibration can't
+# silently change if the instance default moves. (_evaluate takes no config, so
+# masked-eval tooling still rides the instance default — pin it DB-side.)
 AI_CONFIG = {"ai": "high"}
 
 
