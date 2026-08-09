@@ -32,10 +32,14 @@ from pipeline.outcomes import absolute_range_label
 SITE_DATA = Path("site/data")
 COMPANIES_TABLE = "companies"
 
-# Aito's aggressive-grouping inference mode: collapses correlated features into
+# Aito's grouping+calibration inference: collapses correlated features into
 # single $and votes (no double-counting), which keeps predictions calibrated on
-# wide feature spaces. Measured to ~2x held-out info gain on the full feature
-# set vs the default. Every predict the demo shows uses it.
+# wide feature spaces. On this dataset it lifted held-out info gain ~2x on the
+# full 16-feature set vs the pre-grouping engine (docs/wide-feature-calibration.md).
+# NOTE: grouping has since shipped as aito-core's *default* inference, so on the
+# current engine this flag is a no-op — a live _predict is bit-identical with and
+# without it. We keep it as an explicit intent marker: the demo's calibration
+# depends on grouping, and this pins that dependency in case the default changes.
 AI_CONFIG = {"ai": "high"}
 
 
