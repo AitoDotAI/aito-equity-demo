@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.12"
 
 [[package]]
@@ -14,7 +14,6 @@ dependencies = [
     { name = "lxml" },
     { name = "openai" },
     { name = "pandas" },
-    { name = "playwright" },
     { name = "python-dotenv" },
     { name = "uvicorn", extra = ["standard"] },
     { name = "yfinance" },
@@ -23,6 +22,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "booktest" },
+    { name = "playwright" },
     { name = "pytest" },
     { name = "pytest-httpx" },
 ]
@@ -36,7 +36,6 @@ requires-dist = [
     { name = "lxml", specifier = ">=5.0,<6" },
     { name = "openai", specifier = ">=1.50,<2" },
     { name = "pandas", specifier = ">=2.2,<3" },
-    { name = "playwright", specifier = ">=1.52,<1.53" },
     { name = "python-dotenv", specifier = ">=1.0,<2" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.29,<1" },
     { name = "yfinance", specifier = ">=0.2.40,<1" },
@@ -45,6 +44,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "booktest", specifier = ">=1.1,<2" },
+    { name = "playwright", specifier = ">=1.52,<1.53" },
     { name = "pytest", specifier = ">=8.0,<9" },
     { name = "pytest-httpx", specifier = ">=0.30,<1" },
 ]
