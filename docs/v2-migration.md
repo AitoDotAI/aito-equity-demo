@@ -9,22 +9,45 @@ replayed against `/api/v1` and `/api/v2`, payloads diffed — not status codes).
 | Step | State |
 |---|---|
 | Client code on `/api/v2` (pipeline, emitters, proxy, site) | **done** — this PR |
-| New tables created as `collection` (rep2) | **done** in code; takes effect on next `./do pipeline load` |
-| Storage migration of the live tables (`_migrate` → rep2) | **not done** — needs an approved write to the shared instance (plan below) |
-| Parity run v1@master vs v2@migrated env | pending the step above |
+| New tables created as `collection` (rep2) | **done** in code |
+| `v2` env branched from master, both tables `_migrate`d to rep2 | **done** 2026-10-18 (3.3 s, 1,549 + 1,677 rows) |
+| `companies` reloaded into `v2` as a fresh `collection` with `profile_text` | **done** (`AITO_ENV=v2 ./do pipeline load`) |
+| Parity run v1@master vs v2@env/v2 | **done** → `docs/v2-parity-rep2.json` |
+| Held-out quality v1 vs rep2 (backtest, value traps) | see *Held-out comparison* below |
+| Promote `v2` → master (live demo switches engine) | **not done** — a separate decision |
 
-The ported code runs against today's storage: the v2 API answers over v1-engine
-(`type: table`) tables, and all four proxy kinds (`predict`, `relate`, `match`,
-`similarity`) were verified live through the local server.
+Master is untouched (`companies` still `engine: v1`). The ported code serves either:
+`AITO_ENV=v2` points pipeline, proxy and Lab at the rep2 copy.
 
-## Plan for the storage step
+## Held-out comparison (v1 master vs rep2 env)
+
+Same code, same 1,294 held-out rows (ticker-grouped 5-fold backtest) and the same
+walk-forward value-trap scoring; only `AITO_ENV` differs.
+
+| | v1 | rep2 |
+|---|---|---|
+| accuracy / within-one-bucket | 0.35 / 0.743 | 0.35 / 0.747 |
+| over-optimistic calls | 0.471 | 0.449 |
+| top-20 / 50 / 100 CAGR | 20.6 / 18.3 / 15.9 % | 20.1 / 17.8 / 17.1 % |
+| bottom-20 CAGR (market 7.9 %) | −4.1 % | −5.0 % |
+| score ↔ realised return (Spearman) | 0.318 | 0.318 |
+| P(trap) ↔ long-run trap | 0.295 | 0.304 |
+| P(trap) ↔ 12-month return | −0.126 | **−0.182** |
+| P(re-rate 12 m) ↔ 12-month return | 0.115 | 0.114 |
+
+Same predicted bucket on 87 % of rows, score correlation 0.95, 16/20 shared top-20 picks.
+**No quality regression; the trap axis is slightly sharper on rep2.**
+
+## Steps taken / to finish
 
 1. `POST /api/v2/_envs {"name": "v2", "basedOn": "master"}` — branch; master untouched.
 2. `POST /env/v2/api/v2/data/_modify {"operations": [{"migrate": "companies", "engine": "v2"}, {"migrate": "earnings_events", "engine": "v2"}]}` — atomic, no reverse.
-3. `AITO_ENV=v2 uv run python scripts/v2_parity.py --v2-env v2` and the masked held-out evals
-   (`./do pipeline model-eval`, `backtest-page`) with `AITO_ENV=v2` → compare to v1.
-4. If the numbers hold: `POST /api/v2/_envs/v2/promote`, or simply re-run `./do pipeline load`
-   (it now creates `collection` tables).
+3. `AITO_ENV=v2 ./do pipeline load` — recreates `companies` in the env as a `collection`
+   with the new `profile_text` column (needed for similarity, finding 4).
+4. `uv run python scripts/v2_parity.py --v2-env v2 --out docs/v2-parity-rep2.json`, and the
+   held-out emitters with `AITO_ENV=v2 … --refresh`.
+5. **To go live:** deploy this branch with `AITO_ENV=v2` set, or `POST /api/v2/_envs/v2/promote`
+   and run without `AITO_ENV`. Promote swaps master — do it once, deliberately.
 
 ## What changed in the code
 
@@ -57,22 +80,35 @@ The ported code runs against today's storage: the v2 API answers over v1-engine
 3. **`bit & operation requires same sized bit sets, found: 1549, 1520`** — a 400 from
    `_relate` with `$on [cond, {$not: {outcome_bucket: null}}]` on `/api/v2`. This is
    G1 / aito-core#1061, which the aito-demo migration could not reproduce. Here it is
-   deterministic. The two sizes match this table's history — 1,520 rows at first load, 1,549
-   after the 2026 rows were added — so a size taken from an older segment/column state looks
-   likely; not verified in core. (v1-engine table, v2 API.)
-4. **No v2 idiom for categorical profile similarity.** The demo's analogues use
-   `_similarity` with a profile of String/Int columns. `orderBy: "$similarity"` is refused
-   ("needs a {field: {$match: text}} term"); `$match` is refused on non-Text columns;
-   `orderBy: {"$similarity": …}` is a parse error. `/api/v2/_similarity` **does** still
-   answer 200 (on a v1-engine table) although the v2 docs say it is not on v2. Kept on
-   `_similarity` until there is a documented answer; re-check after `_migrate`.
-5. **`_evaluate`**: identical metrics on the same storage; only the `{kind: "evaluation", data}`
-   envelope. Documented, handled by `unwrap()`.
+   deterministic on all three storages: v1 engine, `_migrate`d rep2, and a fresh `collection`.
+   **Trigger:** a nullable column whose *trailing* rows are null. `outcome_bucket`'s last
+   value is at row 1,519; rows 1,520–1,548 (the 2026 vintage, no outcome yet) are null. The
+   `$not {field: null}` path builds its bitset from the column's stored length (1,520), not
+   the table's (1,549). `$defined: true` on the same field works.
+4. **Categorical profile similarity has no direct v2 counterpart.** On rep2, `_similarity`
+   over String/Int columns is refused: *"rep2-native similarity is text BM25"*. (On a v1-engine
+   table `/api/v2/_similarity` still answers, although the docs say it is not on v2.)
+   `orderBy: "$similarity"` needs a Text `$match` term; `$match` is refused on non-Text columns.
+   **Workaround shipped:** a derived Text column `profile_text` (whitespace analyzer, one token
+   per field=value, e.g. `moatstrengthxwide`) and BM25 `_similarity` on it. Against v1's
+   `_similarity`, top-10 overlap is 8/10 (NVDA-like profile) and 9/10 (value-trap profile),
+   same order at the top. Scores change scale (BM25 ≈ 10–80 vs v1 ≈ 1–7).
+5. **`_evaluate` changes its numbers on rep2.** Same storage → identical metrics, only the
+   `{kind: "evaluation", data}` envelope. On rep2, same query and same 362 test rows:
+   accuracy 0.315 → 0.373, **baseAccuracy 0.257 → 0.307**, meanRank 1.74 → 1.09,
+   informationGain 0.187 → 0.177, and ~3× slower (7 s → 23 s). A different *base* on the same
+   test rows means the baseline is computed differently, so v1 and rep2 `_evaluate` figures are
+   not comparable. rep2 adds `brierScore`, `ece`, `logLoss`, `mrr`.
 6. **`type: table` is still the default on v2.** A client that swaps `/api/v1` → `/api/v2`
    and keeps its schema keeps creating v1-engine tables. Nothing tells it. There is also no
    documented whole-database `PUT /api/v2/schema` operation page (base-v2 lists it).
 7. **`GET /api/v2/schema` echoes `engine` without `?meta`** — the docs say it is opt-in.
    Useful, but the docs and the server disagree.
-8. **v2 error messages are clearly better** — e.g. "no such field 'x' in the where clause.
+8. **A `_migrate`d table still reports `type: table`** next to `engine: v2`; a freshly created
+   one says `type: collection`. Two names for the same engine depending on how it got there.
+9. **`_migrate` is fast and atomic** — two tables in 3.3 s, single commit, row counts preserved.
+   `$why` on rep2 adds a `calibration` node (`rowCap`) inside the normalizer group; existing
+   parsers that walk `baseP` / `relatedPropositionLift` are unaffected.
+10. **v2 error messages are clearly better** — e.g. "no such field 'x' in the where clause.
    This is a strict (type:table) schema …", "_match: missing 'match' (the field whose values
    to rank)". They made the two pre-existing broken console samples obvious.

@@ -3169,6 +3169,9 @@
   // Mirror of pipeline/aito/queries.py parse_why — flatten {base_rate, factors:[{label,lift}]}
   // v2 ranked-value hits carry `$value`; v1 carried `feature`. Read either.
   const hitValue = h => (h['$value'] !== undefined ? h['$value'] : h.feature);
+  // Same tokens as pipeline.aito.load.profile_token: `moat_strength=wide` → `moatstrengthxwide`.
+  const profileToken = (f, v) => `${f}x${v}`.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const profileText = where => Object.entries(where).map(([f, v]) => profileToken(f, v)).join(' ');
 
   function parseWhy(why) {
     if (!why || typeof why !== 'object') return null;
@@ -4449,7 +4452,8 @@
     try {
       const r = await fetch('./api/query', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kind: 'similarity', body: { from: 'companies', similarity: where, limit: 12 } }),
+        // v2 similarity is text BM25 over profile_text (one token per field=value)
+        body: JSON.stringify({ kind: 'similarity', body: { from: 'companies', similarity: { profile_text: profileText(where) }, limit: 12 } }),
       });
       const p = await r.json();
       hits = (p.result?.hits || []).filter(h => h.outcome_bucket && h.total_return_pct_local != null);

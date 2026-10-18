@@ -77,6 +77,7 @@
         "market_position_rationale":    { "type": "Text", "analyzer": "english", "nullable": true },
         "moat_rationale":               { "type": "Text", "analyzer": "english", "nullable": true },
         "market_quality_rationale":     { "type": "Text", "analyzer": "english", "nullable": true },
+        "profile_text":                 { "type": "Text", "analyzer": "whitespace", "nullable": true },
         "leadership_rationale":         { "type": "Text", "analyzer": "english", "nullable": true },
 
         "outcome_bucket":               { "type": "String", "nullable": true },

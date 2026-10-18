@@ -19,6 +19,7 @@ import argparse
 import hashlib
 import json
 import math
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -84,6 +85,7 @@ def merge_pipeline_outputs(
     # ticker→title index, cached during the filings stage, covers most of them.
     universe = _backfill_company_names(universe)
     universe = _backfill_delisted_metadata(universe)
+    universe["profile_text"] = universe.apply(profile_text, axis=1)
 
     # Deterministic company-grouped fold id (hashlib, NOT Python hash() which is
     # salted per-process) for random cross-year evaluation: each company lands in
@@ -97,6 +99,38 @@ def merge_pipeline_outputs(
     universe.to_csv(out_csv, index=False)
     print(f"→ {out_csv} ({len(universe)} rows, {len(universe.columns)} cols)")
     return universe
+
+
+# Fields whose values make up a company's "profile" for analogue search.
+PROFILE_FIELDS = [
+    "market_position", "moat_type", "moat_strength", "market_quality", "leadership_quality",
+    "capital_allocation", "strategic_clarity", "execution_track_record", "sector",
+    "valuation_bucket", "growth_bucket", "leverage_bucket", "profitability_bucket",
+    "momentum_bucket", "volatility_bucket",
+]
+
+
+def profile_token(field: str, value) -> str:
+    """One analyzer-proof token per field=value: `moat_strength=wide` → `moatstrengthxwide`.
+
+    Alphanumerics only, so any analyzer keeps it whole. The site builds the same
+    tokens (`profileToken` in site/index.html) for the Lab's analogue query.
+    """
+    if isinstance(value, float) and value.is_integer():
+        value = int(value)
+    return re.sub(r"[^a-z0-9]", "", f"{field}x{value}".lower())
+
+
+def profile_text(row: pd.Series) -> str | None:
+    """Space-joined profile tokens — the Text column v2 similarity ranks on.
+
+    On the v2 (rep2) engine `_similarity` is text BM25 only; the v1 engine's
+    similarity over categorical columns has no v2 counterpart. BM25 over these
+    tokens is the same idea: IDF-weighted overlap of field=value pairs, so a
+    shared rare value (moat = wide) counts more than a common one.
+    """
+    toks = [profile_token(f, row[f]) for f in PROFILE_FIELDS if f in row.index and pd.notna(row[f]) and row[f] != ""]
+    return " ".join(toks) or None
 
 
 def _derive_valuation_and_buckets(df: pd.DataFrame) -> pd.DataFrame:

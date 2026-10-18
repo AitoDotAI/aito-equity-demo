@@ -26,6 +26,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from pipeline.aito.load import profile_token
 from pipeline.aito.client import AitoClient
 from pipeline.outcomes import absolute_range_label
 
@@ -874,9 +875,11 @@ def emit_match_per_focal(
             if c == "leadership_quality" and isinstance(v, float):
                 v = int(round(v))
             proposition[c] = v
+        # v2 (rep2) similarity is text BM25: rank on the profile_text tokens
+        # (IDF-weighted field=value overlap — see pipeline.aito.load.profile_text).
         body = {
             "from": COMPANIES_TABLE,
-            "similarity": proposition,
+            "similarity": {"profile_text": " ".join(profile_token(k, v) for k, v in proposition.items())},
             "limit": 10,
         }
         try:
