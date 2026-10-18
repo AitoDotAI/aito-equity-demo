@@ -249,7 +249,7 @@ def upload_to_aito(rows: list[dict], table: str = DEFAULT_TABLE) -> None:
         client.put_schema(load_schema())
         print(f"  upload {len(rows)} rows")
         n = client.upload_batch(table, rows)
-        print(f"→ uploaded {n} rows to {client.config.base_url}/api/v1/data/{table}")
+        print(f"→ uploaded {n} rows to {client.config.api_root}/data/{table}")
 
 
 def main() -> None:

@@ -2,7 +2,7 @@
   "_comment": "Aito schema for the companies table. Multi-market columns (market, exchange, currency, reporting_standard, filing_language) and quant-feature columns are included from day 1 so non-US / fundamentals data slots in without migration. All non-key columns are nullable because v1 data is sparse (no fundamentals stage yet; LLM grades only on companies whose filings were retrievable). Keys: ticker + vintage_year.",
   "schema": {
     "companies": {
-      "type": "table",
+      "type": "collection",
       "columns": {
         "ticker":                       { "type": "String" },
         "vintage_year":                 { "type": "Int" },

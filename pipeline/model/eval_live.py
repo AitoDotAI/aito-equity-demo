@@ -21,7 +21,7 @@ import time
 
 import numpy as np
 
-from pipeline.aito.client import AitoClient
+from pipeline.aito.client import AitoClient, hit_value
 from pipeline.model import featureclust as fc
 
 CALIB_FEATURES = ["market_position", "moat_type", "moat_strength", "market_quality",
@@ -76,9 +76,9 @@ def main() -> None:
                 continue
             t0 = time.perf_counter()
             r = c.predict({"from": "companies", "where": where, "predict": "outcome_bucket",
-                           "select": ["feature", "$p"]})
+                           "select": ["$value", "$p"]})
             lat.append((time.perf_counter() - t0) * 1000)
-            dist = {h.get("feature"): float(h.get("$p", 0)) for h in r.get("hits", [])}
+            dist = {hit_value(h): float(h.get("$p", 0)) for h in r.get("hits", [])}
             v = np.array([dist.get(cl, 0.0) for cl in fc.CLASSES])
             P[i] = v / v.sum() if v.sum() > 0 else [1 / len(fc.CLASSES)] * len(fc.CLASSES)
             if (i + 1) % 200 == 0:

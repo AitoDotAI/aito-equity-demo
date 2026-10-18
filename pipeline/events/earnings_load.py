@@ -26,7 +26,7 @@ SIGNAL_COLS = [
 SCHEMA = {
     "schema": {
         "earnings_events": {
-            "type": "table",
+            "type": "collection",
             "columns": {
                 "ticker": {"type": "String", "nullable": True},
                 "date": {"type": "String", "nullable": True},

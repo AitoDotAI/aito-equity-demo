@@ -37,7 +37,7 @@ def test_aito_schema(t: bt.TestCaseRun):
         headers={"x-api-key": aito_key, "content-type": "application/json"},
         timeout=10.0,
     ) as client:
-        r = client.get("/api/v1/schema")
+        r = client.get("/api/v2/schema")
         r.raise_for_status()
         data = r.json()
 

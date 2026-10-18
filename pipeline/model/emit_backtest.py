@@ -27,7 +27,7 @@ import httpx
 import pandas as pd
 from dotenv import load_dotenv
 
-from pipeline.aito.client import AitoClient
+from pipeline.aito.client import AitoClient, api_root, hit_value
 from pipeline.aito.load import df_to_aito_rows, load_schema
 from pipeline.aito.queries import parse_why
 from pipeline.model import featureclust as fc
@@ -50,7 +50,7 @@ def _wof(row, feats):
 
 def main() -> None:
     load_dotenv(override=True)
-    url = os.environ["AITO_API_URL"].rstrip("/"); key = os.environ["AITO_API_KEY"]; h = {"x-api-key": key}
+    url = api_root(); key = os.environ["AITO_API_KEY"]; h = {"x-api-key": key}
     df = pd.read_csv("data/companies.csv", low_memory=False)
     df = df[df.outcome_bucket.isin(CL) & df.total_return_pct_local.notna()].reset_index(drop=True)
     df["eval_fold"] = df["eval_fold"].astype(str)
@@ -74,14 +74,14 @@ def main() -> None:
                     w = _wof(r, feats)
                     if not w:
                         continue
-                    rr = cl.post(f"{url}/api/v1/_predict", json={"from": "bt_tmp", "where": w, "predict": "outcome_bucket",
-                                 "select": ["feature", "$p", "$why"], "config": {"ai": "high"}}, headers=h)
+                    rr = cl.post(f"{url}/_predict", json={"from": "bt_tmp", "where": w, "predict": "outcome_bucket",
+                                 "select": ["$value", "$p", "$why"], "config": {"ai": "high"}}, headers=h)
                     if rr.status_code >= 400:
                         continue
                     hits = rr.json()["hits"]
-                    d = {x["feature"]: x["$p"] for x in hits}
+                    d = {hit_value(x): x["$p"] for x in hits}
                     pred = max(d, key=d.get)
-                    why = next((parse_why(x.get("$why")) for x in hits if x["feature"] == pred), None)
+                    why = next((parse_why(x.get("$why")) for x in hits if hit_value(x) == pred), None)
                     recs.append({"true": r.outcome_bucket, "pred": pred, "pred_p": round(float(d[pred]), 4),
                                  "score": sum(d.get(c, 0) * RANK[c] for c in CL),
                                  "ret": float(r.total_return_pct_local), "cagr": float(r.cagr),
@@ -142,7 +142,7 @@ def main() -> None:
             c.delete_table("bt_baskets"); c.put_schema({"schema": {"bt_baskets": {"type": "table", "columns": cols}}})
             c.upload_batch("bt_baskets", bb_rows)
         for name, _ in basket_defs:
-            rr = httpx.post(f"{url}/api/v1/_relate", json={"from": "bt_baskets", "where": {f"in_{name}": True},
+            rr = httpx.post(f"{url}/_relate", json={"from": "bt_baskets", "where": {f"in_{name}": True},
                             "relate": feats, "limit": 10}, headers=h, timeout=90)
             if rr.status_code < 400:
                 out = []

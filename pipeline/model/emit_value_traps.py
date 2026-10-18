@@ -39,7 +39,7 @@ import httpx
 import pandas as pd
 from dotenv import load_dotenv
 
-from pipeline.aito.client import AitoClient
+from pipeline.aito.client import AitoClient, api_root, hit_value
 from pipeline.aito.load import df_to_aito_rows, load_schema
 from pipeline.aito.queries import parse_why
 from pipeline.model import featureclust as fc
@@ -109,19 +109,19 @@ def _heldout(df: pd.DataFrame, cheap: pd.DataFrame, url: str, h: dict) -> pd.Dat
                     continue
                 rec = {"ticker": r.ticker, "vintage": int(r.vintage_year), "company_name": r.company_name}
                 for key, (col, val) in targets.items():
-                    rr = cl.post(f"{url}/api/v1/_predict", json={"from": "vt_tmp", "where": w, "predict": col,
-                                 "select": ["feature", "$p", "$why"], "config": {"ai": "high"}}, headers=h)
+                    rr = cl.post(f"{url}/_predict", json={"from": "vt_tmp", "where": w, "predict": col,
+                                 "select": ["$value", "$p", "$why"], "config": {"ai": "high"}}, headers=h)
                     if rr.status_code >= 400:
                         continue
                     hits = rr.json()["hits"]
-                    d = {x["feature"]: x["$p"] for x in hits}
+                    d = {hit_value(x): x["$p"] for x in hits}
                     if val is None:  # trap = poor ∪ disaster
                         rec[key] = sum(d.get(c, 0) for c in TRAP)
                         why_of = max(TRAP, key=lambda c: d.get(c, 0))
                     else:
                         rec[key] = d.get(val, 0)
                         why_of = val
-                    why = next((parse_why(x.get("$why")) for x in hits if x["feature"] == why_of), None)
+                    why = next((parse_why(x.get("$why")) for x in hits if hit_value(x) == why_of), None)
                     rec[f"{key}_why"] = json.dumps({"label": why_of, "prob": round(float(d.get(why_of, 0)), 4), "why": why})
                 recs.append(rec)
         print(f"  test {test_v} ← train {sorted(train.vintage_year.unique().tolist())}: {len(test)} cheap")
@@ -146,7 +146,8 @@ def _relate(cheap: pd.DataFrame, url: str, h: dict) -> dict:
         c.upload_batch("vt_cheap", rows)
     out = {}
     for target in ("rerated_12m", "longrun_trap"):
-        rr = httpx.post(f"{url}/api/v1/_relate", json={"from": "vt_cheap", "where": {target: True}, "relate": FEATS, "limit": 40},
+        rr = httpx.post(f"{url}/_relate", json={"from": "vt_cheap", "where": {"$on": [{target: True}, {target: {"$defined": True}}]},
+                              "relate": FEATS, "limit": 40},
                         headers=h, timeout=90)
         hits = []
         if rr.status_code < 400:
@@ -169,7 +170,7 @@ def _relate(cheap: pd.DataFrame, url: str, h: dict) -> dict:
 
 def main() -> None:
     load_dotenv(override=True)
-    url = os.environ["AITO_API_URL"].rstrip("/"); h = {"x-api-key": os.environ["AITO_API_KEY"]}
+    url = api_root(); h = {"x-api-key": os.environ["AITO_API_KEY"]}
     df = pd.read_csv("data/companies.csv", low_memory=False)
     df["eval_fold"] = df["eval_fold"].astype(str)
     has_outcome = df.outcome_bucket.notna() | df.fwd_6m_bucket.notna()
