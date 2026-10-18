@@ -13,7 +13,7 @@ All endpoints are `POST` with `Content-Type: application/json` and return JSON.
 
 Predict the value of one field given known values of others. Returns a ranked list with probabilities.
 
-**Endpoint:** `POST /api/v1/_predict`
+**Endpoint:** `POST /api/v2/_predict`
 
 ```json
 {
@@ -33,11 +33,11 @@ Predict the value of one field given known values of others. Returns a ranked li
 ```json
 {
   "hits": [
-    {"feature": "mid",   "$p": 0.41, "$why": [...]},
-    {"feature": "low",   "$p": 0.28, ...},
-    {"feature": "hit",   "$p": 0.19, ...},
-    {"feature": "flop",  "$p": 0.08, ...},
-    {"feature": "viral", "$p": 0.04, ...}
+    {"$value": "mid", "$p": 0.41, "$why": [...]},
+    {"$value": "low", "$p": 0.28, ...},
+    {"$value": "hit", "$p": 0.19, ...},
+    {"$value": "flop", "$p": 0.08, ...},
+    {"$value": "viral", "$p": 0.04, ...}
   ]
 }
 ```
@@ -63,7 +63,7 @@ Same as above, but with two possible values. Use when the answer is "X or not X"
 }
 ```
 
-Then in the UI: `pct = hits.find(h => h.feature === true).$p * 100`.
+Then in the UI: `pct = hits.find(h => h.$value === true).$p * 100`.
 
 ---
 
@@ -71,7 +71,7 @@ Then in the UI: `pct = hits.find(h => h.feature === true).$p * 100`.
 
 Find items most similar to the given fields. Used for "similar past examples" UIs.
 
-**Endpoint:** `POST /api/v1/_match`
+**Endpoint:** `POST /api/v2/_match`
 
 ```json
 {
@@ -90,7 +90,7 @@ Find items most similar to the given fields. Used for "similar past examples" UI
 
 Lucene-style query with optional filters. Use for browseable lists.
 
-**Endpoint:** `POST /api/v1/_search`
+**Endpoint:** `POST /api/v2/_query` (v1 `_search`)
 
 ```json
 {
@@ -109,7 +109,7 @@ Lucene-style query with optional filters. Use for browseable lists.
 
 Cheap, useful for readiness checks and dynamic UIs.
 
-**Endpoint:** `GET /api/v1/schema`
+**Endpoint:** `GET /api/v2/schema`
 
 ```json
 {
