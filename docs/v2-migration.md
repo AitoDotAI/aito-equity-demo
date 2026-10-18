@@ -64,6 +64,15 @@ Same predicted bucket on 87 % of rows, score correlation 0.95, 16/20 shared top-
   samples that were invalid on **both** versions (`relate: "$features"`, object-valued `match`)
   replaced with valid ones.
 
+## Tracked in aito-core (filed by the CPO, 2026-10-18)
+
+| Finding | Ticket | Priority |
+|---|---|---|
+| 3 — `$not {field: null}` bitset 400 on trailing-null columns | `td-20261018190238171893` (aito-core-2; with the `_relate` defined-range fix, finding 2) | P1 |
+| 4, 5, 8 — categorical `_similarity` on rep2, `_evaluate` baseline mismatch, `table`/`collection` label | `td-20261018190308734654` | P2 |
+
+Keep the `profile_text` BM25 workaround until the `_similarity` decision lands.
+
 ## Findings
 
 1. **`_predict` is a near drop-in.** `feature` → `$value`; a verbatim v1 body sent to `/api/v2`
