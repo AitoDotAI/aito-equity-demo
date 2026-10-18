@@ -58,6 +58,13 @@
         "fwd_20d_bucket":               { "type": "String", "nullable": true },
         "pre_filing_mom_60d":           { "type": "Decimal", "nullable": true },
 
+        "fwd_6m_return":                { "type": "Decimal", "nullable": true },
+        "fwd_6m_excess":                { "type": "Decimal", "nullable": true },
+        "fwd_6m_bucket":                { "type": "String", "nullable": true },
+        "fwd_12m_return":               { "type": "Decimal", "nullable": true },
+        "fwd_12m_excess":               { "type": "Decimal", "nullable": true },
+        "fwd_12m_bucket":               { "type": "String", "nullable": true },
+
         "market_position":              { "type": "String", "nullable": true },
         "moat_type":                    { "type": "String", "nullable": true },
         "moat_strength":                { "type": "String", "nullable": true },

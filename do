@@ -71,6 +71,7 @@ cmd_pipeline() {
     fundamentals) uv run python -m pipeline.fundamentals.sec_xbrl "$@" ;;
     market)       uv run python -m pipeline.fundamentals.market_factors "$@" ;;
     events)       uv run python -m pipeline.events.post_filing "$@" ;;
+    midterm)      uv run python -m pipeline.prices.midterm "$@" ;;
     news)         uv run python -m pipeline.events.news_8k "$@" ;;
     earnings-fetch)   uv run python -m pipeline.events.earnings_fetch "$@" ;;
     earnings-extract) uv run python -m pipeline.events.earnings_extract "$@" ;;
@@ -91,6 +92,7 @@ cmd_pipeline() {
       say "fundamentals" && cmd_pipeline fundamentals
       say "market"       && cmd_pipeline market
       say "events"       && cmd_pipeline events
+      say "midterm"      && cmd_pipeline midterm
       say "news"         && cmd_pipeline news
       # Cost-gated: extraction calls the LLM. Requires explicit --confirm-cost.
       if [ -n "${OPENAI_MODEL_API_KEY:-}" ]; then

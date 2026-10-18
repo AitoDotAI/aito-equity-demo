@@ -198,11 +198,15 @@ def emit_universe(companies_df: pd.DataFrame, out_dir: Path) -> None:
         # continuous factors (for drill-down detail)
         "pe_ratio", "revenue_cagr_3y", "debt_to_equity", "return_on_equity",
         "momentum_12m", "volatility_12m",
+        "pb_ratio", "earnings_yield", "market_cap", "gross_margin", "operating_margin",
+        "net_margin", "return_on_assets", "revenue", "net_income",
         # long-horizon outcomes
         "outcome_bucket", "survived_intact", "terminal_event",
         "total_return_pct_local", "total_return_pct_usd", "window_years",
         # short-horizon (post-filing drift) outcome + event
         "filing_date", "fwd_20d_return", "fwd_20d_bucket", "pre_filing_mom_60d",
+        # mid-horizon (6 / 12 months from vintage) excess return vs SPY
+        "fwd_6m_excess", "fwd_6m_bucket", "fwd_12m_excess", "fwd_12m_bucket",
         "end_date",
     ]
     present = [c for c in cols_to_export if c in companies_df.columns]

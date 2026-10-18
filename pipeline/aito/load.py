@@ -59,11 +59,13 @@ def merge_pipeline_outputs(
             suffixes=("", "_feat"),
         )
 
-    # Fundamentals (SEC XBRL) + market factors (yfinance) + filing events.
+    # Fundamentals (SEC XBRL) + market factors (yfinance) + filing events +
+    # 6/12-month excess returns (pipeline.prices.midterm).
     for extra_csv, label in [
         (Path("data/fundamentals.csv"), "fundamentals"),
         (Path("data/market_factors.csv"), "market_factors"),
         (Path("data/filing_events.csv"), "filing_events"),
+        (Path("data/midterm_outcomes.csv"), "midterm_outcomes"),
     ]:
         if extra_csv.exists():
             extra = pd.read_csv(extra_csv)
