@@ -1,4 +1,4 @@
-"""Emit site/data/value_traps.json — "Mr. Market, or a dog?"
+"""Emit site/data/value_traps.json — "Mr. Market, or a value trap?"
 
 A mid-term value trader buys cheap stocks expecting the gap to close within
 3 months – 2 years. Two kinds of company look cheap:
@@ -287,7 +287,7 @@ def main() -> None:
 
     # Tercile tables per vintage: rank the cheap cohort by a walk-forward score,
     # cut into thirds, read off what actually happened. The cleanest test of
-    # "does this score sort dogs from re-raters", with no cut-point tuning.
+    # "does this score sort value traps from re-raters", with no cut-point tuning.
     def terciles(score: str) -> list[dict]:
         out = []
         for v, g in b.groupby("vintage"):

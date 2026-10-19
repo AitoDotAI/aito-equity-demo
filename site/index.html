@@ -2570,15 +2570,15 @@
       <section class="view" id="view-traps">
 
         <div class="article-header">
-          <div class="article-eyebrow">MID-TERM · MR. MARKET, OR A DOG?</div>
+          <div class="article-eyebrow">MID-TERM · MR. MARKET, OR A VALUE TRAP?</div>
           <h1 class="article-title">Cheap — or <em>cheap for a reason?</em></h1>
-          <p class="article-deck">A mid-term value trader buys low-P/E stocks and waits 6–12 months for the gap to close. Two kinds of company look cheap: ones a moody Mr. Market has mispriced, which re-rate — and dogs whose business is shrinking toward distress, which keep sliding. The difference should show in growth, debt, moat and the market the company sells into. Here is what happened to every cheap S&amp;P 500 name, and whether the engine could tell the two apart <em>beforehand</em>.</p>
+          <p class="article-deck">A mid-term value trader buys low-P/E stocks and waits 6–12 months for the gap to close. Two kinds of company look cheap: ones a moody Mr. Market has mispriced, which re-rate — and <em>value traps</em>: cheap because the business is shrinking toward distress, so they keep sliding. The difference should show in growth, debt, moat and the market the company sells into. Here is what happened to every cheap S&amp;P 500 name, and whether the engine could tell the two apart <em>beforehand</em>.</p>
           <div class="article-byline" data-bind="vt-byline">cheap = bottom P/E band at the vintage date · returns vs the equal-weight universe, same vintage</div>
         </div>
 
         <div class="vt-hero" id="vt-hero"><!-- headline stats --></div>
 
-        <div class="section-rule"><span>Inside the cheap cohort — what separated the re-raters from the dogs</span></div>
+        <div class="section-rule"><span>Inside the cheap cohort — what separated the re-raters from the value traps</span></div>
         <div class="ea-scope-bar">
           <label for="vt-split-select">Split cheap stocks by</label>
           <select id="vt-split-select" class="ea-select"></select>
@@ -3210,7 +3210,8 @@
     return html + '</span>';
   };
 
-  const fetchJson = path => fetch(path).then(r => {
+  // no-cache = revalidate (ETag → 304), so a cached older JSON never pairs with a newer page.
+  const fetchJson = path => fetch(path, { cache: 'no-cache' }).then(r => {
     if (!r.ok) throw new Error(`${path}: ${r.status}`);
     return r.json();
   });
@@ -3657,6 +3658,7 @@
   let activeFocal = null;
   async function loadFocal(key) {
     activeFocal = key;
+    writeHash();
     document.querySelectorAll('.company-chip').forEach(c => {
       c.classList.toggle('active', c.dataset.focal === key);
     });
@@ -3694,7 +3696,66 @@
     method: 'On Methodology'
   };
 
-  function setView(v) {
+  // ── Deep links ──────────────────────────────────────────────────
+  //   #traps                         a view
+  //   #company/NVDA_2014             Company File, that focal
+  //   #lab/NVDA_2026                 Company Lab seeded from that company
+  //   #lab?sector=Energy&moat_strength=wide   Company Lab, a hand-built profile
+  // Switching views pushes a history entry (back button works); refining the
+  // state inside a view (knobs, focal) replaces it.
+  let currentView = 'company';
+  let routeReady = false;  // don't write the hash before the boot route is applied
+
+  function parseHash() {
+    const raw = location.hash.replace(/^#\/?/, '');
+    const [path, query] = raw.split('?');
+    const [view, key] = path.split('/').map(decodeURIComponent);
+    return { view: viewTitles[view] ? view : null, key: key || null, params: new URLSearchParams(query || '') };
+  }
+
+  function currentHash() {
+    if (currentView === 'company' && activeFocal) return `#company/${activeFocal}`;
+    if (currentView === 'lab') {
+      if (labState.preset && !labState.modified) return `#lab/${labState.preset}`;
+      const q = new URLSearchParams(Object.entries(labState.selected)).toString();
+      return q ? `#lab?${q}` : '#lab';
+    }
+    return `#${currentView}`;
+  }
+
+  function writeHash(push = false) {
+    if (!routeReady) return;
+    const h = currentHash();
+    if (location.hash === h) return;
+    history[push ? 'pushState' : 'replaceState'](null, '', h);
+  }
+
+  async function applyRoute(r) {
+    const view = r.view || 'company';
+    setView(view, { fromRoute: true });
+    if (view === 'company' && r.key && r.key !== activeFocal && document.querySelector(`.company-chip[data-focal="${CSS.escape(r.key)}"]`)) {
+      await loadFocal(r.key);
+    }
+    if (view === 'lab') {
+      const i = r.key ? r.key.lastIndexOf('_') : -1;
+      if (i > 0) {
+        seedLabFromCompany(r.key.slice(0, i), parseInt(r.key.slice(i + 1), 10));
+      } else if ([...r.params.keys()].length) {
+        labState.selected = {};
+        for (const [f, v] of r.params) if (LAB_FIELDS.includes(f)) labState.selected[f] = v;
+        labState.preset = null;
+        labState.modified = false;
+        renderLabFund(null);
+        renderLabPresets();
+        renderLabForm();
+        labPredict();
+      }
+    }
+  }
+  window.addEventListener('popstate', () => applyRoute(parseHash()));
+
+  function setView(v, { fromRoute = false } = {}) {
+    currentView = v;
     nav.forEach(n => n.classList.toggle('active', n.dataset.view === v));
     views.forEach(view => view.classList.toggle('active', view.id === 'view-' + v));
     aitoSections.forEach(s => {
@@ -3703,6 +3764,7 @@
     breadcrumb.innerHTML = `The Study · <b>${viewTitles[v]}</b>`;
     document.querySelector('.main').scrollTop = 0;
     document.getElementById('app').classList.remove('nav-open');  // close mobile drawer on select
+    if (!fromRoute) writeHash(true);
   }
 
   nav.forEach(n => n.addEventListener('click', () => setView(n.dataset.view)));
@@ -4026,7 +4088,7 @@
       <div>
         <div class="big neg">${hiT != null ? Math.round(hiT * 100) : '—'}%<small> vs ${loT != null ? Math.round(loT * 100) : '—'}%</small></div>
         <div class="lbl">long-run trap rate · top vs bottom third of predicted risk</div>
-        <p>Scored walk-forward, the engine's P(trap) <b>did</b> sort the cheap cohort: the riskiest third became long-run dogs far more often — and lagged by ${vtPct(hiX)} pp over 12 months, against ${vtPct(loX)} pp for the safest third.</p>
+        <p>Scored walk-forward, the engine's P(trap) <b>did</b> sort the cheap cohort: the riskiest third became long-run value traps far more often — and lagged by ${vtPct(hiX)} pp over 12 months, against ${vtPct(loX)} pp for the safest third.</p>
       </div>`;
 
     // Splits
@@ -4081,7 +4143,7 @@
     tsel.addEventListener('change', drawTerc);
     drawTerc();
     const sk = d.heldout.skill;
-    document.getElementById('vt-skill').innerHTML = `Rank correlation with what happened, walk-forward: P(trap) vs actual long-run trap <b>${sk.ptrap_vs_trap}</b>, vs 12-month return <b>${sk.ptrap_vs_12m}</b>. P(re-rate) vs 12-month return <b>${sk.p12_vs_12m}</b> — but the naive <em>"sector that won last time"</em> baseline scores <b>${sk.baseline_12m}</b>, and within a sector the engine's re-rating signal is only <b>${sk.p12_within_sector}</b>. <b style="font-family:'Source Serif 4'">Reading:</b> the grades say little about <em>when</em> a cheap stock re-rates — that is mostly sector rotation. They say a good deal about <em>which</em> cheap stocks are dogs.`;
+    document.getElementById('vt-skill').innerHTML = `Rank correlation with what happened, walk-forward: P(trap) vs actual long-run trap <b>${sk.ptrap_vs_trap}</b>, vs 12-month return <b>${sk.ptrap_vs_12m}</b>. P(re-rate) vs 12-month return <b>${sk.p12_vs_12m}</b> — but the naive <em>"sector that won last time"</em> baseline scores <b>${sk.baseline_12m}</b>, and within a sector the engine's re-rating signal is only <b>${sk.p12_within_sector}</b>. <b style="font-family:'Source Serif 4'">Reading:</b> the grades say little about <em>when</em> a cheap stock re-rates — that is mostly sector rotation. They say a good deal about <em>which</em> cheap stocks are value traps.`;
 
     // Scatter: P(trap) → realised 12-month excess
     Object.entries(d.whys || {}).forEach(([k, w]) => { if (w.ptrap) whyRegistry[`vt-${k}`] = w.ptrap; });
@@ -4241,6 +4303,7 @@
     renderLabPresets();
     renderLabForm();
     labPredict();
+    writeHash();
   }
 
   function seedLabFromCompany(ticker, vintage) {
@@ -4256,6 +4319,7 @@
     labState.preset = `${ticker}_${vintage}`;
     labState.modified = false;
     renderLabFund(row);
+    writeHash();
     renderLabPresets();
     renderLabForm();
     labPredict();
@@ -4313,6 +4377,7 @@
         const note = document.getElementById('lab-seeded-note');
         if (note) note.innerHTML = 'Adjusted from the seeded grades — this is now <b>your own view</b>. Pick a different company to reseed.';
       }
+      writeHash();
       labPredictDebounced();
     }));
     document.getElementById('lab-reset').addEventListener('click', clearLab);
@@ -4418,11 +4483,13 @@
   function renderLabMid({ probs, why, src }) {
     const el = document.getElementById('lab-mid');
     if (!el) return;
+    // No per-bucket means (e.g. universe.json predates the fwd_6m columns) → no estimate, not "+0.0".
+    const haveMeans = LAB_MID.some(b => labState.midMeans[b.key]);
     const ev = LAB_MID.reduce((s, b) => s + (probs[b.key] || 0) * (labState.midMeans[b.key] || 0), 0);
     const maxP = Math.max(...LAB_MID.map(b => probs[b.key] || 0), 0.01);
     const peak = LAB_MID.reduce((a, b) => (probs[b.key] || 0) > (probs[a.key] || 0) ? b : a, LAB_MID[0]);
     el.innerHTML = `
-      <div class="lab-mid-head"><div><div class="val">${ev >= 0 ? '+' : ''}${ev.toFixed(1)} pp</div><div class="lbl">expected next 6 months vs SPY</div></div></div>
+      <div class="lab-mid-head"><div><div class="val">${haveMeans ? `${ev >= 0 ? '+' : ''}${ev.toFixed(1)} pp` : '—'}</div><div class="lbl">expected next 6 months vs SPY</div></div></div>
       <div class="lab-bars">${LAB_MID.map(b => {
         const pv = probs[b.key] || 0;
         let whyBtn = '';
@@ -5111,9 +5178,14 @@ However, citing a more cautious consumer environment and rising input costs, the
       renderLab();   // after renderUniverse (uses universe data for options + bucket means)
       setupConsole();
 
-      const initialKey = `${companies[0].ticker}_${companies[0].vintage}`;
+      const route = parseHash();
+      const histKeys = companies.filter(c => !c.forecast).map(c => `${c.ticker}_${c.vintage}`);
+      const initialKey = route.view === 'company' && histKeys.includes(route.key) ? route.key : histKeys[0];
       renderChips(companies, initialKey);
       await loadFocal(initialKey);
+      await applyRoute(route);
+      routeReady = true;
+      writeHash();
     } catch (e) {
       console.error('Boot failed', e);
       document.body.insertAdjacentHTML('afterbegin',
