@@ -33,6 +33,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
+from pipeline.aito.client import api_root, hit_value
+
 app = FastAPI(
     title="aito-equity-demo",
     description="Predictive equity research — LLM-extracted qualitative features + Aito predictive database.",
@@ -73,7 +75,7 @@ class QueryRequest(BaseModel):
 def query(req: QueryRequest) -> dict:
     """Proxy a user-supplied Aito query for the Live Query console.
 
-    Validates the body, calls Aito's `/api/v1/_{kind}`, returns the response
+    Validates the body, calls Aito's `/api/v2/_{kind}`, returns the response
     plus timing. Mocks if Aito creds aren't configured.
     """
     from_table = req.body.get("from")
@@ -96,12 +98,12 @@ def query(req: QueryRequest) -> dict:
             "_note": "AITO_API_URL / AITO_API_KEY not set; returning a mock. Configure both in .env to call the real Aito instance.",
         }
 
-    endpoint = f"/api/v1/_{req.kind}"
+    endpoint = f"/_{req.kind}"
     t0 = time.perf_counter()
     try:
         with httpx.Client(timeout=15.0) as client:
             r = client.post(
-                f"{aito_url.rstrip('/')}{endpoint}",
+                f"{api_root(aito_url)}{endpoint}",
                 json=req.body,
                 headers={"x-api-key": aito_key, "Content-Type": "application/json"},
             )
@@ -170,14 +172,14 @@ def classify_earnings(req: ClassifyRequest) -> dict:
         try:
             with httpx.Client(timeout=15.0) as client:
                 r = client.post(
-                    f"{aito_url.rstrip('/')}/api/v1/_predict",
+                    f"{api_root(aito_url)}/_predict",
                     json={"from": "earnings_events", "where": where, "predict": "react_1d_bucket",
                           "config": {"ai": "high"}},
                     headers={"x-api-key": aito_key, "Content-Type": "application/json"},
                 )
             if r.status_code < 400:
                 hits = r.json().get("hits", [])
-                prediction = [{"bucket": h.get("feature"), "p": round(float(h.get("$p", 0)), 3)} for h in hits]
+                prediction = [{"bucket": hit_value(h), "p": round(float(h.get("$p", 0)), 3)} for h in hits]
                 pred_source = "aito"
         except Exception as e:
             print(f"classify-earnings predict error: {e}")

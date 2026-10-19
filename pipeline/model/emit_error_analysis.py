@@ -17,7 +17,7 @@ from pathlib import Path
 import httpx
 import pandas as pd
 
-from pipeline.aito.client import AitoClient
+from pipeline.aito.client import AitoClient, api_root, hit_value
 from pipeline.aito.load import df_to_aito_rows, load_schema
 from pipeline.model import featureclust as fc
 
@@ -42,7 +42,7 @@ def main() -> None:
     import os
     from dotenv import load_dotenv
     load_dotenv(override=True)
-    url = os.environ["AITO_API_URL"].rstrip("/"); key = os.environ["AITO_API_KEY"]; h = {"x-api-key": key}
+    url = api_root(); key = os.environ["AITO_API_KEY"]; h = {"x-api-key": key}
 
     df = pd.read_csv("data/companies.csv", low_memory=False)
     df = df[df.outcome_bucket.isin(CL)].reset_index(drop=True)
@@ -62,11 +62,11 @@ def main() -> None:
                 w = _wof(r, feats)
                 if not w:
                     continue
-                rr = cl.post(f"{url}/api/v1/_predict",
+                rr = cl.post(f"{url}/_predict",
                              json={"from": TMP, "where": w, "predict": "outcome_bucket", "config": AI}, headers=h)
                 if rr.status_code >= 400:
                     continue
-                d = {x["feature"]: x["$p"] for x in rr.json()["hits"]}
+                d = {hit_value(x): x["$p"] for x in rr.json()["hits"]}
                 pred = max(d, key=d.get)
                 row = dict(w); row.update({"true_bucket": r.outcome_bucket, "pred_bucket": pred, "correct": bool(pred == r.outcome_bucket)})
                 preds.append(row)
@@ -86,7 +86,7 @@ def main() -> None:
 
     # 3. relate errors → features, overall + $on each bucket
     def relate(where):
-        r = httpx.post(f"{url}/api/v1/_relate",
+        r = httpx.post(f"{url}/_relate",
                        json={"from": TABLE, "where": where, "relate": feats, "limit": 12}, headers=h, timeout=90)
         if r.status_code >= 400:
             return []

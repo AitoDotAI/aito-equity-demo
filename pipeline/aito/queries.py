@@ -26,6 +26,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from pipeline.aito.load import profile_token
 from pipeline.aito.client import AitoClient
 from pipeline.outcomes import absolute_range_label
 
@@ -569,7 +570,7 @@ def emit_calibration(
             continue
         p_great = 0.0
         for hit in result.get("hits", []):
-            label = hit.get("feature") or hit.get("$value")
+            label = hit.get("$value") or hit.get("feature")
             if label == "great":
                 p_great = float(hit.get("$p") or hit.get("p") or 0.0)
                 break
@@ -661,7 +662,7 @@ def emit_predict_per_focal(
             where["founder_still_ceo"] = bool(r["founder_still_ceo"])
 
         body = {"from": COMPANIES_TABLE, "where": where, "predict": "outcome_bucket",
-                "select": ["feature", "$p", "$why"], "config": AI_CONFIG}
+                "select": ["$value", "$p", "$why"], "config": AI_CONFIG}
         result, ms = _measure_latency(client, body, "predict")
         latency_samples.append(ms)
 
@@ -762,7 +763,7 @@ def _hits_to_buckets(result: dict, window_years: float) -> list[dict]:
     by_label = {}
     why_by_label = {}
     for hit in result.get("hits", []):
-        label = str(hit.get("feature") or hit.get("$value") or "").strip()
+        label = str(hit.get("$value") or hit.get("feature") or "").strip()
         prob = float(hit.get("$p") or hit.get("p") or 0.0)
         if label.lower() not in OUTCOME_BUCKET_LABELS:
             continue
@@ -874,9 +875,11 @@ def emit_match_per_focal(
             if c == "leadership_quality" and isinstance(v, float):
                 v = int(round(v))
             proposition[c] = v
+        # v2 (rep2) similarity is text BM25: rank on the profile_text tokens
+        # (IDF-weighted field=value overlap — see pipeline.aito.load.profile_text).
         body = {
             "from": COMPANIES_TABLE,
-            "similarity": proposition,
+            "similarity": {"profile_text": " ".join(profile_token(k, v) for k, v in proposition.items())},
             "limit": 10,
         }
         try:

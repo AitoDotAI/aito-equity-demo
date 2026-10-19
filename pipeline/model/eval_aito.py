@@ -1,4 +1,4 @@
-"""Honest held-out evaluation of the LIVE Aito engine via `/api/v1/_evaluate`,
+"""Honest held-out evaluation of the LIVE Aito engine via `/api/v2/_evaluate`,
 which MASKS each test row so the model can't see its own answer.
 
 Use this — not an in-sample predict loop — to judge whether an aito-core change
@@ -44,7 +44,7 @@ KEYS = ["n", "accuracy", "baseAccuracy", "accuracyGain", "informationGain", "mxe
 def evaluate(client: AitoClient, feats: list[str], test: dict) -> dict:
     where = {f: {"$get": f} for f in feats}
     body = {"test": test, "evaluate": {"from": "companies", "where": where, "predict": "outcome_bucket"}}
-    return client._post_json("/api/v1/_evaluate", body)
+    return client.evaluate(body)  # unwraps v2's {kind, data}
 
 
 CALIBRATED = ["sector", "momentum_bucket", "volatility_bucket", "market_quality",

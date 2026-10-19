@@ -1,0 +1,998 @@
+{
+  "instance": "https://shared.aito.ai/db/aito-equity-demo",
+  "v2_target": "https://shared.aito.ai/db/aito-equity-demo",
+  "cases": [
+    {
+      "case": "lab_predict_longrun",
+      "used_by": "Company Lab + Company File + backtest/error/value-trap emitters",
+      "v1": {
+        "endpoint": "_predict",
+        "status": 200,
+        "ms": 48,
+        "total": 5,
+        "hit_keys": [
+          "$p",
+          "$why",
+          "feature"
+        ],
+        "top": [
+          {
+            "feature": "great",
+            "$p": 0.8141727165887771
+          },
+          {
+            "feature": "good",
+            "$p": 0.1094364297799375
+          },
+          {
+            "feature": "market",
+            "$p": 0.04815656812373912
+          },
+          {
+            "feature": "poor",
+            "$p": 0.018312941997811052
+          },
+          {
+            "feature": "disaster",
+            "$p": 0.0099213435097353
+          }
+        ],
+        "why_root": "product",
+        "why_types": [
+          "baseP",
+          "normalizer",
+          "product",
+          "relatedPropositionLift"
+        ]
+      },
+      "v2": {
+        "endpoint": "_predict",
+        "status": 200,
+        "ms": 112,
+        "total": 5,
+        "hit_keys": [
+          "$p",
+          "$value",
+          "$why"
+        ],
+        "top": [
+          {
+            "$value": "great",
+            "$p": 0.8178657349634447
+          },
+          {
+            "$value": "good",
+            "$p": 0.10504523243559659
+          },
+          {
+            "$value": "market",
+            "$p": 0.04821607869992113
+          },
+          {
+            "$value": "poor",
+            "$p": 0.019385266577267347
+          },
+          {
+            "$value": "disaster",
+            "$p": 0.009487687323770203
+          }
+        ],
+        "why_root": "product",
+        "why_types": [
+          "baseP",
+          "normalizer",
+          "product",
+          "relatedPropositionLift"
+        ]
+      }
+    },
+    {
+      "case": "lab_predict_longrun_v1body",
+      "used_by": "same, v1 body sent verbatim to /api/v2 (does an unported client survive?)",
+      "v1": {
+        "endpoint": "_predict",
+        "status": 200,
+        "ms": 47,
+        "total": 5,
+        "hit_keys": [
+          "$p",
+          "$why",
+          "feature"
+        ],
+        "top": [
+          {
+            "feature": "great",
+            "$p": 0.8141727165887771
+          },
+          {
+            "feature": "good",
+            "$p": 0.1094364297799375
+          },
+          {
+            "feature": "market",
+            "$p": 0.04815656812373912
+          },
+          {
+            "feature": "poor",
+            "$p": 0.018312941997811052
+          },
+          {
+            "feature": "disaster",
+            "$p": 0.0099213435097353
+          }
+        ],
+        "why_root": "product",
+        "why_types": [
+          "baseP",
+          "normalizer",
+          "product",
+          "relatedPropositionLift"
+        ]
+      },
+      "v2": {
+        "endpoint": "_predict",
+        "status": 200,
+        "ms": 112,
+        "total": 5,
+        "hit_keys": [
+          "$p",
+          "$value",
+          "$why",
+          "feature"
+        ],
+        "top": [
+          {
+            "feature": "great",
+            "$value": "great",
+            "$p": 0.8178657349634447
+          },
+          {
+            "feature": "good",
+            "$value": "good",
+            "$p": 0.10504523243559659
+          },
+          {
+            "feature": "market",
+            "$value": "market",
+            "$p": 0.04821607869992113
+          },
+          {
+            "feature": "poor",
+            "$value": "poor",
+            "$p": 0.019385266577267347
+          },
+          {
+            "feature": "disaster",
+            "$value": "disaster",
+            "$p": 0.009487687323770203
+          }
+        ],
+        "why_root": "product",
+        "why_types": [
+          "baseP",
+          "normalizer",
+          "product",
+          "relatedPropositionLift"
+        ]
+      }
+    },
+    {
+      "case": "lab_predict_6m",
+      "used_by": "Company Lab 6-month card",
+      "v1": {
+        "endpoint": "_predict",
+        "status": 200,
+        "ms": 49,
+        "total": 3,
+        "hit_keys": [
+          "$p",
+          "$why",
+          "feature"
+        ],
+        "top": [
+          {
+            "feature": "outperformed",
+            "$p": 0.7848989780930941
+          },
+          {
+            "feature": "inline",
+            "$p": 0.11202298755870253
+          },
+          {
+            "feature": "lagged",
+            "$p": 0.10307803434820337
+          }
+        ],
+        "why_root": "product",
+        "why_types": [
+          "baseP",
+          "normalizer",
+          "product",
+          "relatedPropositionLift"
+        ]
+      },
+      "v2": {
+        "endpoint": "_predict",
+        "status": 200,
+        "ms": 113,
+        "total": 3,
+        "hit_keys": [
+          "$p",
+          "$value",
+          "$why"
+        ],
+        "top": [
+          {
+            "$value": "outperformed",
+            "$p": 0.7846328401983477
+          },
+          {
+            "$value": "inline",
+            "$p": 0.11210066506940651
+          },
+          {
+            "$value": "lagged",
+            "$p": 0.1032664947322458
+          }
+        ],
+        "why_root": "product",
+        "why_types": [
+          "baseP",
+          "normalizer",
+          "product",
+          "relatedPropositionLift"
+        ]
+      }
+    },
+    {
+      "case": "predict_trap_profile",
+      "used_by": "value-trap view (cheap, indebted, disrupted)",
+      "v1": {
+        "endpoint": "_predict",
+        "status": 200,
+        "ms": 44,
+        "total": 5,
+        "hit_keys": [
+          "$p",
+          "$why",
+          "feature"
+        ],
+        "top": [
+          {
+            "feature": "good",
+            "$p": 0.29634469427770793
+          },
+          {
+            "feature": "great",
+            "$p": 0.2280862414979488
+          },
+          {
+            "feature": "poor",
+            "$p": 0.2231778919343806
+          },
+          {
+            "feature": "market",
+            "$p": 0.21152454160290635
+          },
+          {
+            "feature": "disaster",
+            "$p": 0.0408666306870563
+          }
+        ],
+        "why_root": "product",
+        "why_types": [
+          "baseP",
+          "normalizer",
+          "product",
+          "relatedPropositionLift"
+        ]
+      },
+      "v2": {
+        "endpoint": "_predict",
+        "status": 200,
+        "ms": 44,
+        "total": 5,
+        "hit_keys": [
+          "$p",
+          "$value",
+          "$why"
+        ],
+        "top": [
+          {
+            "$value": "good",
+            "$p": 0.29634469427770793
+          },
+          {
+            "$value": "great",
+            "$p": 0.2280862414979488
+          },
+          {
+            "$value": "poor",
+            "$p": 0.2231778919343806
+          },
+          {
+            "$value": "market",
+            "$p": 0.21152454160290635
+          },
+          {
+            "$value": "disaster",
+            "$p": 0.0408666306870563
+          }
+        ],
+        "why_root": "product",
+        "why_types": [
+          "baseP",
+          "normalizer",
+          "product",
+          "relatedPropositionLift"
+        ]
+      }
+    },
+    {
+      "case": "predict_empty_where",
+      "used_by": "Lab with nothing set (base rate)",
+      "v1": {
+        "endpoint": "_predict",
+        "status": 200,
+        "ms": 43,
+        "total": 5,
+        "hit_keys": [
+          "$p",
+          "$why",
+          "feature"
+        ],
+        "top": [
+          {
+            "feature": "good",
+            "$p": 0.3187066974595843
+          },
+          {
+            "feature": "great",
+            "$p": 0.29484218629715164
+          },
+          {
+            "feature": "market",
+            "$p": 0.2063125481139338
+          },
+          {
+            "feature": "poor",
+            "$p": 0.11855273287143957
+          },
+          {
+            "feature": "disaster",
+            "$p": 0.061585835257890686
+          }
+        ],
+        "why_root": "product",
+        "why_types": [
+          "baseP",
+          "normalizer",
+          "product"
+        ]
+      },
+      "v2": {
+        "endpoint": "_predict",
+        "status": 200,
+        "ms": 42,
+        "total": 5,
+        "hit_keys": [
+          "$p",
+          "$value",
+          "$why"
+        ],
+        "top": [
+          {
+            "$value": "good",
+            "$p": 0.3187066974595843
+          },
+          {
+            "$value": "great",
+            "$p": 0.29484218629715164
+          },
+          {
+            "$value": "market",
+            "$p": 0.2063125481139338
+          },
+          {
+            "$value": "poor",
+            "$p": 0.11855273287143957
+          },
+          {
+            "$value": "disaster",
+            "$p": 0.061585835257890686
+          }
+        ],
+        "why_root": "product",
+        "why_types": [
+          "baseP",
+          "normalizer",
+          "product"
+        ]
+      }
+    },
+    {
+      "case": "relate_great",
+      "used_by": "Thesis view headline relate",
+      "v1": {
+        "endpoint": "_relate",
+        "status": 200,
+        "ms": 50,
+        "total": 20,
+        "hit_keys": [
+          "condition",
+          "fs",
+          "info",
+          "lift",
+          "ps",
+          "related",
+          "relation"
+        ],
+        "top": [
+          {
+            "lift": 1.9439542857512766
+          },
+          {
+            "lift": 0.6962829567993841
+          },
+          {
+            "lift": 0.7064998922196276
+          },
+          {
+            "lift": 1.6502512649704328
+          },
+          {
+            "lift": 0.5507752028657888
+          }
+        ],
+        "relate_first": {
+          "related": {
+            "sector": {
+              "$has": "Information Technology"
+            }
+          },
+          "lift": 1.9439542857512766,
+          "info": {
+            "h": 0.5014440730465561,
+            "mi": 0.06471029642184917,
+            "miTrue": 0.20601214672296958,
+            "miFalse": -0.1413018503011204
+          }
+        }
+      },
+      "v2": {
+        "endpoint": "_relate",
+        "status": 200,
+        "ms": 47,
+        "total": 20,
+        "hit_keys": [
+          "condition",
+          "fs",
+          "info",
+          "lift",
+          "n",
+          "ps",
+          "related",
+          "relation"
+        ],
+        "top": [
+          {
+            "lift": 2.46136716299171
+          },
+          {
+            "lift": 1.3412672730441926
+          },
+          {
+            "lift": 1.174188672956052
+          },
+          {
+            "lift": 1.5569300266890216
+          },
+          {
+            "lift": 1.2831920707870121
+          }
+        ],
+        "relate_first": {
+          "related": {
+            "sector": "Information Technology"
+          },
+          "lift": 2.46136716299171,
+          "n": 1549.0,
+          "info": 0.03985440094873708
+        }
+      }
+    },
+    {
+      "case": "similarity_profile",
+      "used_by": "Lab analogues + Historical Analogues view",
+      "v1": {
+        "endpoint": "_similarity",
+        "status": 200,
+        "ms": 92,
+        "total": 1549,
+        "hit_keys": [
+          "$score",
+          "capital_allocation",
+          "company_name",
+          "currency",
+          "debt_to_equity",
+          "earnings_yield",
+          "eval_fold",
+          "exchange",
+          "execution_track_record",
+          "filing_date",
+          "filing_language",
+          "fwd_12m_bucket",
+          "fwd_12m_excess",
+          "fwd_12m_return",
+          "fwd_20d_bucket",
+          "fwd_20d_return",
+          "fwd_6m_bucket",
+          "fwd_6m_excess",
+          "fwd_6m_return",
+          "gross_margin",
+          "growth_bucket",
+          "industry",
+          "leadership_quality",
+          "leadership_rationale",
+          "leverage_bucket",
+          "market",
+          "market_cap",
+          "market_position",
+          "market_position_rationale",
+          "market_quality",
+          "market_quality_rationale",
+          "moat_rationale",
+          "moat_strength",
+          "moat_type",
+          "momentum_12m",
+          "momentum_bucket",
+          "net_income",
+          "net_margin",
+          "operating_margin",
+          "outcome_bucket",
+          "pb_ratio",
+          "pe_ratio",
+          "pre_filing_mom_60d",
+          "pre_filing_mom_bucket",
+          "profitability_bucket",
+          "reporting_standard",
+          "return_on_assets",
+          "return_on_equity",
+          "revenue",
+          "revenue_cagr_3y",
+          "sector",
+          "shares_outstanding",
+          "stockholders_equity",
+          "strategic_clarity",
+          "survived_intact",
+          "terminal_event",
+          "ticker",
+          "total_return_pct_local",
+          "total_return_pct_usd",
+          "valuation_bucket",
+          "vintage_date",
+          "vintage_price",
+          "vintage_year",
+          "volatility_12m",
+          "volatility_bucket",
+          "window_years"
+        ],
+        "top": [
+          {
+            "ticker": "AAPL",
+            "vintage_year": 2014,
+            "$score": 6.8069029031570825
+          },
+          {
+            "ticker": "AAPL",
+            "vintage_year": 2017,
+            "$score": 6.8069029031570825
+          },
+          {
+            "ticker": "AAPL",
+            "vintage_year": 2020,
+            "$score": 6.8069029031570825
+          },
+          {
+            "ticker": "NVDA",
+            "vintage_year": 2020,
+            "$score": 6.8069029031570825
+          },
+          {
+            "ticker": "BKNG",
+            "vintage_year": 2014,
+            "$score": 4.297117096148093
+          }
+        ]
+      },
+      "v2": {
+        "endpoint": "_query",
+        "status": 400,
+        "ms": 42,
+        "error": "{\"kind\": \"error\", \"data\": {\"code\": \"request.invalid\", \"message\": \"orderBy \\\"$similarity\\\" ranks rows by text similarity and needs a {field: {\\\"$match\\\": text}} term in the where\"}}"
+      }
+    },
+    {
+      "case": "evaluate_fold0",
+      "used_by": "Evaluation view (eval_aito / emit_eval)",
+      "v1": {
+        "endpoint": "_evaluate",
+        "status": 200,
+        "ms": 3387,
+        "keys": [
+          "accuracy",
+          "accuracyGain",
+          "accurateCases",
+          "accurateOffsets",
+          "allMs",
+          "allNs",
+          "allUs",
+          "alpha_binByTopScore",
+          "baseAccuracy",
+          "baseError",
+          "baseGmp",
+          "baseMeanRank",
+          "cases",
+          "error",
+          "errorCases",
+          "errorOffsets",
+          "features",
+          "geomMeanLift",
+          "geomMeanP",
+          "h"
+        ],
+        "metrics": {
+          "accuracy": 0.3149171270718232,
+          "baseAccuracy": 0.2569060773480663,
+          "informationGain": 0.18661389406366524,
+          "meanRank": 1.7430939226519337,
+          "testSamples": 362,
+          "n": 362
+        }
+      },
+      "v2": {
+        "endpoint": "_evaluate",
+        "status": 200,
+        "ms": 3403,
+        "envelope": "kind=evaluation",
+        "keys": [
+          "accuracy",
+          "accuracyGain",
+          "accurateCases",
+          "accurateOffsets",
+          "allMs",
+          "allNs",
+          "allUs",
+          "alpha_binByTopScore",
+          "baseAccuracy",
+          "baseError",
+          "baseGmp",
+          "baseMeanRank",
+          "cases",
+          "error",
+          "errorCases",
+          "errorOffsets",
+          "features",
+          "geomMeanLift",
+          "geomMeanP",
+          "h"
+        ],
+        "metrics": {
+          "accuracy": 0.3149171270718232,
+          "baseAccuracy": 0.2569060773480663,
+          "informationGain": 0.18661389406366524,
+          "meanRank": 1.7430939226519337,
+          "testSamples": 362,
+          "n": 362
+        }
+      }
+    },
+    {
+      "case": "relate_great_scoped",
+      "used_by": "v2 idiom: population = rows whose (nullable) outcome is defined",
+      "v1": {
+        "endpoint": "_relate",
+        "status": 200,
+        "ms": 64,
+        "total": 20,
+        "hit_keys": [
+          "condition",
+          "fs",
+          "info",
+          "lift",
+          "ps",
+          "related",
+          "relation"
+        ],
+        "top": [
+          {
+            "lift": 1.9439542857512766
+          },
+          {
+            "lift": 0.6962829567993841
+          },
+          {
+            "lift": 0.7064998922196276
+          },
+          {
+            "lift": 1.6502512649704328
+          },
+          {
+            "lift": 0.5507752028657888
+          }
+        ],
+        "relate_first": {
+          "related": {
+            "sector": {
+              "$has": "Information Technology"
+            }
+          },
+          "lift": 1.9439542857512766,
+          "info": {
+            "h": 0.5014440730465561,
+            "mi": 0.06471029642184917,
+            "miTrue": 0.20601214672296958,
+            "miFalse": -0.1413018503011204
+          }
+        }
+      },
+      "v2": {
+        "endpoint": "_relate",
+        "status": 200,
+        "ms": 47,
+        "total": 20,
+        "hit_keys": [
+          "condition",
+          "fs",
+          "info",
+          "lift",
+          "n",
+          "ps",
+          "related",
+          "relation"
+        ],
+        "top": [
+          {
+            "lift": 2.1916495142688723
+          },
+          {
+            "lift": 0.6993447225831791
+          },
+          {
+            "lift": 1.633964601094275
+          },
+          {
+            "lift": 0.7246407435672328
+          },
+          {
+            "lift": 1.3130328046959874
+          }
+        ],
+        "relate_first": {
+          "related": {
+            "sector": "Information Technology"
+          },
+          "lift": 2.1916495142688723,
+          "n": 1294.0,
+          "info": 0.040891481165563306
+        }
+      }
+    },
+    {
+      "case": "relate_not_null",
+      "used_by": "population via $not null (G1 / aito-core#1061 repro)",
+      "v1": {
+        "endpoint": "_relate",
+        "status": 200,
+        "ms": 52,
+        "total": 5,
+        "hit_keys": [
+          "condition",
+          "fs",
+          "info",
+          "lift",
+          "ps",
+          "related",
+          "relation"
+        ],
+        "top": [
+          {
+            "lift": 1.9439542857512766
+          },
+          {
+            "lift": 0.6962829567993841
+          },
+          {
+            "lift": 0.7064998922196276
+          },
+          {
+            "lift": 1.6502512649704328
+          },
+          {
+            "lift": 0.5507752028657888
+          }
+        ],
+        "relate_first": {
+          "related": {
+            "sector": {
+              "$has": "Information Technology"
+            }
+          },
+          "lift": 1.9439542857512766,
+          "info": {
+            "h": 0.5014440730465561,
+            "mi": 0.06471029642184917,
+            "miTrue": 0.20601214672296958,
+            "miFalse": -0.1413018503011204
+          }
+        }
+      },
+      "v2": {
+        "endpoint": "_relate",
+        "status": 400,
+        "ms": 51,
+        "error": "{\"kind\": \"error\", \"data\": {\"code\": \"request.invalid\", \"message\": \"bit & operation requires same sized bit sets, found: 1549, 1520\"}}"
+      }
+    },
+    {
+      "case": "console_predict",
+      "used_by": "Live Query sample (predict, no select)",
+      "v1": {
+        "endpoint": "_predict",
+        "status": 200,
+        "ms": 52,
+        "total": 5,
+        "hit_keys": [
+          "$p",
+          "feature",
+          "field"
+        ],
+        "top": [
+          {
+            "feature": "great",
+            "$p": 0.41512772302447015
+          },
+          {
+            "feature": "good",
+            "$p": 0.32076455463341835
+          },
+          {
+            "feature": "market",
+            "$p": 0.174337683324456
+          },
+          {
+            "feature": "poor",
+            "$p": 0.05317746402363832
+          },
+          {
+            "feature": "disaster",
+            "$p": 0.03659257499401721
+          }
+        ]
+      },
+      "v2": {
+        "endpoint": "_predict",
+        "status": 200,
+        "ms": 69,
+        "total": 5,
+        "hit_keys": [
+          "$p",
+          "$value"
+        ],
+        "top": [
+          {
+            "$value": "great",
+            "$p": 0.4170767450529555
+          },
+          {
+            "$value": "good",
+            "$p": 0.33957818374895093
+          },
+          {
+            "$value": "market",
+            "$p": 0.16561627146868219
+          },
+          {
+            "$value": "poor",
+            "$p": 0.04490468086752651
+          },
+          {
+            "$value": "disaster",
+            "$p": 0.03282411886188497
+          }
+        ]
+      }
+    },
+    {
+      "case": "console_relate_features",
+      "used_by": "Live Query sample (relate: $features)",
+      "v1": {
+        "endpoint": "_relate",
+        "status": 400,
+        "ms": 49,
+        "error": "{\"charOffset\": 64, \"columnNumber\": 65, \"error\": \"field '$features' not found\", \"lineNumber\": 1, \"message\": \"1:65: field '$features' not found\\n\\n  {\\\"from\\\":\\\"companies\\\",\\\"where\\\":{\\\"outcome_bucket\\\":\\\"great\\\"},\\\"relate\\\":\\\"$features\\\",\\\"limit\\\":12}\\n                                                "
+      },
+      "v2": {
+        "endpoint": "_relate",
+        "status": 400,
+        "ms": 48,
+        "error": "{\"kind\": \"error\", \"data\": {\"code\": \"request.invalid\", \"message\": \"relate field(s) not found in 'companies': $features\"}}"
+      }
+    },
+    {
+      "case": "console_match",
+      "used_by": "Live Query sample (match)",
+      "v1": {
+        "endpoint": "_match",
+        "status": 400,
+        "ms": 48,
+        "error": "{\"charOffset\": 28, \"columnNumber\": 29, \"error\": \"invalid MatchQuery. field 'match' must be of type 'Get'\", \"lineNumber\": 1, \"message\": \"1:29: invalid MatchQuery. field 'match' must be of type 'Get'\\n\\n  {\\\"from\\\":\\\"companies\\\",\\\"match\\\":{\\\"ticker\\\":\\\"NVDA\\\",\\\"vintage_year\\\":2014},\\\"limit\\\":6}\\n     "
+      },
+      "v2": {
+        "endpoint": "_match",
+        "status": 400,
+        "ms": 52,
+        "error": "{\"kind\": \"error\", \"data\": {\"code\": \"request.invalid\", \"message\": \"_match: missing 'match' (the field whose values to rank)\"}}"
+      }
+    },
+    {
+      "case": "earnings_predict",
+      "used_by": "/api/classify-earnings",
+      "v1": {
+        "endpoint": "_predict",
+        "status": 200,
+        "ms": 57,
+        "total": 3,
+        "hit_keys": [
+          "$p",
+          "feature",
+          "field"
+        ],
+        "top": [
+          {
+            "feature": "up",
+            "$p": 0.4736154247712283
+          },
+          {
+            "feature": "flat",
+            "$p": 0.2830401648615907
+          },
+          {
+            "feature": "down",
+            "$p": 0.24334441036718107
+          }
+        ]
+      },
+      "v2": {
+        "endpoint": "_predict",
+        "status": 200,
+        "ms": 139,
+        "total": 3,
+        "hit_keys": [
+          "$p",
+          "$value"
+        ],
+        "top": [
+          {
+            "$value": "up",
+            "$p": 0.47456984082028164
+          },
+          {
+            "$value": "flat",
+            "$p": 0.2826992002511923
+          },
+          {
+            "$value": "down",
+            "$p": 0.24273095892852617
+          }
+        ]
+      }
+    }
+  ],
+  "version": {
+    "name": "aitoai",
+    "version": "2.11.6",
+    "gitRevision": "05ae132790cc9456bd07450b69105077ff498175",
+    "builtAt": "2026-10-11T18:19:49.323387491Z"
+  }
+}

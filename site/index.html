@@ -2733,7 +2733,7 @@
         </div>
 
         <div class="console-hint">
-          <strong>Tip.</strong> Ctrl-Enter (or Cmd-Enter) to run. The body is a literal Aito query — anything you'd POST to <code style="font-family:'JetBrains Mono'">/api/v1/_predict</code> directly works here, as long as <code style="font-family:'JetBrains Mono'">from = "companies"</code>.
+          <strong>Tip.</strong> Ctrl-Enter (or Cmd-Enter) to run. The body is a literal Aito query — anything you'd POST to <code style="font-family:'JetBrains Mono'">/api/v2/_predict</code> directly works here (v1 bodies too — v2 accepts them), as long as <code style="font-family:'JetBrains Mono'">from = "companies"</code>.
         </div>
 
         <pre class="console-response" id="console-response"><span class="placeholder">// run a query to see the response</span></pre>
@@ -2860,7 +2860,7 @@
     <span class="k">"leadership_quality"</span>: <span class="n">4</span>
   },
   <span class="k">"predict"</span>: <span class="s">"outcome_bucket"</span>,
-  <span class="k">"select"</span>: [<span class="s">"feature"</span>, <span class="s">"$p"</span>, <span class="s">"$why"</span>],
+  <span class="k">"select"</span>: [<span class="s">"$value"</span>, <span class="s">"$p"</span>, <span class="s">"$why"</span>],
   <span class="k">"config"</span>: { <span class="k">"ai"</span>: <span class="s">"high"</span> }
 }</div>
         <p>The same <code style="font-family:'JetBrains Mono';color:var(--aito-teal);">$why</code> tree the prediction card opens: base rate × each knob's lift. Change a knob, re-query, watch the lifts recompute.</p>
@@ -2990,7 +2990,7 @@
 
       <div class="aito-section" data-view="eval">
         <div class="aito-section-label">The Query</div>
-        <div class="aito-endpoint">POST /api/v1/_evaluate</div>
+        <div class="aito-endpoint">POST /api/v2/_evaluate</div>
         <div class="aito-code">{
   <span class="k">"test"</span>: { <span class="k">"eval_fold"</span>: <span class="s">"0"</span> },
   <span class="k">"evaluate"</span>: {
@@ -3008,7 +3008,7 @@
 
       <div class="aito-section" data-view="errors">
         <div class="aito-section-label">The Query</div>
-        <div class="aito-endpoint">POST /api/v1/_relate</div>
+        <div class="aito-endpoint">POST /api/v2/_relate</div>
         <div class="aito-code">{
   <span class="k">"from"</span>: <span class="s">"eval_predictions"</span>,
   <span class="k">"where"</span>: { <span class="k">"$on"</span>: {
@@ -3027,7 +3027,7 @@
 
       <div class="aito-section" data-view="backtest">
         <div class="aito-section-label">The Score</div>
-        <div class="aito-endpoint">POST /api/v1/_predict → expected rank</div>
+        <div class="aito-endpoint">POST /api/v2/_predict → expected rank</div>
         <div class="aito-code">{
   <span class="k">"from"</span>: <span class="s">"companies_train_fold_k"</span>,
   <span class="k">"where"</span>: { <span class="c">/* held-out company's features */</span> },
@@ -3046,7 +3046,7 @@
 
       <div class="aito-section" data-view="backtest">
         <div class="aito-section-label">The Explain Query</div>
-        <div class="aito-endpoint">POST /api/v1/_relate</div>
+        <div class="aito-endpoint">POST /api/v2/_relate</div>
         <div class="aito-code">{
   <span class="k">"from"</span>: <span class="s">"bt_baskets"</span>,
   <span class="k">"where"</span>: { <span class="k">"in_top20"</span>: <span class="n">true</span> },
@@ -3062,7 +3062,7 @@
 
       <div class="aito-section" data-view="traps">
         <div class="aito-section-label">The two scores</div>
-        <div class="aito-endpoint">POST /api/v1/_predict × 2</div>
+        <div class="aito-endpoint">POST /api/v2/_predict × 2</div>
         <div class="aito-code"><span class="c">// table holds only EARLIER vintages</span>
 {
   <span class="k">"from"</span>: <span class="s">"vt_tmp"</span>,
@@ -3076,7 +3076,7 @@
 
       <div class="aito-section" data-view="traps">
         <div class="aito-section-label">Relate, inside the cohort</div>
-        <div class="aito-endpoint">POST /api/v1/_relate</div>
+        <div class="aito-endpoint">POST /api/v2/_relate</div>
         <div class="aito-code"><span class="c">// cohort-only table: cheap rows</span>
 {
   <span class="k">"from"</span>: <span class="s">"vt_cheap"</span>,
@@ -3167,6 +3167,12 @@
     return parts.join(' + ');
   }
   // Mirror of pipeline/aito/queries.py parse_why — flatten {base_rate, factors:[{label,lift}]}
+  // v2 ranked-value hits carry `$value`; v1 carried `feature`. Read either.
+  const hitValue = h => (h['$value'] !== undefined ? h['$value'] : h.feature);
+  // Same tokens as pipeline.aito.load.profile_token: `moat_strength=wide` → `moatstrengthxwide`.
+  const profileToken = (f, v) => `${f}x${v}`.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const profileText = where => Object.entries(where).map(([f, v]) => profileToken(f, v)).join(' ');
+
   function parseWhy(why) {
     if (!why || typeof why !== 'object') return null;
     let base = null; const factors = [];
@@ -4410,11 +4416,11 @@
     try {
       const r = await fetch('./api/query', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kind: 'predict', body: { from: 'companies', where, predict: 'outcome_bucket', select: ['feature', '$p', '$why'], config: { ai: 'high' } } }),
+        body: JSON.stringify({ kind: 'predict', body: { from: 'companies', where, predict: 'outcome_bucket', select: ['$value', '$p', '$why'], config: { ai: 'high' } } }),
       });
       const p = await r.json();
       predSource = p.source || 'aito';
-      (p.result?.hits || []).forEach(h => { probs[h.feature] = h['$p']; if (h['$why']) why[h.feature] = parseWhy(h['$why']); });
+      (p.result?.hits || []).forEach(h => { const v = hitValue(h); probs[v] = h['$p']; if (h['$why']) why[v] = parseWhy(h['$why']); });
     } catch (e) { /* fall through to empty */ }
     if (seq !== labState.seq) return;
     if (!Object.keys(probs).length) {
@@ -4466,11 +4472,11 @@
     try {
       const r = await fetch('./api/query', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kind: 'predict', body: { from: 'companies', where, predict: 'fwd_6m_bucket', select: ['feature', '$p', '$why'], config: { ai: 'high' } } }),
+        body: JSON.stringify({ kind: 'predict', body: { from: 'companies', where, predict: 'fwd_6m_bucket', select: ['$value', '$p', '$why'], config: { ai: 'high' } } }),
       });
       const p = await r.json();
       src = p.source || 'aito';
-      (p.result?.hits || []).forEach(h => { probs[h.feature] = h['$p']; if (h['$why']) why[h.feature] = parseWhy(h['$why']); });
+      (p.result?.hits || []).forEach(h => { const v = hitValue(h); probs[v] = h['$p']; if (h['$why']) why[v] = parseWhy(h['$why']); });
     } catch (e) { /* fall through */ }
     if (!LAB_MID.some(b => probs[b.key] != null)) {
       const rows = (universeState.all || []).filter(x => x.fwd_6m_bucket);
@@ -4513,7 +4519,8 @@
     try {
       const r = await fetch('./api/query', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kind: 'similarity', body: { from: 'companies', similarity: where, limit: 12 } }),
+        // v2 similarity is text BM25 over profile_text (one token per field=value)
+        body: JSON.stringify({ kind: 'similarity', body: { from: 'companies', similarity: { profile_text: profileText(where) }, limit: 12 } }),
       });
       const p = await r.json();
       hits = (p.result?.hits || []).filter(h => h.outcome_bucket && h.total_return_pct_local != null);
@@ -4998,13 +5005,17 @@ However, citing a more cautious consumer environment and rising input costs, the
     },
     relate: {
       from: "companies",
-      where: { outcome_bucket: "great" },
-      relate: "$features",
+      // outcome_bucket is nullable (delisted / 2026 rows have none): $on scopes the
+      // population to rows where it is known, so the lifts aren't diluted by them
+      where: { "$on": [{ outcome_bucket: "great" }, { outcome_bucket: { "$defined": true } }] },
+      relate: ["market_position", "moat_type", "moat_strength", "market_quality", "leadership_quality",
+               "sector", "valuation_bucket", "growth_bucket", "leverage_bucket"],
       limit: 12
     },
     match: {
       from: "companies",
-      match: { ticker: "NVDA", vintage_year: 2014 },
+      where: { market_position: "dominant", moat_strength: "wide", market_quality: "secular_growth" },
+      match: "ticker",
       limit: 6
     }
   };
@@ -5120,7 +5131,7 @@ However, citing a more cautious consumer environment and rising input costs, the
     }
     const endpoint = `_${consoleState.kind}`;
     const bodyStr = JSON.stringify(body);
-    const curl = `curl -X POST "$AITO_API_URL/api/v1/${endpoint}" \\
+    const curl = `curl -X POST "$AITO_API_URL/api/v2/${endpoint}" \\
   -H "x-api-key: $AITO_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '${bodyStr.replace(/'/g, "'\\''")}'`;
