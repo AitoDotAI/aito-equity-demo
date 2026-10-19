@@ -180,14 +180,6 @@
       "lift_down": 0.19
     },
     {
-      "feature": "valuation_bucket = cheap",
-      "field": "valuation_bucket",
-      "group": "valuation",
-      "n": 497,
-      "lift_great": 1.17,
-      "lift_down": 0.73
-    },
-    {
       "feature": "growth_bucket = shrinking",
       "field": "growth_bucket",
       "group": "valuation",
@@ -218,6 +210,14 @@
       "n": 170,
       "lift_great": 1.16,
       "lift_down": 1.18
+    },
+    {
+      "feature": "valuation_bucket = cheap",
+      "field": "valuation_bucket",
+      "group": "valuation",
+      "n": 263,
+      "lift_great": 1.15,
+      "lift_down": 0.78
     },
     {
       "feature": "leverage_bucket = low",
@@ -324,20 +324,20 @@
       "lift_down": 0.9
     },
     {
+      "feature": "valuation_bucket = fair",
+      "field": "valuation_bucket",
+      "group": "valuation",
+      "n": 535,
+      "lift_great": 1.04,
+      "lift_down": 0.89
+    },
+    {
       "feature": "leadership_quality = 4",
       "field": "leadership_quality",
       "group": "llm",
       "n": 839,
       "lift_great": 1.03,
       "lift_down": 0.83
-    },
-    {
-      "feature": "valuation_bucket = fair",
-      "field": "valuation_bucket",
-      "group": "valuation",
-      "n": 409,
-      "lift_great": 1.03,
-      "lift_down": 1.01
     },
     {
       "feature": "moat_type = scale_economies",
@@ -452,6 +452,14 @@
       "lift_down": 0.0
     },
     {
+      "feature": "valuation_bucket = expensive",
+      "field": "valuation_bucket",
+      "group": "valuation",
+      "n": 314,
+      "lift_great": 0.9,
+      "lift_down": 0.98
+    },
+    {
       "feature": "momentum_bucket = neutral",
       "field": "momentum_bucket",
       "group": "market",
@@ -546,14 +554,6 @@
       "n": 216,
       "lift_great": 0.66,
       "lift_down": 1.58
-    },
-    {
-      "feature": "valuation_bucket = expensive",
-      "field": "valuation_bucket",
-      "group": "valuation",
-      "n": 215,
-      "lift_great": 0.63,
-      "lift_down": 1.17
     },
     {
       "feature": "strategic_clarity = 3",

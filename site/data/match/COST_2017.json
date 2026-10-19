@@ -6,10 +6,22 @@
   },
   "matches": [
     {
+      "ticker": "DG",
+      "vintage": 2014,
+      "name": "Dollar General",
+      "similarity": 12.382,
+      "description": "The company emphasizes low\u2011cost operating structure, extensive distribution network (11 distribution centers plus leased space), and purchasing power from a large store base ('attractive store economics' and 'strong purchasing power'), which create reinforcing scale advantages across sourcing, distr",
+      "outcome": {
+        "text": "+101%",
+        "window": "'14\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
       "ticker": "DLTR",
       "vintage": 2014,
       "name": "Dollar Tree",
-      "similarity": 4.197,
+      "similarity": 11.611,
       "description": "Filing emphasizes buying power and supply-chain investments (\"substantial buying power\", \"investments in technology\", automatic replenishment and distribution center expansion) and rising selling square footage from ~30.3M to 40.5M, supporting a scale-based advantage that appears stable and reinforc",
       "outcome": {
         "text": "+68%",
@@ -21,7 +33,7 @@
       "ticker": "WMT",
       "vintage": 2014,
       "name": "Walmart",
-      "similarity": 4.197,
+      "similarity": 10.753,
       "description": "The company emphasizes EDLP as its pricing philosophy (\u201cprice items at a low price every day\u201d) and describes extensive store networks, private labels and global operations (26 countries), implying durable scale advantages and purchasing/distribution economics that support a wide moat.",
       "outcome": {
         "text": "+484%",
@@ -30,50 +42,38 @@
       }
     },
     {
-      "ticker": "COST",
+      "ticker": "KO",
       "vintage": 2014,
-      "name": "Costco",
-      "similarity": 3.892,
-      "description": "The filing repeatedly attributes low-price ability to \"high sales volumes and rapid inventory turnover\" and efficient distribution (depots, cross-docking), plus recurring membership fees and a high Executive-member penetration that reinforce volume economics and pricerelated advantages.",
+      "name": "Coca-Cola Company (The)",
+      "similarity": 9.055,
+      "description": "The Company emphasizes Trademark Coca\u2011Cola and other global trademarks and a worldwide bottling system; the proxy and 10\u2011K highlight pervasive brand franchises and an \"unrivaled distribution system,\" suggesting a durable, reinforcing brand advantage across markets.",
       "outcome": {
-        "text": "+991%",
+        "text": "+195%",
         "window": "'14\u2192'26",
         "sentiment": "positive"
       }
     },
     {
-      "ticker": "DG",
-      "vintage": 2014,
-      "name": "Dollar General",
-      "similarity": 3.892,
-      "description": "The company emphasizes low\u2011cost operating structure, extensive distribution network (11 distribution centers plus leased space), and purchasing power from a large store base ('attractive store economics' and 'strong purchasing power'), which create reinforcing scale advantages across sourcing, distr",
+      "ticker": "KO",
+      "vintage": 2017,
+      "name": "Coca-Cola Company (The)",
+      "similarity": 9.055,
+      "description": "The Company emphasizes its ownership of \"numerous valuable nonalcoholic beverage brands\" (e.g., Coca-Cola, Diet Coke, Sprite) and stresses trademarks and formulae as \"essential to the success of our business,\" supported by a unique global distribution system \u2014 a combination that describes a wide, du",
       "outcome": {
-        "text": "+101%",
-        "window": "'14\u2192'26",
+        "text": "+161%",
+        "window": "'17\u2192'26",
         "sentiment": "positive"
       }
     },
     {
-      "ticker": "COST",
+      "ticker": "KO",
       "vintage": 2020,
-      "name": "Costco",
-      "similarity": 3.892,
-      "description": "The primary advantage is scale: the company emphasizes \"volume purchasing, efficient distribution and reduced handling of merchandise\" enabling significantly lower gross margins, plus a strong private-label (Kirkland Signature) and high recurring membership fees that reinforce the scale benefits.",
+      "name": "Coca-Cola Company (The)",
+      "similarity": 9.055,
+      "description": "The primary advantage described is strong, globally recognized brands and an unrivaled distribution system (\"world's largest beverage distribution system\"; \"1.9 billion servings...every day\"), which are durable, scale-reinforcing assets that suggest a wide moat.",
       "outcome": {
-        "text": "+281%",
+        "text": "+79%",
         "window": "'20\u2192'26",
-        "sentiment": "positive"
-      }
-    },
-    {
-      "ticker": "HSY",
-      "vintage": 2014,
-      "name": "Hershey Company (The)",
-      "similarity": 3.711,
-      "description": "The company states that the \u201cfoundation of our marketing strategy is our strong brand equities,\u201d invests heavily in advertising and product innovation, and repeatedly leverages those brands across geographies and product lines\u2014indicating a durable, reinforcing brand advantage.",
-      "outcome": {
-        "text": "+172%",
-        "window": "'14\u2192'26",
         "sentiment": "positive"
       }
     }

@@ -45,21 +45,21 @@
       {
         "label": "Disaster",
         "range": "< -63%",
-        "prob": 0.0779,
+        "prob": 0.066,
         "why": {
           "base_rate": 0.0616,
           "factors": [
             {
-              "label": "moat type: network effects + market position: dominant + market quality: secular growth",
-              "lift": 1.43
+              "label": "moat type + market position + market quality",
+              "lift": 1.31
             },
             {
-              "label": "leadership quality: 4",
-              "lift": 0.73
+              "label": "leadership quality",
+              "lift": 0.95
             },
             {
-              "label": "moat strength: narrow",
-              "lift": 1.15
+              "label": "moat strength",
+              "lift": 0.97
             }
           ]
         }
@@ -67,21 +67,21 @@
       {
         "label": "Poor",
         "range": "-63% to +0%",
-        "prob": 0.0694,
+        "prob": 0.0819,
         "why": {
           "base_rate": 0.1186,
           "factors": [
             {
-              "label": "moat type: network effects + market position: dominant + market quality: secular growth",
-              "lift": 0.45
+              "label": "moat type + market position + market quality",
+              "lift": 0.74
             },
             {
-              "label": "moat strength: narrow",
-              "lift": 1.12
+              "label": "moat strength",
+              "lift": 1.11
             },
             {
-              "label": "leadership quality: 4",
-              "lift": 0.9
+              "label": "leadership quality",
+              "lift": 0.95
             }
           ]
         }
@@ -89,21 +89,21 @@
       {
         "label": "Market",
         "range": "+0% to +89%",
-        "prob": 0.0538,
+        "prob": 0.1016,
         "why": {
           "base_rate": 0.2063,
           "factors": [
             {
-              "label": "moat type: network effects + market position: dominant + market quality: secular growth",
-              "lift": 0.14
+              "label": "moat type + market position + market quality",
+              "lift": 0.5
             },
             {
-              "label": "moat strength: narrow",
-              "lift": 1.04
+              "label": "moat strength",
+              "lift": 1.09
             },
             {
-              "label": "leadership quality: 4",
-              "lift": 1.03
+              "label": "leadership quality",
+              "lift": 1.02
             }
           ]
         }
@@ -111,21 +111,21 @@
       {
         "label": "Good",
         "range": "+89% to +215%",
-        "prob": 0.3485,
+        "prob": 0.3008,
         "why": {
           "base_rate": 0.3187,
           "factors": [
             {
-              "label": "moat type: network effects + market position: dominant + market quality: secular growth",
-              "lift": 0.97
+              "label": "leadership quality",
+              "lift": 1.07
             },
             {
-              "label": "moat strength: narrow",
-              "lift": 0.97
+              "label": "moat type + market position + market quality",
+              "lift": 0.98
             },
             {
-              "label": "leadership quality: 4",
-              "lift": 1.03
+              "label": "moat strength",
+              "lift": 1.02
             }
           ]
         }
@@ -133,21 +133,21 @@
       {
         "label": "Great",
         "range": ">= +215%",
-        "prob": 0.4503,
+        "prob": 0.4497,
         "why": {
           "base_rate": 0.2948,
           "factors": [
             {
-              "label": "moat type: network effects + market position: dominant + market quality: secular growth",
-              "lift": 1.47
+              "label": "moat type + market position + market quality",
+              "lift": 1.67
             },
             {
-              "label": "moat strength: narrow",
-              "lift": 0.94
+              "label": "leadership quality",
+              "lift": 1.06
             },
             {
-              "label": "leadership quality: 4",
-              "lift": 1.03
+              "label": "moat strength",
+              "lift": 0.97
             }
           ]
         }

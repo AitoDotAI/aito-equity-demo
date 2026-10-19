@@ -9,7 +9,7 @@
       "ticker": "NSC",
       "vintage": 2020,
       "name": "Norfolk Southern",
-      "similarity": 4.003,
+      "similarity": 10.778,
       "description": "Competitive advantage is rooted in capital-intensive network scale and infrastructure (\"net property of approximately $31 billion on a historical cost basis\"), extensive owned and leased route miles and equipment, high barriers to entry and a large contracted/exempt revenue base (\"Approximately 90% ",
       "outcome": {
         "text": "+85%",
@@ -18,22 +18,10 @@
       }
     },
     {
-      "ticker": "LMT",
-      "vintage": 2014,
-      "name": "Lockheed Martin",
-      "similarity": 3.721,
-      "description": "The primary advantage is scale: long-duration, multi-contract programs (e.g., F-35 with concurrent development and LRIP, expected to continue for many years), a large backlog ($82.3B), and extensive government relationships and facilities\u2014all reinforcing large fixed-cost absorption and production sc",
-      "outcome": {
-        "text": "+401%",
-        "window": "'14\u2192'26",
-        "sentiment": "positive"
-      }
-    },
-    {
       "ticker": "WM",
       "vintage": 2014,
       "name": "Waste Management",
-      "similarity": 3.721,
+      "similarity": 9.76,
       "description": "The filing emphasizes high capital requirements and permitting barriers\u2014\"significant capital requirements of developing and operating a landfill serve as a barrier to landfill ownership\"\u2014and the value of internalization and the largest network, indicating durable scale advantages.",
       "outcome": {
         "text": "+524%",
@@ -42,10 +30,34 @@
       }
     },
     {
+      "ticker": "WM",
+      "vintage": 2020,
+      "name": "Waste Management",
+      "similarity": 9.76,
+      "description": "The company highlights its scale advantages (252 landfills, 314 transfer stations) and the benefit of \"internalization generally allows us to realize higher consolidated margins and stronger operating cash flows,\" while noting the \"significant capital requirements of developing and operating a landf",
+      "outcome": {
+        "text": "+113%",
+        "window": "'20\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
+      "ticker": "LMT",
+      "vintage": 2014,
+      "name": "Lockheed Martin",
+      "similarity": 9.088,
+      "description": "The primary advantage is scale: long-duration, multi-contract programs (e.g., F-35 with concurrent development and LRIP, expected to continue for many years), a large backlog ($82.3B), and extensive government relationships and facilities\u2014all reinforcing large fixed-cost absorption and production sc",
+      "outcome": {
+        "text": "+401%",
+        "window": "'14\u2192'26",
+        "sentiment": "positive"
+      }
+    },
+    {
       "ticker": "LMT",
       "vintage": 2017,
       "name": "Lockheed Martin",
-      "similarity": 3.721,
+      "similarity": 9.088,
       "description": "Competitive advantage is driven primarily by large-scale, long\u2011duration programs, backlog and integrated capabilities (e.g., F-35 multi-year production and sustainment, substantial backlog including Sikorsky) that create production and sustainment scale and high barriers to entry; the filing highlig",
       "outcome": {
         "text": "+171%",
@@ -57,22 +69,10 @@
       "ticker": "CTAS",
       "vintage": 2020,
       "name": "Cintas",
-      "similarity": 3.721,
+      "similarity": 9.088,
       "description": "Competitive advantage is driven by scale \u2014 extensive local delivery routes, manufacturing and distribution footprint and large installed base \u2014 which the filing highlights as central to serving \"primary markets [that] are local in nature and highly fragmented,\" a dynamic where scale confers durable ",
       "outcome": {
         "text": "+174%",
-        "window": "'20\u2192'26",
-        "sentiment": "positive"
-      }
-    },
-    {
-      "ticker": "LMT",
-      "vintage": 2020,
-      "name": "Lockheed Martin",
-      "similarity": 3.721,
-      "description": "Competitive advantage is driven by large-scale, long-duration government contracts and program positions (e.g., F-35 production/backlog: \"we have 396 production aircraft in backlog\" and an objective of 2,456 aircraft) plus integrated capabilities across defense, space and services\u2014creating high fixe",
-      "outcome": {
-        "text": "+61%",
         "window": "'20\u2192'26",
         "sentiment": "positive"
       }
