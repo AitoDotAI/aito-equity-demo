@@ -81,12 +81,30 @@ def as_traded(closes: pd.Series, splits: pd.Series, on: date) -> tuple[float, pd
 
 
 def _shares_asof(facts: dict, on: date) -> tuple[float, pd.Timestamp] | None:
-    """The share count compute_fundamentals uses, plus the date it is stated at."""
-    for key in CONCEPTS["shares"]:
+    """Common shares outstanding known before `on`, and the date they are stated at.
+
+    Order of trust:
+      1. dei:EntityCommonStockSharesOutstanding — the cover-page count of COMMON
+         shares, on every 10-K and 10-Q; summed across classes in one filing
+         (GOOGL reports A, B and C separately).
+      2. us-gaap WeightedAverageNumberOfDilutedSharesOutstanding (annual).
+      3. us-gaap CommonStockSharesOutstanding — last, because some filers tag a
+         preferred class with it (MRK 3,076; SPG 8,000), which gave P/E ≈ 0.0001.
+    """
+    pts = facts.get("facts", {}).get("dei", {}).get("EntityCommonStockSharesOutstanding", {}).get("units", {}).get("shares", [])
+    eligible = [p for p in pts if p.get("filed") and p.get("end") and p.get("val") and date.fromisoformat(p["filed"]) < on]
+    if eligible:
+        last = max(eligible, key=lambda p: (p["filed"], p["end"]))
+        same = [p for p in eligible if p.get("accn") == last.get("accn") and p["end"] == last["end"]]
+        return float(sum(p["val"] for p in same)), pd.Timestamp(last["end"])
+    for key in ("WeightedAverageNumberOfDilutedSharesOutstanding", "CommonStockSharesOutstanding"):
         hit = _latest_before(_concept_points(facts, key), on)
         if hit and hit.get("val"):
             return float(hit["val"]), pd.Timestamp(hit["end"])
     return None
+
+
+MIN_MARKET_CAP = 1e9  # an S&P 500 member below $1B means the share count is wrong, not the company tiny
 
 
 def market_cap_at(facts: dict, closes: pd.Series, splits: pd.Series, on: date) -> tuple[float | None, float | None]:
@@ -104,7 +122,8 @@ def market_cap_at(facts: dict, closes: pd.Series, splits: pd.Series, on: date) -
         return None, ni
     shares, as_of = sh
     price, d0 = px
-    return price * shares * _split_factor(splits, as_of, d0), ni
+    mcap = price * shares * _split_factor(splits, as_of, d0)
+    return (mcap if mcap >= MIN_MARKET_CAP else None), ni
 
 
 def pe_at(facts: dict, closes: pd.Series, splits: pd.Series, on: date) -> float | None:

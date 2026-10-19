@@ -2201,6 +2201,12 @@
   .lab-fund-cell .v { font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 600; color: var(--ink); }
   .lab-fund-cell .s { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-fade); }
   .lab-fund-cell .s.hi { color: #3c5630; } .lab-fund-cell .s.lo { color: var(--red); }
+  .lab-own { display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dotted var(--rule-soft); }
+  .lab-own svg { width: 100%; height: auto; }
+  .lab-own-ax { font-family: 'Inter', sans-serif; font-size: 9px; fill: var(--ink-fade); }
+  .lab-own-txt { font-family: 'Source Serif 4', serif; font-size: 12.5px; color: var(--ink-soft); line-height: 1.45; }
+  .lab-own-txt span { font-style: italic; color: var(--ink-fade); font-size: 11.5px; }
+  @media (max-width: 768px) { .lab-own { grid-template-columns: 1fr; } }
   .lab-fund-note { font-family: 'Source Serif 4', serif; font-style: italic; font-size: 11.5px; color: var(--ink-fade); margin-top: 10px; }
   .lab-mid { border-top: 1px solid rgba(244,237,225,0.15); margin-top: 18px; padding-top: 16px; }
   .lab-mid-head { display: flex; justify-content: space-between; align-items: baseline; }
@@ -4250,7 +4256,7 @@
     ]},
     { label: 'Sector', fields: [['sector','Sector']] },
     { label: 'Fundamentals', fields: [
-      ['valuation_bucket','Valuation'], ['growth_bucket','Growth'], ['leverage_bucket','Leverage'], ['profitability_bucket','Profitability'],
+      ['valuation_bucket','Valuation'], ['valuation_vs_own','Vs own 5-y P/E'], ['growth_bucket','Growth'], ['leverage_bucket','Leverage'], ['profitability_bucket','Profitability'],
     ]},
     { label: 'Market', fields: [['momentum_bucket','Momentum'], ['volatility_bucket','Volatility']] },
   ];
@@ -4283,6 +4289,38 @@
   // Higher-is-better fields get a green/red tint vs the peer median; valuation and debt stay neutral.
   const LAB_FUND_TINT = new Set(['return_on_equity', 'operating_margin', 'revenue_cagr_3y', 'momentum_12m']);
 
+  // Valuation against the company's own history: P/E at the start of each of the five years
+  // before the vintage (point-in-time, from its 10-Ks) and now, against its 5-y median.
+  function labOwnHistory(row) {
+    const pts = [5, 4, 3, 2, 1].map(k => ({ yr: row.vintage_year - k, pe: row[`pe_hist_${k}y`] }))
+      .concat([{ yr: row.vintage_year, pe: row.pe_ratio, now: true }])
+      .filter(p => p.pe != null && p.pe > 0 && p.pe < 200);
+    const med = row.pe_own_median_5y;
+    if (pts.length < 3 || !med) return '';
+    const W = 300, H = 74, m = { l: 26, r: 46, t: 8, b: 16 };
+    const ymax = Math.max(...pts.map(p => p.pe), med) * 1.1;
+    const x = i => m.l + (i / (pts.length - 1)) * (W - m.l - m.r);
+    const y = v => m.t + (1 - v / ymax) * (H - m.t - m.b);
+    const path = pts.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.pe).toFixed(1)}`).join('');
+    const now = pts[pts.length - 1];
+    const r = row.pe_vs_own;
+    const verdict = r == null ? '' : r < 0.8 ? `<b style="color:#3c5630">${r.toFixed(2)}× its own norm — de-rated</b>`
+      : r > 1.25 ? `<b style="color:var(--red)">${r.toFixed(2)}× its own norm — richer than usual</b>`
+      : `<b>${r.toFixed(2)}× its own norm — at its usual level</b>`;
+    return `<div class="lab-own">
+      <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="P/E over the five years before the vintage and now, against its own median">
+        <line x1="${m.l}" x2="${W - m.r}" y1="${y(med)}" y2="${y(med)}" stroke="var(--ink-fade)" stroke-dasharray="3 3"/>
+        <text x="${W - m.r + 4}" y="${y(med) + 3}" class="lab-own-ax">median ${med.toFixed(1)}×</text>
+        <path d="${path}" fill="none" stroke="var(--ink-soft)" stroke-width="2"/>
+        ${pts.map((p, i) => `<circle cx="${x(i)}" cy="${y(p.pe)}" r="${p.now ? 4.5 : 3}" fill="${p.now ? 'var(--gold)' : 'var(--ink-soft)'}" stroke="#fbf6ec" stroke-width="2"><title>${p.yr}: P/E ${p.pe.toFixed(1)}×</title></circle>`).join('')}
+        <text x="${x(0)}" y="${H - 3}" class="lab-own-ax" text-anchor="middle">${pts[0].yr}</text>
+        <text x="${x(pts.length - 1)}" y="${H - 3}" class="lab-own-ax" text-anchor="middle">now</text>
+        <text x="${x(pts.length - 1) + 7}" y="${y(now.pe) + 3}" class="lab-own-ax" style="fill:var(--ink)">${now.pe.toFixed(1)}×</text>
+      </svg>
+      <div class="lab-own-txt">P/E vs its own 5-year median: ${verdict}<br><span>A low P/E that is the company's normal has nothing to revert to; one well below its own usual level is the mean-reversion case. Set the <em>Vs own 5-y P/E</em> knob to ask Aito about it directly.</span></div>
+    </div>`;
+  }
+
   function renderLabFund(row) {
     const el = document.getElementById('lab-fund');
     if (!el) return;
@@ -4303,7 +4341,7 @@
       ? ` Since ${row.vintage_year}-01-01 it has done <b>${row.fwd_6m_excess >= 0 ? '+' : ''}${row.fwd_6m_excess.toFixed(1)} pp</b> vs SPY over 6 months (<em>${esc(String(row.fwd_6m_bucket || '').replace(/_/g, ' '))}</em>) — check it against the forecast below.`
       : '';
     el.innerHTML = `<div class="lab-fund-title">Fundamentals behind the buckets · ${esc(row.company_name || row.ticker)} · ${row.vintage_year}</div>
-      <div class="lab-fund-grid">${cells}</div>
+      <div class="lab-fund-grid">${cells}</div>${labOwnHistory(row)}
       <div class="lab-fund-note">From the latest 10-K before the vintage (SEC XBRL) and the vintage-date price. Peer median: ${esc(scope)} (n=${peers.length}).${realised}</div>`;
     el.hidden = false;
   }
@@ -4464,7 +4502,7 @@
       // fallback: base rate from the universe data
       const rows = (universeState.all || []).filter(x => x.outcome_bucket);
       LAB_BUCKETS.forEach(b => probs[b.key] = rows.filter(x => x.outcome_bucket === b.key).length / (rows.length || 1));
-      predSource = 'mock';
+      predSource = 'base rate';
     }
 
     const ev = LAB_BUCKETS.reduce((s, b) => s + (probs[b.key] || 0) * (labState.bucketMeans[b.key] || 0), 0);
@@ -4494,7 +4532,8 @@
         }).join('')}
       </div>
       <div class="lab-pred-hint">${nSet === 0 ? 'Set a property on the left — the engine predicts from whatever you give it, no field required.' : 'Expected return = Σ P(bucket) × the historical mean return of that bucket.'}</div>
-      <div class="lab-pred-src">outcome <span class="pill ${predSource}">${predSource}</span> via Aito <code style="font-family:'JetBrains Mono'">_predict</code></div>
+      ${predSource === 'base rate' && nSet ? '<div class="lab-pred-hint" style="color:var(--gold);font-style:normal">⚠ Aito gave no answer: showing the universe base rate, not a forecast for this profile.</div>' : ''}
+      <div class="lab-pred-src">outcome <span class="pill ${predSource === 'base rate' ? 'mock' : predSource}">${predSource}</span> via Aito <code style="font-family:'JetBrains Mono'">_predict</code></div>
       <div class="lab-mid" id="lab-mid"><div class="lab-pred-src">querying the 6-month horizon…</div></div>`;
 
     const mid = await midP;
@@ -4518,7 +4557,7 @@
     if (!LAB_MID.some(b => probs[b.key] != null)) {
       const rows = (universeState.all || []).filter(x => x.fwd_6m_bucket);
       LAB_MID.forEach(b => { probs[b.key] = rows.filter(x => x.fwd_6m_bucket === b.key).length / (rows.length || 1); delete why[b.key]; });
-      src = 'mock';
+      src = 'base rate';  // Aito unreachable or answered nothing: say so, don't pass it off as a forecast
     }
     return { probs, why, src };
   }
@@ -4545,8 +4584,9 @@
           <div class="lab-bar-track"><div class="lab-bar-fill${b.key === peak.key ? ' peak' : ''}" style="width:${((pv / maxP) * 100).toFixed(1)}%"></div></div>
           <div class="lab-bar-val">${(pv * 100).toFixed(1)}%${whyBtn}</div></div>`;
       }).join('')}</div>
+      ${src === 'base rate' ? '<div class="lab-pred-hint" style="color:var(--gold);font-style:normal">⚠ Aito gave no answer: showing the universe base rate, not a forecast for this profile.</div>' : ''}
       <div class="lab-pred-hint">Same profile, different target column — no new model. The mid-term signal is weak and mostly sector rotation; see <em>Cheap for a Reason?</em> for the walk-forward test.</div>
-      <div class="lab-pred-src">fwd_6m_bucket <span class="pill ${src}">${src}</span> via Aito <code style="font-family:'JetBrains Mono'">_predict</code></div>`;
+      <div class="lab-pred-src">fwd_6m_bucket <span class="pill ${src === 'base rate' ? 'mock' : src}">${src}</span> via Aito <code style="font-family:'JetBrains Mono'">_predict</code></div>`;
   }
 
   async function labSimilar(where, nSet) {

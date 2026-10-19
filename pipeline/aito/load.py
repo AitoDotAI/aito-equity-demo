@@ -171,7 +171,10 @@ def _derive_valuation_and_buckets(df: pd.DataFrame) -> pd.DataFrame:
     for new_col, (src, fn) in bucketers.items():
         if src in df.columns:
             df[new_col] = df[src].map(fn)
-    return _derive_relative_valuation(df)
+    df = _derive_relative_valuation(df)
+    num = df.select_dtypes("number").columns
+    df[num] = df[num].replace([float("inf"), float("-inf")], float("nan"))
+    return df
 
 
 # Cheap against what? Absolute P/E can't separate a stock that is always cheap
@@ -302,7 +305,7 @@ def df_to_aito_rows(df: pd.DataFrame) -> list[dict]:
     for raw in df.to_dict(orient="records"):
         clean: dict = {}
         for k, v in raw.items():
-            if isinstance(v, float) and math.isnan(v):
+            if isinstance(v, float) and not math.isfinite(v):  # NaN, and ±inf from a zero denominator
                 continue
             if pd.isna(v):
                 continue
