@@ -4088,6 +4088,19 @@
     return `<div class="vt-trap"><div class="track"><div class="fill" style="width:${Math.min(r / max, 1) * 100}%"></div></div><span class="v">${Math.round(r * 100)}%</span></div>`;
   }
 
+  // The 12-month read of the trap score, per vintage, worded from the data — it held in some
+  // vintages and not others, and the sentence must not claim more than the table shows.
+  function vtMidVerdict(tt) {
+    const per = tt.map(t => {
+      const hi = t.rows.find(r => r.tercile === 'high')?.x12, lo = t.rows.find(r => r.tercile === 'low')?.x12;
+      return { v: t.vintage, hi, lo, ok: hi != null && lo != null && hi < lo };
+    }).filter(x => x.hi != null && x.lo != null);
+    const txt = per.map(x => `${x.v}: riskiest ${vtPct(x.hi)} vs safest ${vtPct(x.lo)} pp`).join('; ');
+    if (per.length && per.every(x => x.ok)) return `consistent — the riskiest third lagged in every vintage (${txt}).`;
+    if (per.some(x => x.ok)) return `<b>mixed</b> — the riskiest third lagged in some vintages, not others (${txt}). It flags long-run failure better than it times the next year.`;
+    return `<b>not</b> a lag signal — the riskiest third did not underperform (${txt}).`;
+  }
+
   function renderValueTraps(d) {
     if (!d || !d.cohorts) return;
     const ch = d.cohorts.cheap, ex = d.cohorts.expensive, sv = d.survivorship;
@@ -4107,7 +4120,7 @@
       <div>
         <div class="big neg">${hiT != null ? Math.round(hiT * 100) : '—'}%<small> vs ${loT != null ? Math.round(loT * 100) : '—'}%</small></div>
         <div class="lbl">long-run trap rate · top vs bottom third of predicted risk</div>
-        <p>Scored walk-forward, the engine's P(trap) <b>did</b> sort the cheap cohort: the riskiest third became long-run value traps far more often — and lagged by ${vtPct(hiX)} pp over 12 months, against ${vtPct(loX)} pp for the safest third.</p>
+        <p>Scored walk-forward, the engine's P(trap) <b>did</b> sort the cheap cohort: the riskiest third became long-run value traps far more often. Over the next 12 months it is ${vtMidVerdict(tt)}</p>
       </div>`;
 
     // Cheap against what? — own-history vs absolute cheapness, against the normally priced control
@@ -4488,6 +4501,7 @@
 
     let probs = {}, why = {}, predSource = 'mock';
     const midP = labPredictMid(where);  // runs in parallel with the long-run query
+    labSimilar(where, nSet);           // and so do the analogues — three independent queries, one wait
     try {
       const r = await fetch('./api/query', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -4539,7 +4553,6 @@
     const mid = await midP;
     if (seq !== labState.seq) return;
     renderLabMid(mid);
-    labSimilar(where, nSet);
   }
 
   async function labPredictMid(where) {

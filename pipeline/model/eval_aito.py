@@ -38,6 +38,10 @@ F16 = ["market_position", "moat_type", "moat_strength", "market_quality", "leade
        "strategic_clarity", "execution_track_record"]
 F7 = ["market_position", "moat_type", "moat_strength", "market_quality",
       "leadership_quality", "founder_still_ceo", "sector"]
+# founder_still_ceo is in the schema but never populated. v1 accepted a $get on it
+# silently (no evidence, baseline-level scoring); v2 refuses it with a 400. Drop it.
+F16 = [f for f in F16 if f != "founder_still_ceo"]
+F7 = [f for f in F7 if f != "founder_still_ceo"]
 KEYS = ["n", "accuracy", "baseAccuracy", "accuracyGain", "informationGain", "mxe", "h", "geomMeanLift"]
 
 

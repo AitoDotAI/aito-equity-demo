@@ -11,6 +11,7 @@ Slow (~30 server-side _evaluate calls); run once and commit the JSON:
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 
 from pipeline.aito.client import AitoClient
@@ -22,21 +23,46 @@ FOLDS = ["0", "1", "2", "3", "4"]
 SWEEP_K = [1, 2, 3, 4, 6, 9, 12, 16]
 
 
-def _wmean(rows: list[dict], key: str) -> float:
-    n = sum(r["n"] for r in rows)
-    return sum(r["n"] * r[key] for r in rows) / n if n else 0.0
+def _metric(r: dict, key: str) -> float | None:
+    """One _evaluate metric, across engines.
+
+    The v2 (rep2) metric set differs from v1: no `geomMeanLift` (it reports
+    `logLoss` / `baseLogLoss` instead, and the geometric-mean likelihood ratio
+    is exp(baseLogLoss − logLoss)), and the sample count is `testSamples`.
+    """
+    if key in r and r[key] is not None:
+        return float(r[key])
+    if key == "geomMeanLift" and r.get("logLoss") is not None and r.get("baseLogLoss") is not None:
+        return float(math.exp(r["baseLogLoss"] - r["logLoss"]))
+    return None
+
+
+def _n(r: dict) -> float:
+    return float(r.get("n") or r.get("testSamples") or 0)
+
+
+def _wmean(rows: list[dict], key: str) -> float | None:
+    pairs = [(_n(r), _metric(r, key)) for r in rows]
+    if any(v is None for _, v in pairs):
+        return None
+    n = sum(w for w, _ in pairs)
+    return sum(w * v for w, v in pairs) / n if n else None
+
+
+def _round(v, nd=3):
+    return None if v is None else round(v, nd)
 
 
 def _cv(c: AitoClient, feats: list[str]) -> dict:
     rows = [ea.evaluate(c, feats, {"eval_fold": k}) for k in FOLDS]
     return {
-        "accuracy": round(_wmean(rows, "accuracy"), 3),
-        "base_accuracy": round(_wmean(rows, "baseAccuracy"), 3),
-        "accuracy_gain": round(_wmean(rows, "accuracyGain"), 3),
-        "information_gain": round(_wmean(rows, "informationGain"), 3),
-        "geom_mean_lift": round(_wmean(rows, "geomMeanLift"), 3),
-        "mean_rank": round(_wmean(rows, "meanRank"), 3),
-        "base_mean_rank": round(_wmean(rows, "baseMeanRank"), 3),
+        "accuracy": _round(_wmean(rows, "accuracy"), 3),
+        "base_accuracy": _round(_wmean(rows, "baseAccuracy"), 3),
+        "accuracy_gain": _round(_wmean(rows, "accuracyGain"), 3),
+        "information_gain": _round(_wmean(rows, "informationGain"), 3),
+        "geom_mean_lift": _round(_wmean(rows, "geomMeanLift"), 3),
+        "mean_rank": _round(_wmean(rows, "meanRank"), 3),
+        "base_mean_rank": _round(_wmean(rows, "baseMeanRank"), 3),
     }
 
 
