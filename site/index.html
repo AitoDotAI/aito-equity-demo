@@ -2201,6 +2201,12 @@
   .lab-fund-cell .v { font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 600; color: var(--ink); }
   .lab-fund-cell .s { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-fade); }
   .lab-fund-cell .s.hi { color: #3c5630; } .lab-fund-cell .s.lo { color: var(--red); }
+  .lab-own { display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dotted var(--rule-soft); }
+  .lab-own svg { width: 100%; height: auto; }
+  .lab-own-ax { font-family: 'Inter', sans-serif; font-size: 9px; fill: var(--ink-fade); }
+  .lab-own-txt { font-family: 'Source Serif 4', serif; font-size: 12.5px; color: var(--ink-soft); line-height: 1.45; }
+  .lab-own-txt span { font-style: italic; color: var(--ink-fade); font-size: 11.5px; }
+  @media (max-width: 768px) { .lab-own { grid-template-columns: 1fr; } }
   .lab-fund-note { font-family: 'Source Serif 4', serif; font-style: italic; font-size: 11.5px; color: var(--ink-fade); margin-top: 10px; }
   .lab-mid { border-top: 1px solid rgba(244,237,225,0.15); margin-top: 18px; padding-top: 16px; }
   .lab-mid-head { display: flex; justify-content: space-between; align-items: baseline; }
@@ -2577,6 +2583,13 @@
         </div>
 
         <div class="vt-hero" id="vt-hero"><!-- headline stats --></div>
+
+        <div class="section-rule"><span>Cheap against what?</span></div>
+        <p class="article-deck" style="font-size:13.5px">A low P/E means two different things. A utility or a bank can trade at 12× for a decade — that is its normal, and there is nothing to revert to. A company trading well below <em>its own</em> usual P/E is the case a mean-reversion trade bets on. Below: each company's P/E against its own median of the five years before the vintage (rebuilt point-in-time from its 10-Ks), compared with normally priced stocks.</p>
+        <div class="vt-table-wrap"><table class="vt-table" id="vt-kinds"></table></div>
+        <p class="ea-legend" id="vt-kinds-note"></p>
+        <div class="vt-table-wrap"><table class="vt-grid" id="vt-own-grid"></table></div>
+        <p class="ea-legend">Rows: absolute P/E band (cheap &lt; 15, fair 15–30, expensive &gt; 30). Columns: P/E against the company's own 5-year median (below &lt; 0.8×, near 0.8–1.25×, above &gt; 1.25×). Cells: mean 12-month return vs universe, long-run trap rate, n. Dashed cells: fewer than 8 companies.</p>
 
         <div class="section-rule"><span>Inside the cheap cohort — what separated the re-raters from the value traps</span></div>
         <div class="ea-scope-bar">
@@ -4075,6 +4088,19 @@
     return `<div class="vt-trap"><div class="track"><div class="fill" style="width:${Math.min(r / max, 1) * 100}%"></div></div><span class="v">${Math.round(r * 100)}%</span></div>`;
   }
 
+  // The 12-month read of the trap score, per vintage, worded from the data — it held in some
+  // vintages and not others, and the sentence must not claim more than the table shows.
+  function vtMidVerdict(tt) {
+    const per = tt.map(t => {
+      const hi = t.rows.find(r => r.tercile === 'high')?.x12, lo = t.rows.find(r => r.tercile === 'low')?.x12;
+      return { v: t.vintage, hi, lo, ok: hi != null && lo != null && hi < lo };
+    }).filter(x => x.hi != null && x.lo != null);
+    const txt = per.map(x => `${x.v}: riskiest ${vtPct(x.hi)} vs safest ${vtPct(x.lo)} pp`).join('; ');
+    if (per.length && per.every(x => x.ok)) return `consistent — the riskiest third lagged in every vintage (${txt}).`;
+    if (per.some(x => x.ok)) return `<b>mixed</b> — the riskiest third lagged in some vintages, not others (${txt}). It flags long-run failure better than it times the next year.`;
+    return `<b>not</b> a lag signal — the riskiest third did not underperform (${txt}).`;
+  }
+
   function renderValueTraps(d) {
     if (!d || !d.cohorts) return;
     const ch = d.cohorts.cheap, ex = d.cohorts.expensive, sv = d.survivorship;
@@ -4094,8 +4120,37 @@
       <div>
         <div class="big neg">${hiT != null ? Math.round(hiT * 100) : '—'}%<small> vs ${loT != null ? Math.round(loT * 100) : '—'}%</small></div>
         <div class="lbl">long-run trap rate · top vs bottom third of predicted risk</div>
-        <p>Scored walk-forward, the engine's P(trap) <b>did</b> sort the cheap cohort: the riskiest third became long-run value traps far more often — and lagged by ${vtPct(hiX)} pp over 12 months, against ${vtPct(loX)} pp for the safest third.</p>
+        <p>Scored walk-forward, the engine's P(trap) <b>did</b> sort the cheap cohort: the riskiest third became long-run value traps far more often. Over the next 12 months it is ${vtMidVerdict(tt)}</p>
       </div>`;
+
+    // Cheap against what? — own-history vs absolute cheapness, against the normally priced control
+    const rv = d.relative;
+    if (rv) {
+      const K = [
+        ['normally_priced', 'Normally priced', 'fair P/E, near its own norm — the control'],
+        ['structurally_cheap', 'Structurally cheap', 'low P/E, but that is its usual level'],
+        ['derated', 'De-rated', `P/E below ${rv.thresholds.below}× its own 5-y median`],
+        ['all', 'All companies', ''],
+      ];
+      const kmax = Math.max(10, ...K.flatMap(([k]) => [Math.abs(rv.kinds[k]?.excess_6m || 0), Math.abs(rv.kinds[k]?.excess_12m || 0)]));
+      document.getElementById('vt-kinds').innerHTML = `
+        <thead><tr><th>Group</th><th class="c">n</th><th class="c">6 months</th><th class="c">12 months</th><th>Long-run trap rate</th></tr></thead>
+        <tbody>${K.map(([k, lbl, sub]) => { const c = rv.kinds[k] || {}; return `<tr class="${c.n < 8 ? 'thin' : ''}">
+          <td>${esc(lbl)}${sub ? `<br><small style="color:var(--ink-fade);font-style:italic">${esc(sub)}</small>` : ''}</td>
+          <td class="mono c">${c.n ?? '—'}</td><td>${vtDiverge(c.excess_6m, kmax)}</td><td>${vtDiverge(c.excess_12m, kmax)}</td><td>${vtTrap(c.trap_rate)}</td></tr>`; }).join('')}</tbody>`;
+      const ex = k => (rv.examples[k] || []).slice(0, 5).map(e => `${esc(e.t)} '${String(e.v).slice(2)} (${e.pe}× vs own ${e.own}×)`).join(', ');
+      document.getElementById('vt-kinds-note').innerHTML = `Largest de-rated names: ${ex('derated') || '—'}. Largest structurally cheap: ${ex('structurally_cheap') || '—'}.`;
+      const MINC = 8;
+      const tintC = x => x == null ? 'transparent' : (x >= 0 ? `rgba(74,107,58,${(Math.min(Math.abs(x) / 15, 1) * 0.32).toFixed(2)})` : `rgba(139,58,42,${(Math.min(Math.abs(x) / 15, 1) * 0.32).toFixed(2)})`);
+      const ownLbl = { below_own_norm: 'below its own norm', near_own_norm: 'near its own norm', above_own_norm: 'above its own norm' };
+      document.getElementById('vt-own-grid').innerHTML = `
+        <thead><tr><th></th>${rv.own_order.map(o => `<th>${esc(ownLbl[o])}</th>`).join('')}</tr></thead>
+        <tbody>${rv.own_grid.map(r => `<tr><th class="row">${esc(r.valuation_bucket)} P/E</th>${r.cells.map(c => {
+          if (!c.n) return `<td class="thin">·</td>`;
+          const thin = c.n < MINC;
+          return `<td class="${thin ? 'thin' : ''}" style="background:${thin ? 'transparent' : tintC(c.excess_12m)}"><span class="x">${vtPct(c.excess_12m)}</span><span class="t">${c.trap_rate != null ? Math.round(c.trap_rate * 100) + '% trap' : ''} · n=${c.n}</span></td>`;
+        }).join('')}</tr>`).join('')}</tbody>`;
+    }
 
     // Splits
     const sel = document.getElementById('vt-split-select');
@@ -4214,7 +4269,7 @@
     ]},
     { label: 'Sector', fields: [['sector','Sector']] },
     { label: 'Fundamentals', fields: [
-      ['valuation_bucket','Valuation'], ['growth_bucket','Growth'], ['leverage_bucket','Leverage'], ['profitability_bucket','Profitability'],
+      ['valuation_bucket','Valuation'], ['valuation_vs_own','Vs own 5-y P/E'], ['growth_bucket','Growth'], ['leverage_bucket','Leverage'], ['profitability_bucket','Profitability'],
     ]},
     { label: 'Market', fields: [['momentum_bucket','Momentum'], ['volatility_bucket','Volatility']] },
   ];
@@ -4236,6 +4291,7 @@
   const LAB_FUND = [
     ['pe_ratio', 'P/E', v => v.toFixed(1) + '×'],
     ['pb_ratio', 'P/B', v => v.toFixed(1) + '×'],
+    ['pe_vs_own', 'P/E vs own 5-y norm', v => v.toFixed(2) + '×'],
     ['debt_to_equity', 'Debt / equity', v => v.toFixed(2)],
     ['return_on_equity', 'ROE', v => (v * 100).toFixed(0) + '%'],
     ['operating_margin', 'Operating margin', v => (v * 100).toFixed(0) + '%'],
@@ -4245,6 +4301,38 @@
   ];
   // Higher-is-better fields get a green/red tint vs the peer median; valuation and debt stay neutral.
   const LAB_FUND_TINT = new Set(['return_on_equity', 'operating_margin', 'revenue_cagr_3y', 'momentum_12m']);
+
+  // Valuation against the company's own history: P/E at the start of each of the five years
+  // before the vintage (point-in-time, from its 10-Ks) and now, against its 5-y median.
+  function labOwnHistory(row) {
+    const pts = [5, 4, 3, 2, 1].map(k => ({ yr: row.vintage_year - k, pe: row[`pe_hist_${k}y`] }))
+      .concat([{ yr: row.vintage_year, pe: row.pe_ratio, now: true }])
+      .filter(p => p.pe != null && p.pe > 0 && p.pe < 200);
+    const med = row.pe_own_median_5y;
+    if (pts.length < 3 || !med) return '';
+    const W = 300, H = 74, m = { l: 26, r: 46, t: 8, b: 16 };
+    const ymax = Math.max(...pts.map(p => p.pe), med) * 1.1;
+    const x = i => m.l + (i / (pts.length - 1)) * (W - m.l - m.r);
+    const y = v => m.t + (1 - v / ymax) * (H - m.t - m.b);
+    const path = pts.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.pe).toFixed(1)}`).join('');
+    const now = pts[pts.length - 1];
+    const r = row.pe_vs_own;
+    const verdict = r == null ? '' : r < 0.8 ? `<b style="color:#3c5630">${r.toFixed(2)}× its own norm — de-rated</b>`
+      : r > 1.25 ? `<b style="color:var(--red)">${r.toFixed(2)}× its own norm — richer than usual</b>`
+      : `<b>${r.toFixed(2)}× its own norm — at its usual level</b>`;
+    return `<div class="lab-own">
+      <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="P/E over the five years before the vintage and now, against its own median">
+        <line x1="${m.l}" x2="${W - m.r}" y1="${y(med)}" y2="${y(med)}" stroke="var(--ink-fade)" stroke-dasharray="3 3"/>
+        <text x="${W - m.r + 4}" y="${y(med) + 3}" class="lab-own-ax">median ${med.toFixed(1)}×</text>
+        <path d="${path}" fill="none" stroke="var(--ink-soft)" stroke-width="2"/>
+        ${pts.map((p, i) => `<circle cx="${x(i)}" cy="${y(p.pe)}" r="${p.now ? 4.5 : 3}" fill="${p.now ? 'var(--gold)' : 'var(--ink-soft)'}" stroke="#fbf6ec" stroke-width="2"><title>${p.yr}: P/E ${p.pe.toFixed(1)}×</title></circle>`).join('')}
+        <text x="${x(0)}" y="${H - 3}" class="lab-own-ax" text-anchor="middle">${pts[0].yr}</text>
+        <text x="${x(pts.length - 1)}" y="${H - 3}" class="lab-own-ax" text-anchor="middle">now</text>
+        <text x="${x(pts.length - 1) + 7}" y="${y(now.pe) + 3}" class="lab-own-ax" style="fill:var(--ink)">${now.pe.toFixed(1)}×</text>
+      </svg>
+      <div class="lab-own-txt">P/E vs its own 5-year median: ${verdict}<br><span>A low P/E that is the company's normal has nothing to revert to; one well below its own usual level is the mean-reversion case. Set the <em>Vs own 5-y P/E</em> knob to ask Aito about it directly.</span></div>
+    </div>`;
+  }
 
   function renderLabFund(row) {
     const el = document.getElementById('lab-fund');
@@ -4266,7 +4354,7 @@
       ? ` Since ${row.vintage_year}-01-01 it has done <b>${row.fwd_6m_excess >= 0 ? '+' : ''}${row.fwd_6m_excess.toFixed(1)} pp</b> vs SPY over 6 months (<em>${esc(String(row.fwd_6m_bucket || '').replace(/_/g, ' '))}</em>) — check it against the forecast below.`
       : '';
     el.innerHTML = `<div class="lab-fund-title">Fundamentals behind the buckets · ${esc(row.company_name || row.ticker)} · ${row.vintage_year}</div>
-      <div class="lab-fund-grid">${cells}</div>
+      <div class="lab-fund-grid">${cells}</div>${labOwnHistory(row)}
       <div class="lab-fund-note">From the latest 10-K before the vintage (SEC XBRL) and the vintage-date price. Peer median: ${esc(scope)} (n=${peers.length}).${realised}</div>`;
     el.hidden = false;
   }
@@ -4413,6 +4501,7 @@
 
     let probs = {}, why = {}, predSource = 'mock';
     const midP = labPredictMid(where);  // runs in parallel with the long-run query
+    labSimilar(where, nSet);           // and so do the analogues — three independent queries, one wait
     try {
       const r = await fetch('./api/query', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -4427,7 +4516,7 @@
       // fallback: base rate from the universe data
       const rows = (universeState.all || []).filter(x => x.outcome_bucket);
       LAB_BUCKETS.forEach(b => probs[b.key] = rows.filter(x => x.outcome_bucket === b.key).length / (rows.length || 1));
-      predSource = 'mock';
+      predSource = 'base rate';
     }
 
     const ev = LAB_BUCKETS.reduce((s, b) => s + (probs[b.key] || 0) * (labState.bucketMeans[b.key] || 0), 0);
@@ -4457,13 +4546,13 @@
         }).join('')}
       </div>
       <div class="lab-pred-hint">${nSet === 0 ? 'Set a property on the left — the engine predicts from whatever you give it, no field required.' : 'Expected return = Σ P(bucket) × the historical mean return of that bucket.'}</div>
-      <div class="lab-pred-src">outcome <span class="pill ${predSource}">${predSource}</span> via Aito <code style="font-family:'JetBrains Mono'">_predict</code></div>
+      ${predSource === 'base rate' && nSet ? '<div class="lab-pred-hint" style="color:var(--gold);font-style:normal">⚠ Aito gave no answer: showing the universe base rate, not a forecast for this profile.</div>' : ''}
+      <div class="lab-pred-src">outcome <span class="pill ${predSource === 'base rate' ? 'mock' : predSource}">${predSource}</span> via Aito <code style="font-family:'JetBrains Mono'">_predict</code></div>
       <div class="lab-mid" id="lab-mid"><div class="lab-pred-src">querying the 6-month horizon…</div></div>`;
 
     const mid = await midP;
     if (seq !== labState.seq) return;
     renderLabMid(mid);
-    labSimilar(where, nSet);
   }
 
   async function labPredictMid(where) {
@@ -4481,7 +4570,7 @@
     if (!LAB_MID.some(b => probs[b.key] != null)) {
       const rows = (universeState.all || []).filter(x => x.fwd_6m_bucket);
       LAB_MID.forEach(b => { probs[b.key] = rows.filter(x => x.fwd_6m_bucket === b.key).length / (rows.length || 1); delete why[b.key]; });
-      src = 'mock';
+      src = 'base rate';  // Aito unreachable or answered nothing: say so, don't pass it off as a forecast
     }
     return { probs, why, src };
   }
@@ -4508,8 +4597,9 @@
           <div class="lab-bar-track"><div class="lab-bar-fill${b.key === peak.key ? ' peak' : ''}" style="width:${((pv / maxP) * 100).toFixed(1)}%"></div></div>
           <div class="lab-bar-val">${(pv * 100).toFixed(1)}%${whyBtn}</div></div>`;
       }).join('')}</div>
+      ${src === 'base rate' ? '<div class="lab-pred-hint" style="color:var(--gold);font-style:normal">⚠ Aito gave no answer: showing the universe base rate, not a forecast for this profile.</div>' : ''}
       <div class="lab-pred-hint">Same profile, different target column — no new model. The mid-term signal is weak and mostly sector rotation; see <em>Cheap for a Reason?</em> for the walk-forward test.</div>
-      <div class="lab-pred-src">fwd_6m_bucket <span class="pill ${src}">${src}</span> via Aito <code style="font-family:'JetBrains Mono'">_predict</code></div>`;
+      <div class="lab-pred-src">fwd_6m_bucket <span class="pill ${src === 'base rate' ? 'mock' : src}">${src}</span> via Aito <code style="font-family:'JetBrains Mono'">_predict</code></div>`;
   }
 
   async function labSimilar(where, nSet) {

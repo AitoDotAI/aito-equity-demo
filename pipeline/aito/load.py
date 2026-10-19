@@ -67,6 +67,7 @@ def merge_pipeline_outputs(
         (Path("data/market_factors.csv"), "market_factors"),
         (Path("data/filing_events.csv"), "filing_events"),
         (Path("data/midterm_outcomes.csv"), "midterm_outcomes"),
+        (Path("data/valuation_history.csv"), "valuation_history"),
     ]:
         if extra_csv.exists():
             extra = pd.read_csv(extra_csv)
@@ -141,8 +142,16 @@ def _derive_valuation_and_buckets(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     have = set(df.columns)
-    if {"vintage_price", "shares_outstanding"} <= have:
-        df["market_cap"] = df["vintage_price"] * df["shares_outstanding"]
+    # Market cap must be point-in-time: as-traded price × the share count of the
+    # same date (pipeline.fundamentals.valuation_history). `vintage_price` is
+    # adjusted to TODAY for later splits, so vintage_price × as-reported shares
+    # divided every future split out of the market cap — a look-ahead leak that
+    # labelled future winners "cheap" (AAPL 2014 at P/E 0.4). No PIT cap → no
+    # valuation, rather than a wrong one.
+    if "market_cap_pit" in have:
+        df["market_cap"] = df["market_cap_pit"]
+        have.add("market_cap")
+    if "market_cap" in have:
         if "net_income" in have:
             df["pe_ratio"] = (df["market_cap"] / df["net_income"]).where(df["net_income"] != 0)
             df["earnings_yield"] = (df["net_income"] / df["market_cap"]).where(df["market_cap"] != 0)
@@ -162,6 +171,44 @@ def _derive_valuation_and_buckets(df: pd.DataFrame) -> pd.DataFrame:
     for new_col, (src, fn) in bucketers.items():
         if src in df.columns:
             df[new_col] = df[src].map(fn)
+    df = _derive_relative_valuation(df)
+    num = df.select_dtypes("number").columns
+    df[num] = df[num].replace([float("inf"), float("-inf")], float("nan"))
+    return df
+
+
+# Cheap against what? Absolute P/E can't separate a stock that is always cheap
+# (nothing to revert to) from one that is cheap against its own usual level.
+OWN_BELOW, OWN_ABOVE = 0.8, 1.25
+
+
+def _derive_relative_valuation(df: pd.DataFrame) -> pd.DataFrame:
+    if "pe_ratio" not in df.columns:
+        return df
+    pe = df["pe_ratio"].where(df["pe_ratio"] > 0)
+    if "pe_own_median_5y" in df.columns:
+        df["pe_vs_own"] = (pe / df["pe_own_median_5y"]).round(3)
+    sec_med = pe.groupby([df["vintage_year"], df["sector"]]).transform("median")
+    df["pe_vs_sector"] = (pe / sec_med).round(3)
+
+    def own_band(r):
+        if pd.isna(r):
+            return None
+        return "below_own_norm" if r < OWN_BELOW else ("above_own_norm" if r > OWN_ABOVE else "near_own_norm")
+    df["valuation_vs_own"] = df.get("pe_vs_own", pd.Series(index=df.index, dtype=float)).map(own_band)
+
+    def kind(row):
+        own, vb = row.get("valuation_vs_own"), row.get("valuation_bucket")
+        if own is None or vb in (None, "negative_earnings") or pd.isna(vb):
+            return None
+        if own == "below_own_norm":
+            return "derated"                # cheaper than it usually is — the reversion case
+        if vb == "cheap":
+            return "structurally_cheap"     # low P/E, but that is its normal
+        if vb == "fair" and own == "near_own_norm":
+            return "normally_priced"        # the control group
+        return "other"
+    df["cheap_kind"] = df.apply(kind, axis=1)
     return df
 
 
@@ -258,7 +305,7 @@ def df_to_aito_rows(df: pd.DataFrame) -> list[dict]:
     for raw in df.to_dict(orient="records"):
         clean: dict = {}
         for k, v in raw.items():
-            if isinstance(v, float) and math.isnan(v):
+            if isinstance(v, float) and not math.isfinite(v):  # NaN, and ±inf from a zero denominator
                 continue
             if pd.isna(v):
                 continue

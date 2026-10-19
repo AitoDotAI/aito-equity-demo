@@ -3,8 +3,18 @@
 For each (ticker, vintage) we use ONLY price history up to the vintage date:
   momentum_12m   — trailing 12-month total return before vintage
   volatility_12m — annualised stdev of daily returns, trailing 12 months
-  vintage_price  — adjusted close at/just-before vintage
-  market_cap     — vintage_price × shares_outstanding (shares from XBRL stage)
+  vintage_price      — adjusted close at/just-before vintage (split + dividend adjusted
+                       to TODAY; right for returns, wrong for levels)
+  vintage_price_raw  — the price that actually traded on that day: Yahoo's
+                       split-adjusted close × every split ratio after the vintage
+  market_cap         — vintage_price_raw × shares_outstanding (shares from XBRL, as
+                       reported at the time)
+
+Why the raw price: shares_outstanding is the as-reported count, so it must be paired
+with the as-traded price. Pairing it with today's split-adjusted price divides the
+market cap by every later split — and companies split *because* their stock went up,
+so the error labels future winners "cheap" (AAPL 2014 came out at P/E 0.4). That is a
+look-ahead leak, not just noise.
 
 Combined with the XBRL fundamentals (net_income, equity), the merge step
 derives the valuation factors:
@@ -39,10 +49,30 @@ def _trailing_window(ticker: str, vintage: date) -> pd.DataFrame:
     return h
 
 
+def _raw_close(ticker: str, vintage: date) -> float | None:
+    """As-traded close at/just-before the vintage (undo later splits; no dividend adjustment)."""
+    t = yf.Ticker(ticker)
+    try:
+        h = t.history(start=(vintage - timedelta(days=10)).isoformat(), end=(vintage + timedelta(days=2)).isoformat(),
+                      auto_adjust=False, actions=False)
+        splits = t.splits
+    except Exception:
+        return None
+    if h.empty or "Close" not in h:
+        return None
+    close = float(h["Close"].dropna().iloc[-1])  # split-adjusted to today, not dividend-adjusted
+    if splits is not None and len(splits):
+        idx = splits.index.tz_localize(None) if splits.index.tz is not None else splits.index
+        later = splits.values[idx > pd.Timestamp(h.index[-1]).tz_localize(None)]
+        close *= float(np.prod(later)) if len(later) else 1.0
+    return round(close, 4)
+
+
 def market_factors(ticker: str, vintage: date) -> dict:
     h = _trailing_window(ticker, vintage)
     out: dict = {
         "vintage_price": None,
+        "vintage_price_raw": None,
         "momentum_12m": None,
         "volatility_12m": None,
     }
@@ -53,6 +83,7 @@ def market_factors(ticker: str, vintage: date) -> dict:
         return out
     price_end = float(closes.iloc[-1])
     out["vintage_price"] = round(price_end, 4)
+    out["vintage_price_raw"] = _raw_close(ticker, vintage)
 
     # 12-month momentum: price now vs ~252 trading days ago (or earliest).
     lookback = closes.iloc[-252] if len(closes) >= 252 else closes.iloc[0]
