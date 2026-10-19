@@ -22,6 +22,11 @@
 
         "pe_ratio":                     { "type": "Decimal", "nullable": true },
         "pb_ratio":                     { "type": "Decimal", "nullable": true },
+        "pe_own_median_5y":             { "type": "Decimal", "nullable": true },
+        "pe_vs_own":                    { "type": "Decimal", "nullable": true },
+        "pe_vs_sector":                 { "type": "Decimal", "nullable": true },
+        "valuation_vs_own":             { "type": "String", "nullable": true },
+        "cheap_kind":                   { "type": "String", "nullable": true },
         "ev_ebitda":                    { "type": "Decimal", "nullable": true },
         "roic_5y_avg":                  { "type": "Decimal", "nullable": true },
         "gross_margin":                 { "type": "Decimal", "nullable": true },

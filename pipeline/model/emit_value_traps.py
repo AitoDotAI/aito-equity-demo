@@ -207,6 +207,22 @@ def main() -> None:
         vals.sort(key=lambda c: -(c["excess_12m"] if c["excess_12m"] is not None else -999))
         splits.append({"feature": f, "values": vals})
 
+    # Cheap against what? Absolute P/E mixes two different things: a stock that is
+    # always cheap (nothing to revert to) and one trading below its own usual P/E
+    # (the mean-reversion bet). Compare those to normally priced stocks.
+    kinds = {k: _cell(df[df.cheap_kind == k]) for k in ("derated", "structurally_cheap", "normally_priced")}
+    kinds["all"] = _cell(df)
+    own_order = ["below_own_norm", "near_own_norm", "above_own_norm"]
+    abs_order = ["cheap", "fair", "expensive"]
+    own_grid = [{"valuation_bucket": vb,
+                 "cells": [dict(_cell(df[(df.valuation_bucket == vb) & (df.valuation_vs_own == ob)]), own=ob) for ob in own_order]}
+                for vb in abs_order]
+    examples = {}
+    for k in ("derated", "structurally_cheap"):
+        sub = df[(df.cheap_kind == k) & df.pe_vs_own.notna()].sort_values("market_cap", ascending=False).head(8)
+        examples[k] = [{"t": r.ticker, "v": int(r.vintage_year), "pe": _r(r.pe_ratio), "own": _r(r.pe_own_median_5y),
+                        "x12": _r(r.fwd_12m_excess)} for r in sub.itertuples()]
+
     # market quality × leverage — the "cheap for a reason" grid
     mq_order = ["secular_growth", "stable", "cyclical", "disrupted", "declining"]
     lev_order = ["low", "moderate", "high", "negative_equity"]
@@ -319,6 +335,8 @@ def main() -> None:
         "bands": {"6m": 5, "12m": 8},
         "cohorts": cohorts, "survivorship": survivorship, "by_vintage": by_vintage,
         "splits": splits, "grid": {"leverage": lev_order, "rows": grid},
+        "relative": {"kinds": kinds, "own_order": own_order, "own_grid": own_grid, "examples": examples,
+                     "thresholds": {"below": 0.8, "above": 1.25}},
         "relate": relate,
         "heldout": {"n": int(len(b)), "skill": skill, "terciles": tercile_tables, "q6": quadrants("p6", "fwd_6m_excess"),
                     "q12": quadrants("p12", "fwd_12m_excess"), "points": points},

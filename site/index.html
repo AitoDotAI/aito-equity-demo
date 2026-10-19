@@ -2578,6 +2578,13 @@
 
         <div class="vt-hero" id="vt-hero"><!-- headline stats --></div>
 
+        <div class="section-rule"><span>Cheap against what?</span></div>
+        <p class="article-deck" style="font-size:13.5px">A low P/E means two different things. A utility or a bank can trade at 12× for a decade — that is its normal, and there is nothing to revert to. A company trading well below <em>its own</em> usual P/E is the case a mean-reversion trade bets on. Below: each company's P/E against its own median of the five years before the vintage (rebuilt point-in-time from its 10-Ks), compared with normally priced stocks.</p>
+        <div class="vt-table-wrap"><table class="vt-table" id="vt-kinds"></table></div>
+        <p class="ea-legend" id="vt-kinds-note"></p>
+        <div class="vt-table-wrap"><table class="vt-grid" id="vt-own-grid"></table></div>
+        <p class="ea-legend">Rows: absolute P/E band (cheap &lt; 15, fair 15–30, expensive &gt; 30). Columns: P/E against the company's own 5-year median (below &lt; 0.8×, near 0.8–1.25×, above &gt; 1.25×). Cells: mean 12-month return vs universe, long-run trap rate, n. Dashed cells: fewer than 8 companies.</p>
+
         <div class="section-rule"><span>Inside the cheap cohort — what separated the re-raters from the value traps</span></div>
         <div class="ea-scope-bar">
           <label for="vt-split-select">Split cheap stocks by</label>
@@ -4097,6 +4104,35 @@
         <p>Scored walk-forward, the engine's P(trap) <b>did</b> sort the cheap cohort: the riskiest third became long-run value traps far more often — and lagged by ${vtPct(hiX)} pp over 12 months, against ${vtPct(loX)} pp for the safest third.</p>
       </div>`;
 
+    // Cheap against what? — own-history vs absolute cheapness, against the normally priced control
+    const rv = d.relative;
+    if (rv) {
+      const K = [
+        ['normally_priced', 'Normally priced', 'fair P/E, near its own norm — the control'],
+        ['structurally_cheap', 'Structurally cheap', 'low P/E, but that is its usual level'],
+        ['derated', 'De-rated', `P/E below ${rv.thresholds.below}× its own 5-y median`],
+        ['all', 'All companies', ''],
+      ];
+      const kmax = Math.max(10, ...K.flatMap(([k]) => [Math.abs(rv.kinds[k]?.excess_6m || 0), Math.abs(rv.kinds[k]?.excess_12m || 0)]));
+      document.getElementById('vt-kinds').innerHTML = `
+        <thead><tr><th>Group</th><th class="c">n</th><th class="c">6 months</th><th class="c">12 months</th><th>Long-run trap rate</th></tr></thead>
+        <tbody>${K.map(([k, lbl, sub]) => { const c = rv.kinds[k] || {}; return `<tr class="${c.n < 8 ? 'thin' : ''}">
+          <td>${esc(lbl)}${sub ? `<br><small style="color:var(--ink-fade);font-style:italic">${esc(sub)}</small>` : ''}</td>
+          <td class="mono c">${c.n ?? '—'}</td><td>${vtDiverge(c.excess_6m, kmax)}</td><td>${vtDiverge(c.excess_12m, kmax)}</td><td>${vtTrap(c.trap_rate)}</td></tr>`; }).join('')}</tbody>`;
+      const ex = k => (rv.examples[k] || []).slice(0, 5).map(e => `${esc(e.t)} '${String(e.v).slice(2)} (${e.pe}× vs own ${e.own}×)`).join(', ');
+      document.getElementById('vt-kinds-note').innerHTML = `Largest de-rated names: ${ex('derated') || '—'}. Largest structurally cheap: ${ex('structurally_cheap') || '—'}.`;
+      const MINC = 8;
+      const tintC = x => x == null ? 'transparent' : (x >= 0 ? `rgba(74,107,58,${(Math.min(Math.abs(x) / 15, 1) * 0.32).toFixed(2)})` : `rgba(139,58,42,${(Math.min(Math.abs(x) / 15, 1) * 0.32).toFixed(2)})`);
+      const ownLbl = { below_own_norm: 'below its own norm', near_own_norm: 'near its own norm', above_own_norm: 'above its own norm' };
+      document.getElementById('vt-own-grid').innerHTML = `
+        <thead><tr><th></th>${rv.own_order.map(o => `<th>${esc(ownLbl[o])}</th>`).join('')}</tr></thead>
+        <tbody>${rv.own_grid.map(r => `<tr><th class="row">${esc(r.valuation_bucket)} P/E</th>${r.cells.map(c => {
+          if (!c.n) return `<td class="thin">·</td>`;
+          const thin = c.n < MINC;
+          return `<td class="${thin ? 'thin' : ''}" style="background:${thin ? 'transparent' : tintC(c.excess_12m)}"><span class="x">${vtPct(c.excess_12m)}</span><span class="t">${c.trap_rate != null ? Math.round(c.trap_rate * 100) + '% trap' : ''} · n=${c.n}</span></td>`;
+        }).join('')}</tr>`).join('')}</tbody>`;
+    }
+
     // Splits
     const sel = document.getElementById('vt-split-select');
     sel.innerHTML = d.splits.map(s => `<option value="${esc(s.feature)}">${esc(VT_FEAT_LABELS[s.feature] || vtHuman(s.feature))}</option>`).join('');
@@ -4236,6 +4272,7 @@
   const LAB_FUND = [
     ['pe_ratio', 'P/E', v => v.toFixed(1) + '×'],
     ['pb_ratio', 'P/B', v => v.toFixed(1) + '×'],
+    ['pe_vs_own', 'P/E vs own 5-y norm', v => v.toFixed(2) + '×'],
     ['debt_to_equity', 'Debt / equity', v => v.toFixed(2)],
     ['return_on_equity', 'ROE', v => (v * 100).toFixed(0) + '%'],
     ['operating_margin', 'Operating margin', v => (v * 100).toFixed(0) + '%'],

@@ -201,6 +201,8 @@ def emit_universe(companies_df: pd.DataFrame, out_dir: Path) -> None:
         "momentum_12m", "volatility_12m",
         "pb_ratio", "earnings_yield", "market_cap", "gross_margin", "operating_margin",
         "net_margin", "return_on_assets", "revenue", "net_income",
+        # P/E against the company's own 5-y norm and its sector (cheap against what?)
+        "pe_own_median_5y", "pe_vs_own", "pe_vs_sector", "valuation_vs_own", "cheap_kind",
         # long-horizon outcomes
         "outcome_bucket", "survived_intact", "terminal_event",
         "total_return_pct_local", "total_return_pct_usd", "window_years",
