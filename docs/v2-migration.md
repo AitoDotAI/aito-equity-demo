@@ -38,6 +38,26 @@ walk-forward value-trap scoring; only `AITO_ENV` differs.
 Same predicted bucket on 87 % of rows, score correlation 0.95, 16/20 shared top-20 picks.
 **No quality regression; the trap axis is slightly sharper on rep2.**
 
+## Numeric evidence: v2 quantities vs hand-made buckets (2026-10-20, core 2.11.7)
+
+v2 treats `Decimal` columns as quantities by default (binned so neighbours share
+evidence), and `$numeric` asks for it explicitly. Does that beat the pipeline's
+hand-made buckets? Same 5 ticker-grouped folds, same 1,294 rows, same LLM grades +
+sector in every arm; only the fundamentals' encoding differs. Re-run with
+`./do pipeline numeric-bakeoff` (aito-core ticket td-20261020092559142882):
+
+| fundamentals as | accuracy | log-loss ↓ | rank-IC | top-20 / 50 / 100 CAGR |
+|---|---|---|---|---|
+| **buckets** (valuation, growth, leverage, profitability, momentum, volatility, vs-own-P/E) | **0.346** | **1.494** | **0.295** | **19.6 / 16.8 / 17.3 %** |
+| bare numbers (pe_ratio, pe_vs_own, revenue_cagr_3y, debt_to_equity, ROE, momentum, volatility) | 0.342 | 1.515 | 0.276 | 18.5 / 16.2 / 14.1 % |
+| same numbers as `{"$numeric": v}` | 0.335 | 1.549 | 0.285 | 16.5 / 14.3 / 14.5 % |
+
+Buckets win on every metric; `$numeric` is worst on calibration. In a single predict
+the bare numbers carry lifts of ≈ 0.99 and `$numeric` ≈ 1.06 — opposite profiles
+(cheap/growing/unlevered vs rich/shrinking/levered) get near-identical forecasts.
+**The demo keeps buckets.** Reported to the CPO: "Decimal is a useful quantity by
+default" does not hold on this data.
+
 ## Steps taken / to finish
 
 1. `POST /api/v2/_envs {"name": "v2", "basedOn": "master"}` — branch; master untouched.

@@ -85,6 +85,7 @@ cmd_pipeline() {
     eval-page)    uv run python -m pipeline.model.emit_eval "$@" ;;       # → site/data/eval.json (Evaluation view)
     error-page)   uv run python -m pipeline.model.emit_error_analysis "$@" ;;  # → site/data/error_analysis.json (Error Analysis view)
     backtest-page) uv run python -m pipeline.model.emit_backtest "$@" ;;       # → site/data/backtest.json (Beat the Market? view)
+    numeric-bakeoff) uv run python -m pipeline.model.numeric_bakeoff "$@" ;;  # buckets vs v2 numeric evidence (aito-core td-20261020092559142882)
     all)
       # Free, deterministic stages always run.
       say "universe"     && cmd_pipeline universe "$@"

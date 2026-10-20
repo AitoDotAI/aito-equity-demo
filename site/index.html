@@ -2897,11 +2897,13 @@
         <div class="aito-endpoint">POST /_relate</div>
         <div class="aito-code">{
   <span class="k">"from"</span>: <span class="s">"companies"</span>,
-  <span class="k">"where"</span>: {
-    <span class="k">"outcome_bucket"</span>: <span class="s">"great"</span>
-  },
-  <span class="k">"relate"</span>: <span class="s">"$features"</span>
+  <span class="k">"where"</span>: { <span class="k">"$on"</span>: [
+    { <span class="k">"outcome_bucket"</span>: <span class="s">"great"</span> },
+    { <span class="k">"outcome_bucket"</span>: { <span class="k">"$defined"</span>: <span class="n">true</span> } }
+  ]},
+  <span class="k">"relate"</span>: [<span class="s">"moat_strength"</span>, <span class="s">"sector"</span>, <span class="c">/* … */</span>]
 }</div>
+        <p><code style="font-family:'JetBrains Mono';color:var(--aito-teal);">$on</code> scopes the population to companies whose outcome is known — delisted and current rows have none, and counting them as "not great" would inflate every lift.</p>
       </div>
 
       <div class="aito-section" data-view="thesis">
@@ -3421,6 +3423,10 @@
       { val: (h.accuracy_gain >= 0 ? '+' : '') + (h.accuracy_gain * 100).toFixed(0) + 'pt', cls: h.accuracy_gain >= 0 ? 'pos' : 'neg', lbl: 'Accuracy gain', sub: 'over guessing the most common bucket' },
       { val: (igPos ? '+' : '') + h.information_gain.toFixed(3), cls: igPos ? 'pos' : 'neg', lbl: 'Information gain', sub: 'bits the probabilities beat base rate' },
       { val: h.geom_mean_lift.toFixed(2) + '×', cls: h.geom_mean_lift >= 1 ? 'pos' : 'neg', lbl: 'Geom-mean lift', sub: 'prob. on the true bucket vs base' },
+      // Calibration (Aito v2 _evaluate): are the stated probabilities honest, not just the top pick?
+      ...(h.ece != null ? [{ val: (h.ece * 100).toFixed(1) + 'pt', cls: h.ece <= 0.05 ? 'pos' : 'neg', lbl: 'Calibration error', sub: 'ECE: avg gap between stated probability and hit rate' }] : []),
+      ...(h.log_loss_skill != null ? [{ val: (h.log_loss_skill >= 0 ? '+' : '') + (h.log_loss_skill * 100).toFixed(1) + '%', cls: h.log_loss_skill >= 0 ? 'pos' : 'neg', lbl: 'Log-loss skill', sub: `log-loss ${h.log_loss} vs base ${h.base_log_loss}` }] : []),
+      ...(h.brier_score != null ? [{ val: h.brier_score.toFixed(3), cls: '', lbl: 'Brier score', sub: 'mean squared error of the 5 probabilities (lower is better)' }] : []),
     ].map(t => `<div class="eval-tile"><div class="val ${t.cls}">${esc(t.val)}</div><div class="lbl">${esc(t.lbl)}</div><div class="sub">${esc(t.sub)}</div></div>`).join('');
 
     // comparison — accuracy bars, info gain annotated

@@ -20,7 +20,7 @@ from pipeline.model import featureclust as fc
 
 OUT = Path("site/data/eval.json")
 FOLDS = ["0", "1", "2", "3", "4"]
-SWEEP_K = [1, 2, 3, 4, 6, 9, 12, 16]
+SWEEP_K = [1, 2, 3, 4, 6, 9, 12, 16]  # capped at the real feature count below
 
 
 def _metric(r: dict, key: str) -> float | None:
@@ -63,6 +63,13 @@ def _cv(c: AitoClient, feats: list[str]) -> dict:
         "geom_mean_lift": _round(_wmean(rows, "geomMeanLift"), 3),
         "mean_rank": _round(_wmean(rows, "meanRank"), 3),
         "base_mean_rank": _round(_wmean(rows, "baseMeanRank"), 3),
+        # v2 (rep2) calibration metrics — None on a v1 engine
+        "log_loss": _round(_wmean(rows, "logLoss"), 3),
+        "base_log_loss": _round(_wmean(rows, "baseLogLoss"), 3),
+        "log_loss_skill": _round(_wmean(rows, "logLossSkill"), 3),
+        "brier_score": _round(_wmean(rows, "brierScore"), 3),
+        "ece": _round(_wmean(rows, "ece"), 3),
+        "test_rows": int(sum(_n(r) for r in rows)),
     }
 
 
@@ -70,10 +77,11 @@ def main() -> None:
     df, _ = fc.load_dataset()
     n_graded = len(df)
 
-    with AitoClient() as c:
+    # rep2 _evaluate is ~3x slower than v1 (~20 s on this table); give it room
+    with AitoClient(timeout=300) as c:
         print("→ 5-fold CV: calibrated feature set")
         cal = _cv(c, ea.CALIBRATED)
-        print("→ 5-fold CV: all 16 features")
+        print(f"→ 5-fold CV: all {len(ea.F16)} features")
         allf = _cv(c, ea.F16)
 
         print("→ single-feature ranking (fold 0)")
@@ -82,7 +90,7 @@ def main() -> None:
 
         print("→ feature-count sweep (fold 0)")
         sweep = []
-        for k in SWEEP_K:
+        for k in sorted({k for k in SWEEP_K if k < len(rank)} | {len(rank)}):  # always end at "all"
             r = ea.evaluate(c, rank[:k], {"eval_fold": "0"})
             sweep.append({"k": k, "information_gain": round(r["informationGain"], 3),
                           "accuracy": round(r["accuracy"], 3), "added": rank[k - 1]})
@@ -107,7 +115,7 @@ def main() -> None:
              "accuracy": cal["base_accuracy"], "information_gain": 0.0},
             {"label": "calibrated features", "sub": f"{len(ea.CALIBRATED)} decorrelated features",
              "accuracy": cal["accuracy"], "information_gain": cal["information_gain"]},
-            {"label": "all 16 features", "sub": "everything, incl. redundant/noisy",
+            {"label": f"all {len(ea.F16)} features", "sub": "everything, incl. redundant/noisy",
              "accuracy": allf["accuracy"], "information_gain": allf["information_gain"]},
         ],
         "feature_sweep": sweep,
@@ -119,7 +127,7 @@ def main() -> None:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     print(f"→ {OUT}: headline acc {cal['accuracy']} (base {cal['base_accuracy']}), "
-          f"infoGain {cal['information_gain']} | all-16 infoGain {allf['information_gain']} | peak k={peak_k}")
+          f"infoGain {cal['information_gain']} | all-features infoGain {allf['information_gain']} | peak k={peak_k}")
 
 
 if __name__ == "__main__":
