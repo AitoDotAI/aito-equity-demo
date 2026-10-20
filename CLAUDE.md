@@ -10,7 +10,7 @@ pattern, vehicle = long-horizon equity research (Buffett-style: moat,
 position, market quality, leadership). Primary audience: a large quantitative trading firm. Secondary:
 public artifact (HN/LinkedIn/blog) between the two meetings.
 
-**Deployment target:** static site at `equity.aito.ai`, served via the
+**Deployment target:** https://demos.aito.ai/equity/ — path-mounted on the
 `aito-demos-unified` platform alongside the other `*.aito.ai` demos.
 
 **The demo is the methodology.** The numbers in the UI come from real
@@ -22,23 +22,43 @@ only for the period between repo bootstrap and the first pipeline run.
 This demo **deviates from the demo-server default** (which is FastAPI +
 Next.js with a shared shell). The equity demo has its own editorial
 visual identity (single-file HTML, Fraunces / Source Serif 4 type, paper
-texture, double-rule dividers) and no need for a runtime backend.
+texture, double-rule dividers) and no app backend beyond a thin Aito query proxy.
 
 | Layer | Lives at | Notes |
 |---|---|---|
 | Data pipeline | `pipeline/` (Python 3.12) | Stages: universe → filings → extract → outcomes → load → precompute |
 | Static site | `site/index.html` + `site/data/*.json` | Single-file HTML with inline CSS/JS; fetches JSON at runtime |
-| Health stub | `src/app.py` (FastAPI, ~30 lines) | Serves `site/` + `/health` + `/api/health`. The aito-demos-unified platform expects a uvicorn process per demo; this stub satisfies that contract. **No /api/* routes are added here.** |
-| Aito | external | Predictive database; pipeline writes to it, then precomputes query results to JSON |
+| Server | `src/app.py` (FastAPI) | Serves `site/` + `/health` + `/api/health`, plus a thin **read-only query proxy**: `/api/query` (predict / relate / match / similarity, `from` must be `companies`) for the Company Lab and Live Query, and `/api/classify-earnings` (LLM extract → Aito predict). The key stays server-side. |
+| Aito | external, **v2 API on rep2 storage** | Predictive database; pipeline writes to it, then precomputes query results to JSON |
 
-There is **no request-time Aito call**. Every value the user sees in the
-browser was precomputed by `./do pipeline precompute` and written to
-`site/data/`. This is intentional:
+Every *view* is precomputed by the pipeline into `site/data/` (reproducible,
+works without Aito). Only the interactive surfaces — Company Lab, Live Query,
+the earnings box — query Aito at request time, through the proxy above, so
+the API key never reaches the browser.
 
-- API key never reaches the browser
-- Demo works offline (after build)
-- Reproducible from the four notebooks
-- Deploy is just a tarball of `site/`
+## Aito v2
+
+The demo runs on the Aito **v2 API** (`/api/v2`) and master's tables are
+**rep2** (`collection`) storage — the `v2` env was promoted into master on
+2026-10-19. Rollback is a database action, not a config edit.
+
+- One root for every call: `pipeline.aito.client.api_root()` =
+  `AITO_API_URL[/env/AITO_ENV]/api/v2`. `AITO_ENV` (optional) points the whole
+  demo — pipeline, proxy, Lab — at a branched env: branch, load / `_migrate`
+  there, regenerate, compare, then promote.
+- Ranked-value hits carry `$value`, not `feature` → use `hit_value()`.
+  `_evaluate` / `_estimate` / `_aggregate` answer `{kind, data}` → `unwrap()`.
+- `put_schema` creates tables as `collection`; `type: table` is still the v2
+  default and would silently keep the legacy engine.
+- Analogue search: rep2 `_similarity` is text BM25 only, so analogues rank on
+  the derived Text column `profile_text` (one token per field=value,
+  `profile_token()` in `pipeline/aito/load.py`, `profileToken` in the site).
+- `_relate` on a **nullable** condition (`outcome_bucket` is null for
+  delisted / current rows): v2 counts a missing value as "not the condition".
+  Scope the population: `{"$on": [cond, {field: {"$defined": true}}]}`.
+- `scripts/v2_parity.py` replays every query shape the demo sends and diffs
+  payloads; `docs/v2-migration.md` has the findings and the held-out
+  v1-vs-rep2 comparison.
 
 ## Conventions enforced by the platform — DO NOT drift
 
@@ -47,7 +67,7 @@ browser was precomputed by `./do pipeline precompute` and written to
 | Health stub entry | `src/app.py` defines `app: FastAPI` |
 | Static mount | `app.mount("/", StaticFiles(directory="site", html=True))` — must be LAST so it doesn't shadow `/health` |
 | `/health` | Returns 200 cheaply, no Aito call |
-| `/api/health` | Returns 200 + `backend: "static-only"` |
+| `/api/health` | Returns 200 + `backend: "static-with-query-proxy"` |
 | Lockfile | `uv.lock` committed (`uv sync --frozen` in build) |
 | Env contract | `AITO_API_URL`, `AITO_API_KEY` (pipeline), `ANTHROPIC_API_KEY` (extraction) |
 
@@ -150,8 +170,14 @@ What's NOT done (deliberately):
   copy the placeholder JSONs from a known-good commit.
 - **`/api/*` 404 unexpectedly** → you've added a route after the
   `app.mount` line in `src/app.py`. The mount shadows everything below.
-  But: this demo's design says **don't add /api/* routes at all** — if you
-  reach for one, ask whether the data should be precomputed instead.
+  Keep the proxy read-only and narrow; if you reach for a new route, ask
+  whether the data should be precomputed instead.
+- **Lab shows "Aito gave no answer"** → the proxy got zero hits (wrong env,
+  empty table mid-reload, unknown field). The card is showing the base rate.
+- **Valuation numbers look absurd** (P/E < 1) → market cap must be
+  point-in-time: `valuation_history` pairs the as-traded price with a
+  split-consistent share count. Never multiply a today-adjusted price by an
+  as-reported share count.
 - **Pipeline stage fails with `NotImplementedError`** → that stage is
   scaffolded but not implemented yet; see `aito-equity-demo-TASK.md` for
   the v1 build order.
@@ -169,18 +195,22 @@ don't commit or push directly to `main`.** Branch → commit → push branch →
 open PR → review → merge. `main` is what the demo deploys from, so keep it
 green and let changes land through review.
 
-aito-demo-server tracks each demo's `main` branch by default. So:
+aito-demo-server tracks each demo's `main` branch (`demos.config.yaml`,
+entry `equity`, path-mounted at `/equity`, no frontend build). So:
 
-1. PR your change in this repo
-2. Merge to `main`
-3. In aito-azure: `./do deploy-demos` — rebuilds the unified image (latest
-   `main` is pulled at build time via `git ls-remote`) and updates the
-   Web App
+1. PR your change in this repo, merge to `main`
+2. In aito-azure, inside its nix-shell (that is where `az` lives):
+   `nix-shell --run "./do build-demos"` → prints a date tag and
+   `resolved equity: main → <sha>`
+3. `./do deploy-demos-test <tag>` → smoke-test at
+   https://aito-demos-unified-test.azurewebsites.net/equity/ (on the test app
+   a `Host: demos.aito.ai` header 404s; use the default hostname)
+4. `./do deploy-demos <tag>` — production, restarts the **shared** Web App
+   (all demos). It asks for a typed `yes`; non-interactively:
+   `echo yes | ./do deploy-demos <tag>`
 
-Note: the platform may need adjustment for this demo since there's no
-Next.js build step. If `demos.config.yaml`'s `build.frontend_build` for
-this demo still says `cd frontend && npm ci && npx next build`, it needs
-to become a no-op (or `cd .` placeholder). Coordinate before deploying.
+Data changes that need Aito (a new column, a reload) go to a branched env
+first (`AITO_ENV=<env>`), then promote.
 
 ## Files you can ignore as an agent
 

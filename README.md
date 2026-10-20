@@ -3,7 +3,7 @@
 **Predictive equity research with LLM-graded qualitative features and the
 [aito.ai](https://aito.ai) predictive database.**
 
-Live: [equity.aito.ai](https://equity.aito.ai) *(pending v1 deploy)*
+Live: [demos.aito.ai/equity](https://demos.aito.ai/equity/)
 
 ---
 
@@ -77,7 +77,7 @@ contract — nothing else.
 - **HTML/CSS/JS** — single-file editorial frontend (Fraunces / Source Serif 4,
   cream paper texture, double-rule dividers); no Next.js, no React
 - **playwright** — screenshot regression
-- **FastAPI / uvicorn** — health-stub only; no `/api/*` business routes
+- **FastAPI / uvicorn** — serves the static site plus a read-only Aito query proxy for the interactive views (key stays server-side)
 
 Multi-market columns (`market`, `exchange`, `currency`, `reporting_standard`,
 `filing_language`) are in the Aito schema from day 1 even though v1 data
