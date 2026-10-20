@@ -22,6 +22,7 @@
 #   ── Tests ────────────────────────────────────────────────────────────────
 #   ./do test                 run pytest unit tests (tests/)
 #   ./do test-book            run booktest snapshot tests (book/); -a to accept
+#   ./do contract             live contract test: real Aito + deployed site still answer the demo's query shapes
 #
 #   ── Visuals ──────────────────────────────────────────────────────────────
 #   ./do screenshot-teaser    render assets/teaser.html → assets/teaser.png (1200×630)
@@ -118,6 +119,7 @@ cmd_pipeline() {
 }
 
 cmd_test()      { exec uv run pytest "$@"; }
+cmd_contract()  { exec uv run pytest -m live -v tests/test_aito_contract.py "$@"; }
 # Booktests run via the booktest CLI (pytest can't inject their TestCaseRun
 # arg). Flags: -v verbose · -a accept new/changed snapshots · -u update on
 # success · -i interactive review. e.g. `./do test-book -a` to accept.
@@ -141,6 +143,7 @@ case "${1:-help}" in
   pipeline)            shift; cmd_pipeline "$@" ;;
   test)                shift; cmd_test "$@" ;;
   test-book)           shift; cmd_test_book "$@" ;;
+  contract)            shift; cmd_contract "$@" ;;
   screenshot-teaser)   shift; cmd_screenshot_teaser "$@" ;;
   screenshot-pages)    shift; cmd_screenshot_pages "$@" ;;
   inspect-mobile)      shift; cmd_inspect_mobile "$@" ;;
