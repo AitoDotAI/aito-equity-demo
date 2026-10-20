@@ -305,7 +305,10 @@ def emit_relate(
     try:
         _, ms = _measure_latency(
             client,
-            {"from": COMPANIES_TABLE, "where": {"outcome_bucket": "great"}, "relate": relate_columns, "limit": 60},
+            # outcome_bucket is nullable (delisted / current rows): scope the population to rows
+            # where it is known, or v2 counts the unknowns as "not great" and inflates every lift.
+            {"from": COMPANIES_TABLE, "where": {"$on": [{"outcome_bucket": "great"}, {"outcome_bucket": {"$defined": True}}]},
+             "relate": relate_columns, "limit": 60},
             "relate",
         )
         latency_samples.append(ms)
