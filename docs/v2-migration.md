@@ -68,10 +68,11 @@ Same predicted bucket on 87 % of rows, score correlation 0.95, 16/20 shared top-
 
 | Finding | Ticket | Priority |
 |---|---|---|
-| 3 — `$not {field: null}` bitset 400 on trailing-null columns | `td-20261018190238171893` (aito-core-2; with the `_relate` defined-range fix, finding 2) | P1 |
-| 4, 5, 8 — categorical `_similarity` on rep2, `_evaluate` baseline mismatch, `table`/`collection` label | `td-20261018190308734654` | P2 |
+| 3 — `$not {field: null}` bitset 400 on trailing-null columns | `td-20261018190238171893` (aito-core-2; with the `_relate` defined-range fix, finding 2) — fixed in core v2.11.8 (#1725) | P1 |
+| 4, 8 — categorical `_similarity` on rep2 (on 2.11.7 also a 501 with an empty type name), `table`/`collection` label; 5 reclassified as a v1 denominator bug (guide note) | `td-20261018190308734654` | P2 |
 
 Keep the `profile_text` BM25 workaround until the `_similarity` decision lands.
+`./do contract` pins both gaps as strict xfails, so it fails the day either is fixed.
 
 ## Findings
 
@@ -102,12 +103,15 @@ Keep the `profile_text` BM25 workaround until the `_similarity` decision lands.
    per field=value, e.g. `moatstrengthxwide`) and BM25 `_similarity` on it. Against v1's
    `_similarity`, top-10 overlap is 8/10 (NVDA-like profile) and 9/10 (value-trap profile),
    same order at the top. Scores change scale (BM25 ≈ 10–80 vs v1 ≈ 1–7).
-5. **`_evaluate` changes its numbers on rep2.** Same storage → identical metrics, only the
-   `{kind: "evaluation", data}` envelope. On rep2, same query and same 362 test rows:
-   accuracy 0.315 → 0.373, **baseAccuracy 0.257 → 0.307**, meanRank 1.74 → 1.09,
-   informationGain 0.187 → 0.177, and ~3× slower (7 s → 23 s). A different *base* on the same
-   test rows means the baseline is computed differently, so v1 and rep2 `_evaluate` figures are
-   not comparable. rep2 adds `brierScore`, `ece`, `logLoss`, `mrr`.
+5. **`_evaluate` changes its numbers on rep2 — because v1's were wrong.** Same 362-row
+   fold: accuracy 0.315 → 0.373, baseAccuracy 0.257 → 0.307, ~3× slower (7 s → 23 s).
+   The cause is the denominator, not the model: 59 of the 362 test rows have
+   `outcome_bucket = null` (delisted, current vintage). **v1 scores them** (always wrong);
+   v2 excludes them (n = 303). Base 0.2569 = mode/362 vs 0.3069 = mode/303, both exact;
+   the same ~114 correct calls give 0.315 vs 0.373. So v1 published deflated metrics on any
+   table with a nullable target — the demo's v1-era Evaluation numbers included. rep2's
+   metric set has no `geomMeanLift`; derive it as exp(baseLogLoss − logLoss). rep2 adds
+   `brierScore`, `ece`, `logLoss`, `mrr`. (Reclassified by the CPO as a v1 bug + guide note.)
 6. **`type: table` is still the default on v2.** A client that swaps `/api/v1` → `/api/v2`
    and keeps its schema keeps creating v1-engine tables. Nothing tells it. There is also no
    documented whole-database `PUT /api/v2/schema` operation page (base-v2 lists it).

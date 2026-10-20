@@ -51,3 +51,7 @@ package = false
 # Booktests in book/ are run by the `booktest` CLI (they take a TestCaseRun
 # arg pytest can't provide), so keep plain pytest scoped to tests/.
 testpaths = ["tests"]
+# `live` = contract tests against the real Aito + deployed site (tests/test_aito_contract.py);
+# off by default, run with `./do contract`.
+markers = ["live: hits the real Aito instance and the deployed site (read-only)"]
+addopts = "-m 'not live'"
