@@ -28,13 +28,6 @@ dependencies = [
     # ── Universe construction (Wikipedia constituent parsing) ────
     "beautifulsoup4>=4.12,<5",
     "lxml>=5.0,<6",
-
-    # ── Screenshots (replaces Node playwright-core) ──────────────
-    # Pinned to the playwright Python release whose bundled browser revision
-    # matches nix's playwright-driver.browsers (chromium 1169). If you bump
-    # nix, bump this in lockstep — version skew here produces
-    # "Executable doesn't exist" failures at screenshot time.
-    "playwright>=1.52,<1.53",
 ]
 
 [dependency-groups]
@@ -42,6 +35,16 @@ dev = [
     "pytest>=8.0,<9",
     "pytest-httpx>=0.30,<1",
     "booktest>=1.1,<2",
+
+    # ── Screenshots (replaces Node playwright-core) ──────────────
+    # Dev-only: scripts/screenshot_pages.py and scripts/inspect_mobile.py use
+    # it, src/ never does. `./do install` (plain `uv sync`) still installs it;
+    # the demos image (`uv sync --frozen --no-dev`) no longer ships its 129 MB.
+    # Pinned to the playwright Python release whose bundled browser revision
+    # matches nix's playwright-driver.browsers (chromium 1169). If you bump
+    # nix, bump this in lockstep — version skew here produces
+    # "Executable doesn't exist" failures at screenshot time.
+    "playwright>=1.52,<1.53",
 ]
 
 [tool.uv]
